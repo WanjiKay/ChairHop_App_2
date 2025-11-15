@@ -10,9 +10,74 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_15_155123) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_15_180256) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "appointments", force: :cascade do |t|
+    t.datetime "time"
+    t.string "location"
+    t.boolean "booked"
+    t.text "content"
+    t.bigint "customer_id", null: false
+    t.bigint "stylist_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_appointments_on_customer_id"
+    t.index ["stylist_id"], name: "index_appointments_on_stylist_id"
+  end
+
+  create_table "chats", force: :cascade do |t|
+    t.string "title"
+    t.bigint "customer_id", null: false
+    t.bigint "appointment_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_chats_on_appointment_id"
+    t.index ["customer_id"], name: "index_chats_on_customer_id"
+  end
+
+  create_table "conversation_messages", force: :cascade do |t|
+    t.string "role"
+    t.text "content"
+    t.bigint "conversation_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id"], name: "index_conversation_messages_on_conversation_id"
+  end
+
+  create_table "conversations", force: :cascade do |t|
+    t.bigint "appointment_id", null: false
+    t.bigint "customer_id", null: false
+    t.bigint "stylist_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_conversations_on_appointment_id"
+    t.index ["customer_id"], name: "index_conversations_on_customer_id"
+    t.index ["stylist_id"], name: "index_conversations_on_stylist_id"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.string "role"
+    t.text "content"
+    t.bigint "chat_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_messages_on_chat_id"
+  end
+
+  create_table "reviews", force: :cascade do |t|
+    t.integer "rating"
+    t.text "content"
+    t.bigint "appointment_id", null: false
+    t.bigint "customer_id", null: false
+    t.bigint "stylist_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_reviews_on_appointment_id"
+    t.index ["customer_id"], name: "index_reviews_on_customer_id"
+    t.index ["stylist_id"], name: "index_reviews_on_stylist_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -22,8 +87,24 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_15_155123) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
+    t.string "username"
+    t.string "location"
+    t.text "about"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "appointments", "users", column: "customer_id"
+  add_foreign_key "appointments", "users", column: "stylist_id"
+  add_foreign_key "chats", "appointments"
+  add_foreign_key "chats", "users", column: "customer_id"
+  add_foreign_key "conversation_messages", "conversations"
+  add_foreign_key "conversations", "appointments"
+  add_foreign_key "conversations", "users", column: "customer_id"
+  add_foreign_key "conversations", "users", column: "stylist_id"
+  add_foreign_key "messages", "chats"
+  add_foreign_key "reviews", "appointments"
+  add_foreign_key "reviews", "users", column: "customer_id"
+  add_foreign_key "reviews", "users", column: "stylist_id"
 end
