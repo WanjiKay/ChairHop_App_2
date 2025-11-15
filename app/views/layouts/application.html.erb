@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>ChairHopApp2</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -10,7 +10,9 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body><%= render "shared/navbar" %>
+<%= render "shared/flashes" %>
+
     <%= yield %>
   </body>
 </html>
