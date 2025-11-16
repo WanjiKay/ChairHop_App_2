@@ -1,38 +1,70 @@
 <nav class="navbar navbar-expand-sm navbar-light navbar-lewagon">
-  <div class="container-fluid">
-    <%= link_to "#", class: "navbar-brand" do %>
-      <%= image_tag "https://raw.githubusercontent.com/lewagon/fullstack-images/master/uikit/logo.png" %>
-    <% end %>
+  <div class="container-fluid header-display-desktop" data-content-field="site-title">
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <!-- Logo / Site title -->
+    <div class="header-title-nav-wrapper">
+      <div class="header-title" data-animation-role="header-element">
+        <div class="header-title-text">
+          <%= link_to root_path, id: "site-title", data: { animation_role: "header-element" } do %>
+            <%= image_tag "logo.png", alt: "ChairHop Logo", class: "navbar-logo" %>
+          <% end %>
+        </div>
+      </div>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto">
-        <% if user_signed_in? %>
-          <li class="nav-item active">
-            <%= link_to "Home", "#", class: "nav-link" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to "Messages", "#", class: "nav-link" %>
-          </li>
-          <li class="nav-item dropdown">
-          <a href="#" class="avatar" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <%= image_tag "https://kitt.lewagon.com/placeholder/users/ssaunier", class: "avatar", alt: "dropdown menu" %>
-          </a>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <%= link_to "Action", "#", class: "dropdown-item" %>
-              <%= link_to "Another action", "#", class: "dropdown-item" %>
-              <%= link_to "Log out", destroy_user_session_path, data: {turbo_method: :delete}, class: "dropdown-item" %>
+      <!-- Navigation links -->
+      <div class="header-nav">
+        <div class="header-nav-wrapper">
+          <nav class="header-nav-list">
+            <div class="header-nav-item header-nav-item--collection">
+
+            <div class="header-nav-item header-nav-item--collection">
+
             </div>
-          </li>
-        <% else %>
-          <li class="nav-item">
-            <%= link_to "Login", new_user_session_path, class: "nav-link" %>
-          </li>
-        <% end %>
-      </ul>
+            <div class="header-nav-item header-nav-item--collection">
+
+            </div>
+          </nav>
+        </div>
+      </div>
     </div>
+
+    <!-- Right-side actions -->
+    <div class="header-actions header-actions--right">
+      <% if user_signed_in? %>
+        <div class="dropdown header-actions-action">
+          <a href="#" class="avatar" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <% if defined?(current_user) && current_user && current_user.respond_to?(:avatar) && current_user.avatar&.attached? %>
+              <%= image_tag url_for(current_user.avatar), class: "avatar", alt: "User menu" %>
+            <% else %>
+              <%= image_tag "profile.png", class: "avatar", alt: "User menu" %>
+            <% end %>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <% if defined?(edit_user_registration_path) %>
+              <%= link_to "Profile", profile_path(edit: 1), class: "dropdown-item" %>
+              <%= link_to "Settings", edit_user_registration_path, class: "dropdown-item" %>
+            <% end %>
+            <% if defined?(chats_path) %>
+              <%= link_to "Chats", chats_path, class: "dropdown-item" %>
+            <% end %>
+            <% if defined?(destroy_user_session_path) %>
+              <%= link_to "Log out", destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item" %>
+            <% end %>
+          </div>
+        </div>
+      <% else %>
+        <div class="header-actions-action header-actions-action--cta" data-animation-role="header-element">
+            <%= link_to "Login", new_user_session_path, class: "btn btn-outline-light ms-3" %>
+        </div>
+      <% end %>
+
+      <div class="header-actions-action header-actions-action--cta" data-animation-role="header-element">
+      </div>
+    </div>
+
+
   </div>
 </nav>
+<style>
+  .navbar-logo { height: 40px; width: auto; }
+</style>
