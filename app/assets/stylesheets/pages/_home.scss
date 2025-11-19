@@ -1,1 +1,146 @@
 // Specific CSS for your home-page
+.container-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 3rem;
+  margin: 4rem auto;
+  padding: 4rem 3rem;
+  max-width: 1300px;
+  background: linear-gradient(
+    135deg,
+    lighten($color-soft-gray, 10%),
+    lighten($color-soft-gray, 25%)
+  );
+  border-radius: $border-radius-xl;
+  border: 1px solid rgba($color-soft-gray, 0.35);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(6px);
+}
+.side-by-side {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  > div {
+    flex: 1 1 45%;
+    min-width: 320px;
+    padding: 2.5rem;
+    background-color: lindear-gradient(145deg, $color-cream, lighten($color-cream, 6%));
+    border-radius: 18px;
+    border: 1px solid rgba($color-soft-gray, 0.45);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    transition: all 0.35s ease;
+    &:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
+    }
+  }
+}
+//Text Style
+.text-center {
+  text-align: center;
+  margin-bottom: 4rem;
+  h1 {
+    font-family: 'Inter', sans-serif;
+    color: $primary;
+    font-weight: 800;
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.03em;
+    text-shadow: 0 3px 8px rgba($primary, 0.15);
+  }
+  h2,
+  h3 {
+    font-family: 'Inter', sans-serif;
+    color: $color-muted-olive;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  p {
+    color: $color-dark-text;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    max-width: 720px;
+    margin: 1.5rem auto 0;
+    opacity: 0.9;
+  }
+  a {
+    color: $color-beige;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: all 0.25s ease;
+    &:hover {
+      color: $primary;
+      border-bottom-color: $primary;
+    }
+  }
+}
+//Appointments
+.section-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.list-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  .appointment-item {
+    flex: 1 1 300px;
+    max-width: 350px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.75rem 1.5rem;
+    background: linear-gradient(145deg, lighten($color-muted-olive, 10%), $color-muted-olive);
+    border: 1px solid rgba($color-soft-gray, 0.5);
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    transition: transform all 0.3s ease;
+    strong {
+      color: $primary;
+      font-weight: 700;
+    }
+    small {
+      color: darken($color-muted-olive, 15%);
+      font-weight: 600;
+    }
+  }
+}
+// Adjusted Response
+@media (max-width: 992px) {
+  .side-by-side {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+@media (max-width: 768px) {
+  .container-wrapper {
+    padding: 2rem 1.5rem;
+  }
+  .text-center h1 {
+    font-size: 2.4rem;
+  }
+  .search-bar form {
+    flex-direction: column;
+    gap: 0.75rem;
+    .input.form-control,
+    .btn{
+      border-radius: 50px;
+      width: 100%
+    }
+    .btn{
+      margin-top: 0.5rem;
+    }
+  }
+}

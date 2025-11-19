@@ -1,0 +1,11 @@
+<div class="search-bar">
+  <%= form_with url: appointments_path, method: :get, class: "d-flex" do %>
+    <%= label_tag :query, "Search", class: "visually-hidden" %>
+      <%= text_field_tag :query,
+            params[:query],
+            class: "form-control",
+            placeholder: "Type a keyword"
+        %>
+      <%= submit_tag "Search", name: "", class: "btn btn-primary" %>
+    <% end %>
+  </div>

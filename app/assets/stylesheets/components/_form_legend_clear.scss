@@ -5,6 +5,20 @@
 // input and has no visual effect. Here we try to fix matters by
 // applying the clear to the div wrapping the first following radio button
 // or checkbox.
-legend ~ div.form-check:first-of-type {
-  clear: left;
+fieldset{
+  margin-bottom: 2rem;
+  padding: 0;
+  border: none;
+}
+legend{
+  float: none;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 1.5ream;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
 }

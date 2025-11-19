@@ -4,25 +4,32 @@
 // 2. These variables are defined with default value (see https://robots.thoughtbot.com/sass-default)
 // 3. You can override them below!
 
-// General style
 $font-family-sans-serif: $body-font;
 $headings-font-family:   $headers-font;
-$body-bg:                $light-gray;
+$body-bg:                $color-soft-gray;
 $font-size-base:         1rem;
-
-// Colors
-$body-color: $gray;
-$primary:    $blue;
-$success:    $green;
-$info:       $yellow;
-$danger:     $red;
-$warning:    $orange;
-
+// color palette
+$color-dark-green: #6B705C;
+$color-muted-olive: #A5A58D;
+$color-soft-gray: #B7B7A4;
+$color-beige: #D8A7A7;
+$color-cream: #F4EDE4;
+$color-dark-text: #333;
+// color maping
+$primary: $color-dark-green;   // primary buttons, links, etc.
+$secondary: $color-muted-olive;
+$success: #28A745;             // can keep default-we can change in future
+$info: $color-beige;           // info alerts, badges
+$warning: #FD7E14;             // default warning color
+$danger: #DC3545;              // default danger color
+$light: $color-cream;          // body background, card bg
+$dark: $color-soft-gray;       // text-dark, borders
+$body-bg: $color-cream;
+$body-color: $color-soft-gray;
 // Buttons & inputs' radius
 $border-radius-sm:            .0625rem;
 $border-radius:               .125rem;
 $border-radius-lg:            .25rem;
 $border-radius-xl:            .5rem;
 $border-radius-xxl:           1rem;
-
 // Override other variables below!

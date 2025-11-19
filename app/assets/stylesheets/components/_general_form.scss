@@ -1,0 +1,93 @@
+.form-container-ch{
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 3rem;
+  background: $color-cream;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba($color-soft-gray, 0.6);
+}
+.form-group-ch{
+  margin-bottom: 1.75 rem;
+}
+label{
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: $primary;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+.form-control-ch{
+  width: 100%;
+  padding: 0.9rem 1.25rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: $dark;
+  background: #fff;
+  border: 1px solid $color-soft-gray;
+  border-radius: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  &:focus{
+    color: $dark;
+    background: #fff;
+    border-color: $primary;
+    outline: 0;
+    box-shadow: 0 0 0 4px rgba($primary, 0.1);
+  }
+}
+.custom-btn {
+  background: $primary;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  min-width: 130px;
+  text-align: center;
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  transform: translateY(0);
+  &:hover,
+  &:focus {
+    background: darken($primary, 10%);
+    box-shadow: 0 0 0 3px rgba($primary, 0.3);
+    transform: translateY(-3px);
+  }
+  &:active{
+  transform: translateY(0);
+  }
+}
+.profile-header{
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+  border-bottom: 1px solid $color-soft-gray;
+  padding-bottom: 1rem;
+}
+.header-action-btn{
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+.profile-view-card{
+  padding: 3rem;
+  background: $color-cream;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgb(0, 0, 0.05);
+  border: 1px solid rgba($color-soft-gray, 0.6);
+}
+.custom-btn--ghost{
+  background: transparent;
+  color: $primary;
+  border: 1px solid $primary;
+  box-shadow: none;
+  &:hover,
+  &:focus{
+    background: $primary;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba($primary, 0.3);
+  }
+}
