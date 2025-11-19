@@ -1,2 +1,69 @@
 <h1>Pages#home</h1>
 <p>Find me in app/views/pages/home.html.erb</p>
+
+<div class="text-center">
+  <h1>Chair Hop</h1>
+  <p>Our chair is always open</p>
+
+  <% signed_in = (defined?(user_signed_in?) && user_signed_in?) %>
+
+  <% if signed_in %>
+    <p class="text-muted">
+      Welcome back,
+      <%= (defined?(current_user) && current_user && current_user.respond_to?(:first_name)) ? current_user.first_name : "friend" %>!
+    </p>
+  <% else %>
+    <p class="text-muted">
+      Welcome!
+      <% if defined?(new_user_session_path) %>
+        <%= link_to "Log in", new_user_session_path %>
+      <% end %>
+      <% if defined?(new_user_registration_path) %>
+        <% if defined?(new_user_session_path) %> or <% end %>
+        <%= link_to "Sign up", new_user_registration_path %>
+      <% end %>
+      <% unless defined?(new_user_session_path) || defined?(new_user_registration_path) %>
+        <!-- Devise not present: hide auth links -->
+      <% end %>
+      to book a chair.
+    </p>
+    <p class="text-muted">
+      <%= link_to "My Profile", (defined?(profile_path) ? profile_path : root_path), class: "button button--ghost" %>
+    </p>
+  <% end %>
+</div>
+
+<div class="search-bar my-4">
+  <%= form_with url: appointments_path, method: :get, local: true, class: "d-flex justify-content-center" do |form| %>
+    <%= form.text_field :search, placeholder: "Open Chair", class: "form-controle w-50 me-2" %>
+    <%= form.submit "Search", class: "btn custom-btn" %>
+  <% end %>
+</div>
+
+<%= link_to 'View Booked Appointments', appointments_path %>
+<hr>
+
+<h2 class="text-center mb-3 section-title">Available Appointments</h2>
+
+<% if @upcoming_appointments.any? %>
+  <div class="list-group">
+    <% @upcoming_appointments.each do |appointment| %>
+      <div class="list-group-item d-flex justify-content-between align-items-center appointment-item">
+        <div>
+          <strong><%= appointment.content %></strong><br>
+          <small><%= appointment.time.strftime("%I:%M %p") %> with <%= appointment.stylist_Name %></small>
+        </div>
+
+        <div>
+          <% if signed_in %>
+            <%= link_to "Book Now", appointment_path(appointment), class: "btn btn-sm custom-btn" %>
+          <% else %>
+            <%= link_to "Login to Book", (defined?(new_user_session_path) ? new_user_session_path : profile_path), class: "btn btn-sm custom-btn" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-center text-muted mt-4">There are no seats available for the next 4 hours.</p>
+<% end %>
