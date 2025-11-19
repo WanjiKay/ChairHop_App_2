@@ -79,55 +79,6 @@
     }
   }
 }
-// Searchbar
-.search-bar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 650px;
-  margin: 3.5rem auto;
-  form{
-    display: flex;
-    width: 100%;
-    align-items: stretch;
-  }
-  .input.form-control {
-    flex-grow: 1;
-    padding: 1rem 1.5rem;
-    font-size: 1rem;
-    border-radius: 50px 0 0 50px;
-    border: 1px solid rgba($color-soft-gray, 0.4);
-    background: lindear-gradient(145deg, $color-cream, lighten($color-cream, 5%));
-    box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.6);
-    transition: all 0.25s ease;
-    &:focus {
-      border-color: $primary;
-      box-shadow: 0 0 8px rgba($primary, 0.25);
-      outline: none;
-    }
-  }
-  .btn {
-    padding: 0 1.8rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 0 50px 50px 0;;
-    background: linear-gradient(145deg, $primary, darken($primary, 10%));
-    color: $color-cream;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 14px rgba($primary, 0.3);
-    &:hover {
-      background-color: linear-gradient(145deg, lighten($primary, 6%), $primary);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba($primary, 0.35);
-    }
-    &:active{
-      transform: translateY(0);
-      box-shadow: 0 4px 10px rgba($primary, 0.2);
-    }
-  }
-}
 //Appointments
 .section-title {
   text-align: center;

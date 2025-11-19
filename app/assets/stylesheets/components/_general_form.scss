@@ -1,4 +1,4 @@
-.form-container{
+.form-container-ch{
   max-width: 600px;
   margin: 3rem auto;
   padding: 3rem;
@@ -7,7 +7,7 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba($color-soft-gray, 0.6);
 }
-.form-group{
+.form-group-ch{
   margin-bottom: 1.75 rem;
 }
 label{
@@ -19,7 +19,7 @@ label{
   font-size: 0.9rem;
   letter-spacing: 0.5px;
 }
-.form-control{
+.form-control-ch{
   width: 100%;
   padding: 0.9rem 1.25rem;
   font-size: 1rem;
