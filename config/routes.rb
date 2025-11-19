@@ -14,7 +14,10 @@ Rails.application.routes.draw do
   resource :profile, only: [:show, :edit, :update]
   get "/profile", to: "profile#show"
 
-  resources :appointments
+  resources :appointments do
+    resources :chats, only: [:index, :show, :new, :create]
+  end
+
   post "appointment/:id/book", to: "appointments#book", as: :book_appointment
 
   resources :chats, only: [:index, :new, :create, :show]

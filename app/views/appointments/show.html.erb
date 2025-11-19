@@ -1,0 +1,22 @@
+<h1>Appointment Details</h1>
+
+<p>
+  <strong>Stylist:</strong>
+  <%= @appointment.stylist %>
+</p>
+
+<p>
+  <strong>Location:</strong>
+  <%= @appointment.location %>
+</p>
+
+<p>
+  <strong>Time:</strong>
+  <%= @appointment.time %>
+  <strong>Salon:</strong>
+  <%= @appointment.location %>
+</p>
+
+<%= link_to "← Back", root_path %>
+<%= link_to "Go to chats", appointment_chats_path(@appointment), class: "btn btn-primary" %>
+<%= link_to "Ask HOPPS for help", new_chat_path(@appointment, appointment_id: @appointment.id), class: "btn btn-primary" %>
