@@ -8,7 +8,6 @@ class Appointment < ApplicationRecord
 
   validates :time, presence: true
   validates :location, presence: true
-  validates :stylist_Name, presence: true
 
   private
 

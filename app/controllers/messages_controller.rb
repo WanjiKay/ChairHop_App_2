@@ -12,12 +12,12 @@ class MessagesController < ApplicationController
     @message.chat = @chat
     @message.role = "user"
     if @message.save
-      if @message.photos.attatched?
+      if @message.photos.attached?
         process_file(@message.photos.first)
       else
         send_question
       end
-      Message.create(role: "assistant", content: @reponse.content, chat: @chat)
+      Message.create(role: "assistant", content: @response.content, chat: @chat)
       book_appointment(@message.content)
       redirect_to chat_path(@chat)
     else
@@ -43,12 +43,12 @@ class MessagesController < ApplicationController
   end
 
   def brodact_mesage(message)
-    Turbo::StreamsChannel.brodcast_replace_to(@chat, target: helpers.dom_id(message), partial: "messages/message", locals: {message: message})
+    Turbo::StreamsChannel.broadcast_replace_to(@chat, target: helpers.dom_id(message), partial: "messages/message", locals: {message: message})
   end
 
   def process_file(file)
     if file.image?
-      send+question(model: "gpt-4o", with { image: @message.photos.first.url })
+      send_question(model: "gpt-4o", with: { image: @message.photos.first.url })
     end
   end
 
