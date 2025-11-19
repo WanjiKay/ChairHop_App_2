@@ -1,12 +1,52 @@
 .navbar-lewagon {
+  display: flex;
   justify-content: space-between;
-  background: white;
+  align-items: center;
+  padding: 0,75rem 1.5rem;
+  background: $primary;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border-bottom: 2px solid lighten($primary, 10%);
 }
-
 .navbar-lewagon .navbar-collapse {
   flex-grow: 0;
 }
-
 .navbar-lewagon .navbar-brand img {
-  width: 40px;
+  width: 42px;
+  border-radius: 6px;
+}
+.navbar-lewagon .nav-link{
+  color: $color-cream;
+  font-weight: 500;
+  margin: 0 0.5rem;
+  transition: color 0.3s ease;
+  &:hover {
+    color: $color-beige;
+    text-decoration: none;
+  }
+}
+.navbar-lewagon .dropdown-menu {
+  background-color: $color-cream;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  .dropdown-item{
+    color: $primary;
+    &:hover{
+      background-color: lighten($color-cream, 25%);
+      color: $primary;
+    }
+  }
+}
+.navbar-lewagon .btn-login {
+  background-color: transparent;
+  color: $color-cream;
+  border: 1.5px solid $color-cream;
+  border-radius: 50px;
+  padding: 0.35rem 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  &:hover {
+    background-color: $color-beige;
+    color: white;
+    border-color: $color-beige;
+  }
 }

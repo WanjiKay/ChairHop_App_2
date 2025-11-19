@@ -1,0 +1,39 @@
+.section-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: $primary;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.list-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+
+.appointment-item {
+    flex: 1 1 300px;
+    max-width: 350px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.75rem 1.5rem;
+    background: linear-gradient(145deg, lighten($color-muted-olive, 10%), $color-muted-olive);
+    border: 1px solid rgba($color-soft-gray, 0.5);
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    transition: transform all 0.3s ease;
+    strong {
+      color: $primary;
+      font-weight: 700;
+    }
+    small {
+      color: darken($color-muted-olive, 15%);
+      font-weight: 600;
+    }
+  }
+}
