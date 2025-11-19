@@ -1,11 +1,11 @@
 class AppointmentsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_appointment, only: [:show, :book, :destroy]
+  before_action :set_appointment, only: [:book, :destroy]
 
   def index
     @available_appointments = Appointment.where(booked: false)
-    @upcoming_appointments = current_user.appointments.where(booked: true) if user_signed_in?
-    @my_appointments = current_user.appointments
+    #@upcoming_appointments = current_user.appointments.where(booked: true) if user_signed_in?
+    #@my_appointments = current_user.appointments
     @appointments = Appointment.all
       respond_to do |format|
         format.html {render :index}
