@@ -1,6 +1,6 @@
 class AppointmentsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_appointment, only: [:book, :destroy]
+  before_action :set_appointment, only: [:show, :book, :destroy]
 
   def index
     @available_appointments = Appointment.where(booked: false)
@@ -14,8 +14,8 @@ class AppointmentsController < ApplicationController
 
   def book
     if @appointment.booked?
-      redirect_to appointment_path(@appointmet), alert: "Sorry this chair has already been filled."
-    elsif @ppointment.update(user: current_user, booked: true)
+      redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
+    elsif @appointment.update(customer: current_user, booked: true)
       redirect_to appointments_path, notice: "You may now take your seat!"
     else
       render :show, status: :unprocessable_entity
@@ -23,8 +23,8 @@ class AppointmentsController < ApplicationController
   end
 
   def destroy
-    if @appointment.user == current_user
-      @appointment.update(user: nil, booked: false)
+    if @appointment.customer == current_user
+      @appointment.update(customer: nil, booked: false)
       redirect_to appointments_path, notice: "Your appointment has been cancelled, let us know when you want to take another seat!"
     else
       redirect_to appointment_path, alert: "Sorry, you didn't book this seat."
