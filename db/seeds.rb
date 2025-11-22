@@ -113,13 +113,13 @@ salon_locations = {
 # 30 APPOINTMENTS — USING salon + location
 # -----------------------------------------
 salon_names = salon_descriptions.keys
-images = ["https://unsplash.com/photos/a-room-filled-with-furniture-and-a-large-window-_C-S7LqxHPw", "https://unsplash.com/photos/a-woman-getting-her-hair-cut-by-a-hair-stylist-Md_DhaFsnCQ", "https://unsplash.com/photos/person-holding-gray-hair-curler-MMz03PyCOZg",
-"https://unsplash.com/photos/photo-of-saloon-interior-view-PtOfbGkU3uI", "https://unsplash.com/photos/person-holding-silver-and-black-hair-brush-KVVjmb3IIL8", "https://unsplash.com/photos/a-black-and-white-photo-of-a-row-of-sinks-qrz6s4yDcIM",
-"https://unsplash.com/photos/black-and-silver-bar-stools-jsuWg7IXx1k", "https://unsplash.com/photos/a-group-of-combs-sitting-on-top-of-each-other-mTPKPPdVvAU", "https://unsplash.com/photos/black-and-silver-office-rolling-chair-beside-mirror-gI9rvJK61L8",
-"https://unsplash.com/photos/a-person-holding-a-pen-and-a-clipboard-7ThXveRv96E", "https://unsplash.com/photos/man-in-black-shirt-with-tattoo-on-his-left-arm-1Pmp9uxK8X8", "https://unsplash.com/photos/hair-studio-neon-led-signboard-uM6IhU0UZg0",
-"https://unsplash.com/photos/black-hair-dryer-on-white-and-green-textile-MGt5tcLebds", "https://unsplash.com/photos/black-and-silver-barber-chair-M4R8iaqPVp8", "https://unsplash.com/photos/woman-in-gray-sweater-and-black-pants-standing-in-front-of-mirror-3nBzt3Jdeh4"]
+images = ["https://images.unsplash.com/photo-1633681926035-ec1ac984418a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1560869713-7d0a29430803?q=80&w=926&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+"https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1595475884562-073c30d45670?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1637777269327-c4d5c7944d7b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+"https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=1736&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://plus.unsplash.com/premium_photo-1664544673201-9f1809938ddd?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1626379501846-0df4067b8bb9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+"https://plus.unsplash.com/premium_photo-1669675935927-0ed8935e6600?q=80&w=988&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=988&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1614438865362-9137f7e3036e?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+"https://images.unsplash.com/photo-1581404788767-726320400cea?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"]
 i = 0
-15.times do
+12.times do
   salon = salon_names.sample
   appointment = Appointment.new(
     time: Time.current + rand(1..24).hours,
@@ -132,7 +132,7 @@ i = 0
     stylist: stylist_users.sample,
     )
   file = URI.parse(images[i]).open
-  appointment.photo.attach(io: file, filename: "nes.png", content_type: "image/png")
+  appointment.image.attach(io: file, filename: "nes.png", content_type: "image/png")
   appointment.save
   i = i + 1
   end

@@ -13,7 +13,7 @@ class Appointment < ApplicationRecord
   private
 
   def user_cannot_book_multiple
-    if booked && user && user.appointments.where(booked: true).where.not(id: id).exists?
+    if booked && user && customer.appointments.where(booked: true).where.not(id: id).exists?
       errors.add(:base, "Honey, you can't sit in two chairs at once!")
     end
   end

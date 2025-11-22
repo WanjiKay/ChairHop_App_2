@@ -25,7 +25,7 @@ class ChatsController < ApplicationController
     if appointment_id.present?
       @appointment = Appointment.find(appointment_id)
     else
-      @appointment = Appointment.find_by(stylist_Name: "General Chat")
+      @appointment = Appointment.find_by(appointment.stylist.name: "General Chat")
     end
     @chat = Chat.new(title: "Untitled", model_id: "gpt-4.1-nano")
     @chat.user = current_user
