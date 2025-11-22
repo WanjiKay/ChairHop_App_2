@@ -4,6 +4,7 @@ class Appointment < ApplicationRecord
   has_many :chats, dependent: :nullify
   has_one :conversation, dependent: :nullify
   has_one :review, dependent: :destroy
+  has_one_attached :image
   validate :user_cannot_book_multiple, on: :update
 
   validates :time, presence: true

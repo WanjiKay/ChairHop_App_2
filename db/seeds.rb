@@ -7,10 +7,10 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+require "open-uri"
 
 Appointment.destroy_all
 User.destroy_all
-
 # -----------------------------------------
 # SALON-SPECIFIC DESCRIPTIONS (appointment.content)
 # -----------------------------------------
@@ -21,26 +21,22 @@ salon_descriptions = {
     luxury hair treatments to give clients a polished, camera-ready look.
     Choose from the available services listed below.
   TEXT
-
   "Chic Studio" => <<~TEXT,
     Chic Studio is known for high-end coloring, balayage, and modern
     layered cuts. Our stylists are trained in runway-inspired styling
     and soft glam finishing. Select a service from our menu below.
   TEXT
-
   "Glow Lounge" => <<~TEXT,
     Glow Lounge focuses on protective styles, natural hair treatments,
     silk presses, and scalp health. Our team specializes in textured hair
     and long-lasting styles. Pick your desired service from our offerings.
   TEXT
-
   "Downtown Cuts" => <<~TEXT,
     Downtown Cuts offers sharp fades, beard detailing, clipper precision,
     and classic barbering with a modern twist. Choose from the services
     listed below to complete your appointment.
   TEXT
 }
-
 # -----------------------------------------
 # SERVICE LIST (stored in appointments.services)
 # -----------------------------------------
@@ -55,9 +51,7 @@ service_list = [
   { name: "Loc Maintenance", price: 75 },
   { name: "Kids Cut", price: 20 }
 ]
-
 services_text = service_list.map { |s| "#{s[:name]} - $#{s[:price]}" }.join("\n")
-
 # -----------------------------------------
 # STYLIST USERS WITH SPECIALIZED PROFILES
 # -----------------------------------------
@@ -84,7 +78,6 @@ stylists = [
     email: "marco@example.com"
   }
 ]
-
 stylist_users = stylists.map do |s|
   User.create!(
     email: s[:email],
@@ -95,7 +88,6 @@ stylist_users = stylists.map do |s|
     about: s[:about]
   )
 end
-
 # -----------------------------------------
 # CUSTOMERS (NO ABOUT FIELD)
 # -----------------------------------------
@@ -108,7 +100,6 @@ customer_users = 10.times.map do |i|
     location: ["Montreal", "Laval", "Longueuil"].sample
   )
 end
-
 # -----------------------------------------
 # SALON ADDRESSES
 # -----------------------------------------
@@ -118,16 +109,19 @@ salon_locations = {
   "Glow Lounge"           => "980 Sherbrooke St W, Montreal",
   "Downtown Cuts"         => "75 Rue Saint-Paul O, Montreal"
 }
-
 # -----------------------------------------
 # 30 APPOINTMENTS — USING salon + location
 # -----------------------------------------
 salon_names = salon_descriptions.keys
-
-30.times do
+images = ["https://images.unsplash.com/photo-1633681926035-ec1ac984418a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1560869713-7d0a29430803?q=80&w=926&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+"https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1595475884562-073c30d45670?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1637777269327-c4d5c7944d7b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+"https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=1736&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://plus.unsplash.com/premium_photo-1664544673201-9f1809938ddd?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1626379501846-0df4067b8bb9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+"https://plus.unsplash.com/premium_photo-1669675935927-0ed8935e6600?q=80&w=988&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=988&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1614438865362-9137f7e3036e?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+"https://images.unsplash.com/photo-1581404788767-726320400cea?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"]
+i = 0
+12.times do
   salon = salon_names.sample
-
-  Appointment.create!(
+  appointment = Appointment.new(
     time: Time.current + rand(1..24).hours,
     salon: salon,                                 # SALON NAME
     location: salon_locations[salon],             # ADDRESS
@@ -135,8 +129,11 @@ salon_names = salon_descriptions.keys
     content: salon_descriptions[salon],           # Salon-specific description
     services: services_text,                      # List of services + prices
     customer: customer_users.sample,
-    stylist: stylist_users.sample
-  )
-end
-
+    stylist: stylist_users.sample,
+    )
+  file = URI.parse(images[i]).open
+  appointment.image.attach(io: file, filename: "nes.png", content_type: "image/png")
+  appointment.save
+  i = i + 1
+  end
 puts "Seed complete: #{stylist_users.count} stylists, #{customer_users.count} customers, and 30 diverse appointments created."
