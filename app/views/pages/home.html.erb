@@ -1,9 +1,8 @@
-<h1>Pages#home</h1>
-<p>Find me in app/views/pages/home.html.erb</p>
 
-<div class="text-center">
-  <h1>Chair Hop</h1>
-  <p>Our chair is always open</p>
+<div class="home-page">
+  <div class="container mt-4" >
+    <h1>Chair Hop</h1>
+    <p>Our chair is always open</p>
 
   <% signed_in = (defined?(user_signed_in?) && user_signed_in?) %>
 
@@ -63,7 +62,94 @@
         </div>
       </div>
     <% end %>
+
+    <div class="search-section p-4 rounded position-relative">
+      <div class="row align-itmes-center">
+        <div class="col">
+          <%= form_with url: appointments_path, method: :get, local: true, class: "input-grouop" do |f| %>
+            <%= f.text_field :query, class: "form-control", placeholder: "Search for servce or stylist" %>
+            <%= f.submit "search", class: "btn btn-primary px-4" %>
+            <% end %>
+          </div>
+        </div>
+        <% if defined?(chats_path) %>
+          <%= link_to chats_path, class: "btn btn-info rounded-cirlce chat-bot-btn" do %>
+            Chat<br>Bot
+          <% end %>
+        <% else %>
+          <%= link_to "#", class: "btn btn-info rounded-circle chat-bot-btn" do %>
+            Chat<br>Bot
+          <% end %>
+        <% end %>
+      </div>
+
+     <h3 class="mt-4 mb-3">Near By Appointments:</h3>
+    <div class="row g-3">
+      <% if defined?(@appointments) && @appointments.present? %>
+        <% @appointments.each do |appointment| %>
+          <div class="col-md-6">
+            <%= link_to appointment_path(appointment), class: "text-decoration-none" do %>
+              <div class="card appointment-card">
+                <% if appointment.stylist.avatar.attached? %>
+                  <%= image_tag appointment.stylist.avatar, class: "card-img-top", alt: appointment.stylist.name %>
+                <% else %>
+                  <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
+                <% end %>
+                <div class="card-body">
+                  <h5 class="card-title"><%= appointment.stylist.name %></h5>
+                  <p class="card-text">
+                    <%= appointment.location %>
+                    <% if appointment.time.present? %>
+                      <br><small><%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %></small>
+                    <% end %>
+                  </p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+
+      <div class="col-md-6">
+          <div class="card appointment-card">
+            <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
+            <div class="card-body">
+              <h5 class="card-title">Chez Chic</h5>
+              <p class="card-text">Wash & Set with Tiley</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card appointment-card">
+            <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
+            <div class="card-body">
+              <h5 class="card-title">Barber Shop</h5>
+              <p class="card-text">Beard trim & line up with Omar</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card appointment-card">
+            <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
+            <div class="card-body">
+              <h5 class="card-title">Barber Shop</h5>
+              <p class="card-text">Beard trim & line up with Omar</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card appointment-card">
+            <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
+            <div class="card-body">
+              <h5 class="card-title">Chez Chic</h5>
+              <p class="card-text">Wash & Set with Tiley</p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
   </div>
-<% else %>
-  <p class="text-center text-muted mt-4">There are no seats available for the next 4 hours.</p>
-<% end %>
+</div>
