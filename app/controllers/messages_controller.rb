@@ -37,7 +37,7 @@ class MessagesController < ApplicationController
         Message.create(role: "assistant", content: "That chair is already taken.", chat: @chat)
       else
         appointment.update(booked: true, user: @chat.user)
-        Message.create(role: "assistant", content: "✅ You’re all set! I’ve booked your seat at #{appointment.location} with #{appointment.stylist_Name}.", chat: @chat)
+        Message.create(role: "assistant", content: "✅ You’re all set! I’ve booked your seat at #{appointment.location} with #{appointment.stylist.name}.", chat: @chat)
       end
     end
   end
@@ -67,7 +67,7 @@ class MessagesController < ApplicationController
 
   def appointment_context
     appointment = @chat.appointment
-    "Here is the context of the appointment: #{appointment.content}, #{appointment.time}, the location is: #{appointment.location}, the stylist's name is: #{appointment.stylist_Name}."
+    "Here is the context of the appointment: #{appointment.content}, #{appointment.time}, the location is: #{appointment.location}, the stylist's name is: #{appointment.stylist.name}."
   end
 
   def instructions
