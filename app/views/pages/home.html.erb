@@ -50,8 +50,8 @@
 
      <h3 class="mt-4 mb-3">Near By Appointments:</h3>
     <div class="row g-3">
-      <% if defined?(@appointments) && @appointments.present? %>
-        <% @appointments.each do |appointment| %>
+      <% if @upcoming_appointments.present? %>
+        <% @upcoming_appointments.each do |appointment| %>
           <div class="col-md-6">
             <%= link_to appointment_path(appointment), class: "text-decoration-none" do %>
               <div class="card appointment-card">
