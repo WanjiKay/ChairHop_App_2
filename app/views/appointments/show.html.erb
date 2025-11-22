@@ -1,9 +1,11 @@
 <h1> <%= @appointment.salon %></h1>
-<%= link_to "View the stylist", stylist_path(@appointment.stylist), class: "btn btn-primary" %>
 <p>
   <strong>Stylist:</strong>
   <%= @appointment.stylist.name %>
 </p>
+
+<%= link_to "View the stylist", stylist_path(@appointment.stylist), class: "btn btn-primary" %>
+
 
 <p>
   <strong>Location:</strong>
@@ -24,6 +26,24 @@
   <strong>Description:</strong>
   <%= @appointment.content %>
 </p>
+
+<hr>
+
+<h3>Available Hairstyles & Services</h3>
+<pre><%= @appointment.services %></pre>
+
+
+
+<% if @appointment.booked? %>
+  <p class="text-danger"><strong>This chair is already filled.</strong></p>
+
+<% else %>
+  <%= form_with url: book_appointment_path(@appointment), method: :post do %>
+    <%= submit_tag "Book Appointment", class: "btn btn-primary" %>
+  <% end %>
+<% end %>
+
+<hr>
 
 <%= link_to "← Back", root_path %>
 <%= link_to "Go to chats", appointment_chats_path(@appointment), class: "btn btn-primary" %>
