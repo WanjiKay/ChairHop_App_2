@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'stylists/show'
   root to: "pages#home"
 
   devise_for :users
@@ -16,6 +17,7 @@ Rails.application.routes.draw do
 
   resources :appointments do
     resources :chats, only: [:index, :show, :new, :create]
+    resources :stylists, only: [:index, :show]
   end
 
   post "appointment/:id/book", to: "appointments#book", as: :book_appointment

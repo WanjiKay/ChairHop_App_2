@@ -5,7 +5,7 @@ class ProfilesController < ApplicationController
       name: "Jane Doe",
       location: "Brooklyn, NY",
       username: "janedoe",
-      aboyt: "Plant parent, weekend woodworker, and iced coffee enthusiast."
+      about: "Plant parent, weekend woodworker, and iced coffee enthusiast."
     )
     @editing = params[:edit].present?
   end

@@ -1,0 +1,15 @@
+<h1><%= @stylist.name %></h1>
+<p><%= @stylist.location %></p>
+<p><%= @stylist.about %></p>
+
+<h2>Reviews</h2>
+<% @reviews.each do |review| %>
+  <p><strong>Rating:</strong> <%= review.rating %>/5</p>
+  <p><%= review.content %></p>
+  <hr>
+<% end %>
+
+<h2>Appointments</h2>
+<% @appointments.each do |appt| %>
+  <p><%= appt.time %> • <%= appt.location %></p>
+<% end %>

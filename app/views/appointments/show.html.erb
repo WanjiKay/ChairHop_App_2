@@ -1,5 +1,5 @@
 <h1> <%= @appointment.salon %></h1>
-<%= link_to "View the stylist", appointment_chats_path(@appointment), class: "btn btn-primary" %>
+<%= link_to "View the stylist", stylist_path(@appointment.stylist), class: "btn btn-primary" %>
 <p>
   <strong>Stylist:</strong>
   <%= @appointment.stylist.name %>
