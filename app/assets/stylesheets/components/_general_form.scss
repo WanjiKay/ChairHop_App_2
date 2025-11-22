@@ -10,7 +10,7 @@
 .form-group-ch{
   margin-bottom: 1.75 rem;
 }
-label{
+label-ch{
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
@@ -37,9 +37,9 @@ label{
     box-shadow: 0 0 0 4px rgba($primary, 0.1);
   }
 }
-.custom-btn {
-  background: $primary;
-  color: #fff;
+.custom-btn-ch {
+  background: $primary !important;
+  color: #fff !important;
   border: none;
   border-radius: 8px;
   padding: 0.5rem 1rem;

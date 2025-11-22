@@ -1,0 +1,60 @@
+<div data-controller="search-toggle">
+  <!-- Toggle Button -->
+  <button
+    type="button"
+    data-action="click->search-toggle#toggle"
+    class="custom-btn-ch mb-3">
+    Show Filters
+  </button>
+
+  <div data-search-toggle-target="filters" class="d-none form-container-ch">
+
+    <%= simple_form_for :search, url: appointments_path, method: :get, html: {class: "d-flex flex-wrap"} do |f| %>
+
+      <div class="form-group-ch me-3">
+        <%= f.input :location,
+              value: params[:location],
+              placeholder: "City or Postal Code",
+              class: "form-control-ch" %>
+      </div>
+
+      <div class="form-group-ch me-3">
+        <%= f.input :date,
+            input_html: {
+              class: "form-control-ch datepicker",
+              data: {
+                search_toggle_target: "date",
+                controller: "fltapickr" } },
+              as: :string,
+              value: params[:date],
+              class: "form-control-ch datepicker",
+              placeholder: "Select Date"%>
+      </div>
+<!-- I need to set ruby current date to my stimulus controller stimulus static values from ruby to js to be current date of the browser -->
+
+
+      <div class="form-group-ch me-3">
+        <%= f.input :time,
+              value: params[:time],
+              class: "form-control-ch timepicker",
+              placeholder: "Select Time",
+              data: { search_toggle_target: "time" } %>
+      </div>
+
+      <div class="form-group-ch me-3">
+        <%= f.input :service,
+              as: :check_boxes,
+              collection: ["Haircut", "Trim", "Style", "Colour", "Wash & Blow Dry", "Facial"],
+              input_html: { class: "me-2" },
+              item_wrapper_class: "me-2",
+              wrapper: false,
+              label: false %>
+      </div>
+
+      <div class="d-flex align-items-end mt-2">
+        <%= f.button :submit, "Search", class: "custom-btn" %>
+      </div>
+
+    <% end %>
+  </div>
+</div>
