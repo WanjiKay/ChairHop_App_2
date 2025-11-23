@@ -20,6 +20,8 @@ Rails.application.routes.draw do
 
   post "appointment/:id/book", to: "appointments#book", as: :book_appointment
 
-  resources :chats, only: [:index, :new, :create, :show]
-  resources :messages, only: [:index, :create]
+  resources :chats, only: [:index, :new, :create, :show] do
+    resources :messages, only: [:create]
+  end
+  resources :messages, only: [:index]
 end
