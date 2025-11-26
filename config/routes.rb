@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   resources :appointments do
     resources :chats, only: [:index, :show, :new, :create]
     resources :conversations, only: [:index, :show, :new, :create]
+    post "appointment/:id/check_in", to: "appointments#check_in", as: :check_in_appointment
   end
 
   resources :stylists, only: [:show]

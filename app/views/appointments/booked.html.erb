@@ -1,0 +1,125 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="booked-confirmation-page">
+        <!-- Success Header -->
+        <div class="text-center mb-5">
+          <div class="success-icon-wrapper mb-4">
+            <i class="fas fa-check-circle success-icon-large"></i>
+          </div>
+          <h1 class="success-title fw-bold mb-3">You May Now Take Your Seat!</h1>
+          <p class="success-subtitle">Your appointment has been successfully booked</p>
+        </div>
+
+        <!-- Profile Pictures Section -->
+        <div class="profiles-section mb-4">
+          <div class="row text-center">
+            <!-- Customer Profile -->
+            <div class="col-6">
+              <div class="profile-card">
+                <% if current_user.avatar.attached? %>
+                  <%= image_tag current_user.avatar, class: "profile-picture rounded-circle mb-3" %>
+                <% else %>
+                  <%= image_tag "https://via.placeholder.com/120", class: "profile-picture rounded-circle mb-3" %>
+                <% end %>
+                <h5 class="text-primary fw-bold">You</h5>
+                <p class="text-muted mb-0"><%= current_user.name %></p>
+              </div>
+            </div>
+
+            <!-- Stylist Profile -->
+            <div class="col-6">
+              <div class="profile-card">
+                <% if @appointment.stylist.avatar.attached? %>
+                  <%= image_tag @appointment.stylist.avatar, class: "profile-picture rounded-circle mb-3" %>
+                <% else %>
+                  <%= image_tag "https://via.placeholder.com/120", class: "profile-picture rounded-circle mb-3" %>
+                <% end %>
+                <h5 class="text-primary fw-bold">Your Stylist</h5>
+                <p class="text-muted mb-0"><%= @appointment.stylist.name %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Details Section -->
+        <div class="booking-details-card mb-4">
+          <h4 class="text-primary fw-bold mb-3">
+            <i class="fas fa-calendar-check me-2"></i>
+            Booking Confirmation
+          </h4>
+
+          <div class="detail-row">
+            <span class="detail-label"><i class="fas fa-store me-2"></i>Salon:</span>
+            <span class="detail-value"><%= @appointment.salon %></span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label"><i class="fas fa-map-marker-alt me-2"></i>Location:</span>
+            <span class="detail-value"><%= @appointment.location %></span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label"><i class="fas fa-clock me-2"></i>Time:</span>
+            <span class="detail-value"><%= @appointment.time.strftime("%b %d, %Y at %I:%M %p") if @appointment.time.present? %></span>
+          </div>
+
+          <hr class="my-3">
+
+          <!-- Service and Price -->
+          <div class="service-price-section">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="mb-1 text-primary fw-bold">
+                  <i class="fas fa-cut me-2"></i>Booked Service
+                </h5>
+                <p class="mb-0 service-name"><%= @appointment.selected_service %></p>
+              </div>
+              <div class="price-badge">
+                <span class="display-6 fw-bold text-primary">$<%= @service_price %></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Success Badge -->
+          <div class="text-center mt-4">
+            <span class="badge bg-success booking-status-badge">
+              <i class="fas fa-check me-2"></i>Confirmed
+            </span>
+          </div>
+        </div>
+
+        <!-- Quick Actions Section -->
+        <div class="quick-actions-section">
+          <h5 class="text-primary fw-bold text-center mb-3">What's Next?</h5>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= link_to appointment_path(@appointment), class: "action-card" do %>
+                <i class="fas fa-eye fa-2x mb-2"></i>
+                <p class="mb-0 fw-bold">View Appointment</p>
+              <% end %>
+            </div>
+            <div class="col-md-6">
+              <%= button_to appointment_conversations_path(@appointment), method: :post, params: { appointment_id: @appointment.id }, class: "action-card w-100 border-0" do %>
+                <i class="fas fa-comments fa-2x mb-2"></i>
+                <p class="mb-0 fw-bold">Message Stylist</p>
+              <% end %>
+            </div>
+            <div class="col-md-6">
+              <%= link_to new_chat_path(appointment_id: @appointment.id), class: "action-card" do %>
+                <i class="fas fa-robot fa-2x mb-2"></i>
+                <p class="mb-0 fw-bold">Ask HOPPS for Help</p>
+              <% end %>
+            </div>
+            <div class="col-md-6">
+              <%= link_to appointments_path, class: "action-card" do %>
+                <i class="fas fa-list fa-2x mb-2"></i>
+                <p class="mb-0 fw-bold">View All Appointments</p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

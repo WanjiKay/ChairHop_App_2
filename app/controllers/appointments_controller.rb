@@ -47,7 +47,8 @@ end
     if @appointment.booked?
       redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
     elsif @appointment.update(customer: current_user, booked: true, selected_service: params[:selected_service])
-      redirect_to appointments_path, notice: "You may now take your seat!"
+      @service_price = extract_price(@appointment.selected_service)
+      render :booked
     else
       redirect_to check_in_appointment_path(@appointment, selected_service: params[:selected_service]), alert: "Something went wrong."
     end

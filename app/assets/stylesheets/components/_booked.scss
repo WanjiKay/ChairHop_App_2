@@ -1,0 +1,154 @@
+// Booked Confirmation Page Styles
+.booked-confirmation-page {
+  background: linear-gradient(145deg, lighten($color-cream, 6%), $color-cream);
+  border-radius: $border-radius-xl;
+  padding: 2.5rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.success-title {
+  color: $primary;
+  font-size: 2.5rem;
+  letter-spacing: -0.02rem;
+}
+
+.success-subtitle {
+  font-size: 1.2rem;
+  color: $color-muted-olive;
+  font-weight: 500;
+}
+
+.success-icon-wrapper {
+  display: inline-block;
+  animation: scaleIn 0.5s ease-out;
+}
+
+.success-icon-large {
+  font-size: 5rem;
+  color: $success;
+  animation: successBounce 0.6s ease-out;
+}
+
+.booking-status-badge {
+  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: $border-radius-lg;
+}
+
+// Quick Actions Section
+.quick-actions-section {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: white;
+  border-radius: $border-radius-lg;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  h5 {
+    font-size: 1.3rem;
+  }
+}
+
+.action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: linear-gradient(145deg, lighten($color-cream, 6%), $color-cream);
+  border: 1px solid rgba($color-soft-gray, 0.35);
+  border-radius: $border-radius-lg;
+  text-decoration: none;
+  color: $primary;
+  transition: all 0.3s ease;
+  text-align: center;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(145deg, $color-cream, lighten($color-cream, 3%));
+    color: $primary;
+  }
+
+  i {
+    color: $color-muted-olive;
+    transition: color 0.3s ease;
+  }
+
+  &:hover i {
+    color: $primary;
+  }
+
+  p {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+  }
+}
+
+// Animations
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes successBounce {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .booked-confirmation-page {
+    padding: 1.5rem;
+  }
+
+  .success-title {
+    font-size: 2rem;
+  }
+
+  .success-icon-large {
+    font-size: 4rem;
+  }
+
+  .success-subtitle {
+    font-size: 1rem;
+  }
+
+  .quick-actions-section {
+    padding: 1.5rem;
+
+    h5 {
+      font-size: 1.1rem;
+    }
+  }
+
+  .action-card {
+    padding: 1.25rem;
+
+    i {
+      font-size: 1.5rem !important;
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
+  }
+}
