@@ -18,12 +18,19 @@ Rails.application.routes.draw do
 
   resources :appointments do
     resources :chats, only: [:index, :show, :new, :create]
+    resources :conversations, only: [:index, :show, :new, :create]
   end
 
   resources :stylists, only: [:show]
 
-  post "appointment/:id/book", to: "appointments#book", as: :book_appointment
+  post "appointment/:id/check_in", to: "appointments#check_in", as: :check_in_appointment
+  get "appointment/:id/confirmation", to: "appointments#confirmation", as: :confirmation_appointment
+  post "appointment/:id/confirm_booking", to: "appointments#confirm_booking", as: :confirm_booking_appointment
 
   resources :chats, only: [:index, :new, :create, :show]
   resources :messages, only: [:index, :create]
+
+  resources :conversations, only: [:show] do
+    resources :conversation_messages, only: [:create]
+  end
 end

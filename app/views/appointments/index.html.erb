@@ -11,3 +11,26 @@
   </div>
 
 <%= render "shared/searchbar" %>
+
+ <% @appointments.each do |appointment| %>
+          <div class="col-md-6">
+            <%= link_to appointment_path(appointment), class: "text-decoration-none" do %>
+              <div class="card appointment-card">
+                <% if appointment.stylist.avatar.attached? %>
+                  <%= image_tag appointment.stylist.avatar, class: "card-img-top", alt: appointment.stylist.name %>
+                <% else %>
+                  <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
+                <% end %>
+                <div class="card-body">
+                  <h5 class="card-title"><%= appointment.salon %></h5>
+                  <p class="card-text">
+                    <%= appointment.location %>
+                    <% if appointment.time.present? %>
+                      <br><small><%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %></small>
+                    <% end %>
+                  </p>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>

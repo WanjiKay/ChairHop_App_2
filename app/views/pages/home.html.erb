@@ -6,111 +6,63 @@
 
   <% signed_in = (defined?(user_signed_in?) && user_signed_in?) %>
 
-  <% if signed_in %>
-    <p class="text-muted">
-      Welcome back,
-      <%= (defined?(current_user) && current_user && current_user.respond_to?(:first_name)) ? current_user.first_name : "friend" %>!
-    </p>
-  <% else %>
-    <p class="text-muted">
-      Welcome!
-      <% if defined?(new_user_session_path) %>
-        <%= link_to "Log in", new_user_session_path %>
-      <% end %>
-      <% if defined?(new_user_registration_path) %>
-        <% if defined?(new_user_session_path) %> or <% end %>
-        <%= link_to "Sign up", new_user_registration_path %>
-      <% end %>
-      <% unless defined?(new_user_session_path) || defined?(new_user_registration_path) %>
-        <!-- Devise not present: hide auth links -->
-      <% end %>
-      to book a chair.
-    </p>
-    <p class="text-muted">
-      <%= link_to "My Profile", (defined?(profile_path) ? profile_path : root_path), class: "button button--ghost" %>
-    </p>
-  <% end %>
-</div>
 
-<div class="search-bar my-4">
-  <%= form_with url: appointments_path, method: :get, local: true, class: "d-flex justify-content-center" do |form| %>
-    <%= form.text_field :search, placeholder: "Open Chair", class: "form-controle w-50 me-2" %>
-    <%= form.submit "Search", class: "btn custom-btn" %>
-  <% end %>
-</div>
-
-<%= link_to 'View All Appointments', appointments_path %>
-<hr>
-
-<h2 class="text-center mb-3 section-title">Available Appointments</h2>
-
-<% if @upcoming_appointments.any? %>
-  <div class="list-group">
-    <% @upcoming_appointments.each do |appointment| %>
-      <div class="list-group-item d-flex justify-content-between align-items-center appointment-item">
-        <div>
-          <strong><%= appointment.salon %></strong><br>
-          <small><%= appointment.time.strftime("%I:%M %p") %> with <%= appointment.stylist.name %></small>
-        </div>
-
-        <div>
-          <% if signed_in %>
-            <%= link_to "Book Now", appointment_path(appointment), class: "btn btn-sm custom-btn" %>
-          <% else %>
-            <%= link_to "Login to Book", (defined?(new_user_session_path) ? new_user_session_path : profile_path), class: "btn btn-sm custom-btn" %>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-
-    <div class="search-section p-4 rounded position-relative">
-      <div class="row align-itmes-center">
-        <div class="col">
-          <%= form_with url: appointments_path, method: :get, local: true, class: "input-grouop" do |f| %>
-            <%= f.text_field :query, class: "form-control", placeholder: "Search for servce or stylist" %>
-            <%= f.submit "search", class: "btn btn-primary px-4" %>
-            <% end %>
-          </div>
-        </div>
-        <% if defined?(chats_path) %>
-          <%= link_to chats_path, class: "btn btn-info rounded-cirlce chat-bot-btn" do %>
-            Chat<br>Bot
-          <% end %>
-        <% else %>
-          <%= link_to "#", class: "btn btn-info rounded-circle chat-bot-btn" do %>
-            Chat<br>Bot
-          <% end %>
-        <% end %>
-      </div>
-
-     <h3 class="mt-4 mb-3">Near By Appointments:</h3>
-    <div class="row g-3">
-      <% if defined?(@appointments) && @appointments.present? %>
-        <% @appointments.each do |appointment| %>
-          <div class="col-md-6">
-            <%= link_to appointment_path(appointment), class: "text-decoration-none" do %>
-              <div class="card appointment-card">
-                <% if appointment.stylist.avatar.attached? %>
-                  <%= image_tag appointment.stylist.avatar, class: "card-img-top", alt: appointment.stylist.name %>
-                <% else %>
-                  <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
-                <% end %>
-                <div class="card-body">
-                  <h5 class="card-title"><%= appointment.stylist.name %></h5>
-                  <p class="card-text">
-                    <%= appointment.location %>
-                    <% if appointment.time.present? %>
-                      <br><small><%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %></small>
-                    <% end %>
-                  </p>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        <% end %>
-
-      <% end %>
-    </div>
-    <% end %>
   </div>
+
+
+  <h2 class="text-center mb-3 section-title">Available Appointments</h2>
+
+  <% if @upcoming_appointments.any? %>
+    <div class="list-group">
+
+      <div class="search-section p-4 rounded position-relative">
+        <div class="d-flex align-items-center gap-2">
+
+          <%= form_with url: appointments_path, method: :get, local: true, class: "d-flex flex-grow-1 gap-2" do |f| %>
+            <%= f.text_field :query, class: "form-control", placeholder: "Search for service or stylist" %>
+            <%= f.submit "Search", class: "btn btn-primary px-4" %>
+          <% end %>
+
+          <% if defined?(chats_path) %>
+            <%= link_to chats_path, class: "btn btn-info chat-bot-btn d-flex align-items-center justify-content-center" do %>
+            Chat Bot
+            <% end %>
+          <% else %>
+            <%= link_to "#", class: "btn btn-info chat-bot-btn d-flex align-items-center justify-content-center" do %>
+            Chat Bot
+            <% end %>
+          <% end %>
+
+        </div>
+      </div>
+
+      <h3 class="mt-4 mb-3">Near By Appointments:</h3>
+      <div class="row g-3">
+        <% if @upcoming_appointments.present? %>
+          <% @upcoming_appointments.each do |appointment| %>
+            <div class="col-md-6">
+              <%= link_to appointment_path(appointment), class: "text-decoration-none" do %>
+                <div class="card appointment-card">
+                  <% if appointment.image.attached? %>
+                    <%= cl_image_tag appointment.image.key, class: "card-img-top", alt: appointment.salon %>
+                  <% else %>
+                    <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
+                  <% end %>
+                  <div class="card-body">
+                    <h5 class="card-title"><%= appointment.salon %></h5>
+                    <p class="card-text">
+                      <%= appointment.location %>
+                      <% if appointment.time.present? %>
+                        <br><small><%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %></small>
+                      <% end %>
+                    </p>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 </div>

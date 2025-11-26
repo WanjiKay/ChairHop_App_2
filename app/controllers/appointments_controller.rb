@@ -1,6 +1,6 @@
 class AppointmentsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_appointment, only: [:show, :book, :destroy]
+  before_action :set_appointment, only: [:show, :check_in, :confirmation, :confirm_booking, :destroy]
 
   def index
     @available_appointments = Appointment.where(booked: false)
@@ -12,13 +12,44 @@ class AppointmentsController < ApplicationController
       end
   end
 
-  def book
+  # def check_in
+  #   if @appointment.booked?
+  #     redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
+  #   else
+  #     @selected_service = params[:selected_service]
+  #     # Extract price from service string (format: "Service Name - $Price")
+  #     @service_price = extract_price(@selected_service)
+  #   end
+  # end
+
+def check_in
+  if @appointment.booked?
+    redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
+  elsif params[:selected_service].blank?
+    redirect_to appointment_path(@appointment), alert: "Please select a service first."
+  else
+    @selected_service = params[:selected_service]
+    @service_price = extract_price(@selected_service)
+  end
+end
+
+
+  def confirmation
     if @appointment.booked?
       redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
-    elsif @appointment.update(customer: current_user, booked: true)
+    else
+      @selected_service = params[:selected_service]
+      @service_price = extract_price(@selected_service)
+    end
+  end
+
+  def confirm_booking
+    if @appointment.booked?
+      redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
+    elsif @appointment.update(customer: current_user, booked: true, selected_service: params[:selected_service])
       redirect_to appointments_path, notice: "You may now take your seat!"
     else
-      render :show, status: :unprocessable_entity
+      redirect_to check_in_appointment_path(@appointment, selected_service: params[:selected_service]), alert: "Something went wrong."
     end
   end
 
@@ -37,4 +68,7 @@ class AppointmentsController < ApplicationController
     @appointment = Appointment.find(params[:id])
   end
 
+  def extract_price(service_string)
+    service_string.split(" - $").last.to_f
+  end
 end

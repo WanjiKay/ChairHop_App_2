@@ -1,0 +1,62 @@
+.chat-bot-btn {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 !important;
+  line-height: 1 !important;
+  white-space: nowrap;
+
+  background-color: #0dcaf0; // btn-info color
+  color: white;
+
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transition: 0.3s;
+
+  &:hover {
+    transform: translateY(-50%) scale(1.05);
+  }
+}
+
+// Button overrides to ensure correct colors
+.btn-primary {
+  background-color: $color-dark-green !important;
+  border-color: $color-dark-green !important;
+  color: white !important;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba($color-dark-green, 0.25);
+  transition: all 0.3s ease;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: darken($color-dark-green, 8%) !important;
+    border-color: darken($color-dark-green, 8%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba($color-dark-green, 0.35);
+  }
+}
+
+.btn-info {
+  background-color: $color-beige !important;
+  border-color: $color-beige !important;
+  color: white !important;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: darken($color-beige, 8%) !important;
+    border-color: darken($color-beige, 8%) !important;
+  }
+}

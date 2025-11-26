@@ -1,0 +1,23 @@
+// Stylist Profile Image
+.stylist-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border: 4px solid $color-muted-olive;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+// Page-specific styling
+.home-page,
+.results-page,
+.appointment-details-page {
+  .container {
+    margin-top: 2rem;
+    max-width: 1200px;
+  }
+
+  // Override h4 color inside appointment cards
+  .appointment-card h4 {
+    color: white;
+  }
+}
