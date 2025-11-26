@@ -14,7 +14,7 @@ class ProfilesController < ApplicationController
     @user = User.first
     permitted = params.require(:user).permit(:name, :location, :userame, :about, :password_confirmation)
     permitted.except!(:password, :password_confirmation)
-    if permitterd[:password].blank? if @user.update(permitted)
+    if permitted[:password].blank? && @user.update(permitted)
         redirect_to profiile_path, notice: "Profile updated."
     else
       @editing = true
