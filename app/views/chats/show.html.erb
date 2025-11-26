@@ -1,0 +1,214 @@
+<div class="chat-show-page">
+  <div class="container-fluid">
+    <div class="row">
+
+      <!-- Sidebar -->
+      <div class="col-lg-3 col-md-4 d-none d-md-block chat-sidebar">
+        <h4>Conversations</h4>
+        <%= link_to chats_path, class: "btn btn-primary btn-sm mb-3" do %>
+          <i class="fas fa-plus"></i> New Chat
+        <% end %>
+
+        <div class="conversations-list">
+          <% if defined?(@chats) && @chats.present? %>
+            <% @chats.each do |chat| %>
+              <%= link_to chat_path(chat), class: "conversation-item #{@chat.id == chat.id ? 'active' : ''}" do %>
+                <div class="conversation-avatar">
+                  <%= image_tag "https://images.unsplash.com/photo-1722292373839-fc27dc345ff0?q=80&w=987&auto=format&fit=crop",
+                                alt: "AI", class: "rounded-circle" %>
+                </div>
+                <div class="conversation-info">
+                  <h6 class="conversation-title">
+                    <%= chat.title.present? ? truncate(chat.title, length: 25) : "Hopps" %>
+                  </h6>
+                  <p class="conversation-preview">
+                    <% if chat.messages.any? %>
+                      <%= truncate(chat.messages.last.content, length: 35) %>
+                    <% else %>
+                      New conversation
+                    <% end %>
+                  </p>
+                </div>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Main Chat Area -->
+      <div class="col-lg-9 col-md-8 chat-main">
+        <div class="chat-header d-flex align-items-center mb-3">
+          <button class="btn btn-link d-md-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#chatSidebar">
+            <i class="fas fa-bars"></i>
+          </button>
+          <%= image_tag "https://images.unsplash.com/photo-1722292373839-fc27dc345ff0?q=80&w=987&auto=format&fit=crop",
+                        alt: "AI", class: "chat-avatar-header rounded-circle" %>
+          <div class="ms-3">
+            <h5 class="mb-0"><%= @chat.title.present? ? @chat.title : "Hopps" %></h5>
+            <small class="text-muted">Online • Ready to help</small>
+          </div>
+          <%= link_to chats_path, class: "btn btn-outline-primary btn-sm ms-auto" do %>
+            <i class="fas fa-plus"></i> New Chat
+          <% end %>
+        </div>
+
+        <div class="messages-container" id="messagesContainer">
+          <% if @chat.messages.any? %>
+            <% @chat.messages.each do |message| %>
+              <% if message.role == 'user' %>
+                <div class="message message-user">
+                  <div class="message-content">
+                    <%= simple_format(message.content) %>
+                  </div>
+                  <div class="message-time">
+                    <%= message.created_at.strftime("%I:%M %p") %>
+                  </div>
+                </div>
+              <% else %>
+                <div class="message message-assistant">
+                  <div class="message-avatar">
+                    <%= image_tag "https://images.unsplash.com/photo-1722292373839-fc27dc345ff0?q=80&w=987&auto=format&fit=crop",
+                                  alt: "AI", class: "rounded-circle" %>
+                  </div>
+                  <div class="message-bubble">
+                    <div class="message-content">
+                      <%= simple_format(message.content) %>
+                    </div>
+                    <div class="message-time">
+                      <%= message.created_at.strftime("%I:%M %p") %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          <% else %>
+            <div class="empty-chat-state text-center py-5">
+              <i class="fas fa-comments fa-4x mb-3"></i>
+              <h4>Start a conversation</h4>
+              <p class="text-muted">Send a message or upload an image to begin</p>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Message Input -->
+        <div class="message-input-container mt-3">
+          <%= form_with url: chat_messages_path(@chat), method: :post, multipart: true, local: true,
+                        class: "message-input-form", id: "messageForm" do |f| %>
+            <div class="input-wrapper d-flex align-items-center gap-2">
+              <label for="messagePhoto" class="btn btn-link upload-btn">
+                <i class="fas fa-image"></i>
+              </label>
+              <%= f.file_field :photo, accept: "image/*", class: "d-none", id: "messagePhoto" %>
+              <%= f.text_area :content, class: "form-control message-input flex-grow-1",
+                               placeholder: "Type your message...", rows: 1, id: "messageTextarea" %>
+              <%= f.submit class: "btn btn-primary send-btn" do %>
+                <i class="fas fa-paper-plane"></i>
+              <% end %>
+            </div>
+
+            <div class="image-preview d-none" id="imagePreview">
+              <img src="" alt="Preview" id="previewImg">
+              <button type="button" class="btn btn-sm btn-danger remove-image" id="removeImage">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar for Mobile -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="chatSidebar">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Conversations</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <%= link_to chats_path, class: "btn btn-primary w-100 mb-3" do %>
+      <i class="fas fa-plus"></i> New Chat
+    <% end %>
+
+    <div class="conversations-list">
+      <% if defined?(@chats) && @chats.present? %>
+        <% @chats.each do |chat| %>
+          <%= link_to chat_path(chat), class: "conversation-item #{@chat.id == chat.id ? 'active' : ''}" do %>
+            <div class="conversation-avatar">
+              <%= image_tag "https://images.unsplash.com/photo-1722292373839-fc27dc345ff0?q=80&w=987&auto=format&fit=crop",
+                            alt: "AI", class: "rounded-circle" %>
+            </div>
+            <div class="conversation-info">
+              <h6 class="conversation-title">
+                <%= chat.title.present? ? truncate(chat.title, length: 25) : "Hopps" %>
+              </h6>
+              <p class="conversation-preview">
+                <% if chat.messages.any? %>
+                  <%= truncate(chat.messages.last.content, length: 35) %>
+                <% else %>
+                  New conversation
+                <% end %>
+              </p>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Auto-scroll to bottom of messages
+  const messagesContainer = document.getElementById('messagesContainer');
+  if (messagesContainer) {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Auto-resize textarea
+  const textarea = document.getElementById('messageTextarea');
+  if (textarea) {
+    textarea.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
+  }
+
+  // Image preview
+  const photoInput = document.getElementById('messagePhoto');
+  const imagePreview = document.getElementById('imagePreview');
+  const previewImg = document.getElementById('previewImg');
+  const removeImage = document.getElementById('removeImage');
+
+  if (photoInput) {
+    photoInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          imagePreview.classList.remove('d-none');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  if (removeImage) {
+    removeImage.addEventListener('click', function() {
+      photoInput.value = '';
+      imagePreview.classList.add('d-none');
+    });
+  }
+
+  // Submit on Enter (Shift+Enter for new line)
+  if (textarea) {
+    textarea.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById('messageForm').submit();
+      }
+    });
+  }
+});
+</script>

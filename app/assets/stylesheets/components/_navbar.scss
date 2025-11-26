@@ -50,3 +50,15 @@
     border-color: $color-beige;
   }
 }
+
+.avatar-img {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.avatar-dropdown-toggle {
+  cursor: pointer;
+}

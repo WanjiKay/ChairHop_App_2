@@ -26,17 +26,16 @@ class ChatsController < ApplicationController
 
   # Create a new chat
   def create
-    @appointment_id = params.dig(:chat, :appointment_id) || params[:appointment_id]
+    appointment_id = params.dig(:chat, :appointment_id) || params[:appointment_id]
 
-    if @appointment_id.present?
-      @appointment = Appointment.find(@appointment_id)
-    else
-      @appointment = Appointment.joins(:stylist).find_by(stylists: { name: "General Chat" })
-    end
+    @appointment = appointment_id.present? ? Appointment.find_by(id: appointment_id) : nil
 
-    @chat = Chat.new(title: "Untitled", model_id: "gpt-4.1-nano")
-    @chat.user = current_user
-    @chat.appointment = @appointment
+    @chat = Chat.new(
+      title: "Untitled",
+      model_id: "gpt-4.1-nano",
+      customer: current_user,
+      appointment: @appointment
+    )
 
     if @chat.save
       redirect_to @chat
