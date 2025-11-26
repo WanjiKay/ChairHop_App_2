@@ -1,62 +1,49 @@
-.chat-bot-btn {
-  position: absolute;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
+.hopps-wrapper {
+  position: absolute !important;
+  top: 50% !important;
+  right: 20px !important;
+  transform: translateY(-50%) !important;
+  z-index: 3000 !important;
+  text-align: center !important;
+}
 
-  width: 48px !important;
-  height: 48px !important;
-  border-radius: 50% !important;
+/* THE CIRCLE BUTTON */
+.hopps-btn {
+  width: 60px !important;
+  height: 60px !important;
 
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
+  min-width: 60px !important;
+  min-height: 60px !important;
+  max-width: 60px !important;
+  max-height: 60px !important;
 
   padding: 0 !important;
-  line-height: 1 !important;
-  white-space: nowrap;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
 
-  background-color: #0dcaf0; // btn-info color
-  color: white;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  transition: 0.3s;
-
-  &:hover {
-    transform: translateY(-50%) scale(1.05);
-  }
+  background: #0dcaf0 !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  color: white !important;
+  font-weight: 600 !important;
 }
 
-// Button overrides to ensure correct colors
-.btn-primary {
-  background-color: $color-dark-green !important;
-  border-color: $color-dark-green !important;
-  color: white !important;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba($color-dark-green, 0.25);
-  transition: all 0.3s ease;
-
-  &:hover,
-  &:focus,
-  &:active {
-    background-color: darken($color-dark-green, 8%) !important;
-    border-color: darken($color-dark-green, 8%) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba($color-dark-green, 0.35);
-  }
+/* TEXT UNDER BUTTON */
+.hopps-label {
+  margin-top: 6px !important;
+  font-size: 0.8rem !important;
+  color: #333 !important;
+  font-weight: 600 !important;
 }
 
-.btn-info {
-  background-color: $color-beige !important;
-  border-color: $color-beige !important;
-  color: white !important;
-  font-weight: 600;
-  transition: all 0.3s ease;
-
-  &:hover,
-  &:focus,
-  &:active {
-    background-color: darken($color-beige, 8%) !important;
-    border-color: darken($color-beige, 8%) !important;
-  }
+/* hover effect */
+.hopps-btn:hover {
+  transform: scale(1.08);
 }

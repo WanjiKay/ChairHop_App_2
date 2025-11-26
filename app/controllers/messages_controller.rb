@@ -10,7 +10,7 @@ class MessagesController < ApplicationController
   def create
     @message = Message.new(message_params)
     @message.chat = @chat
-    @message.role = "user"
+    @message.role = "User"
     if @message.save
       if @message.photos.attached?
         process_file(@message.photos.first)
@@ -54,7 +54,7 @@ class MessagesController < ApplicationController
 
   def send_question(model: "gpt-4.1-nano", with: {})
     @ruby_llm_chat = RubyLLM.chat(model: model)
-    @response = @ruby_llm_chat.with_instruction(instructions).ask(@message.content, with: with)
+    @response = @ruby_llm_chat.with_instructions(instructions).ask(@message.content, with: with)
   end
 
   def set_chat
@@ -66,6 +66,7 @@ class MessagesController < ApplicationController
   end
 
   def appointment_context
+    return if @chat.appointment.nil?
     appointment = @chat.appointment
     "Here is the context of the appointment: #{appointment.content}, #{appointment.time}, the location is: #{appointment.location}, the stylist's name is: #{appointment.
     .name}."

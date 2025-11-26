@@ -34,4 +34,8 @@ Rails.application.routes.draw do
   resources :conversations, only: [:show] do
     resources :conversation_messages, only: [:create]
   end
+  resources :chats, only: [:index, :new, :create, :show] do
+    resources :messages, only: [:create]
+  end
+  resources :messages, only: [:index]
 end
