@@ -7,8 +7,7 @@ class ChatsController < ApplicationController
       @appointment = Appointment.find(params[:appointment_id])
       @chats = current_user.chats.where(appointment: @appointment)
     else
-      @chats = current_
-      .chats.where(appointment: nil)
+      @chats = current_user.chats.where(appointment: nil)
     end
   end
 

@@ -29,7 +29,7 @@ Rails.application.routes.draw do
   post "appointment/:id/book", to: "appointments#book", as: :book_appointment
 
   resources :chats, only: [:index, :new, :create, :show]
-  resources :messages, only: [:index, :create]
+
 
   resources :conversations, only: [:show] do
     resources :conversation_messages, only: [:create]
@@ -37,5 +37,6 @@ Rails.application.routes.draw do
   resources :chats, only: [:index, :new, :create, :show] do
     resources :messages, only: [:create]
   end
-  resources :messages, only: [:index]
+  resources :messages, only: [:index, :create]
+
 end
