@@ -25,7 +25,7 @@ Rails.application.routes.draw do
 
   post "appointment/:id/check_in", to: "appointments#check_in", as: :check_in_appointment
   get "appointment/:id/confirmation", to: "appointments#confirmation", as: :confirmation_appointment
-  post "appointment/:id/confirm_booking", to: "appointments#confirm_booking", as: :confirm_booking_appointment
+  post "appointment/:id/book", to: "appointments#book", as: :book_appointment
 
   resources :chats, only: [:index, :new, :create, :show]
   resources :messages, only: [:index, :create]

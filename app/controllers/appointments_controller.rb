@@ -1,6 +1,6 @@
 class AppointmentsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_appointment, only: [:show, :check_in, :confirmation, :confirm_booking, :destroy]
+  before_action :set_appointment, only: [:show, :check_in, :confirmation, :book, :destroy]
 
   def index
     @available_appointments = Appointment.where(booked: false)
@@ -43,7 +43,7 @@ end
     end
   end
 
-  def confirm_booking
+  def book
     if @appointment.booked?
       redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
     elsif @appointment.update(customer: current_user, booked: true, selected_service: params[:selected_service])
