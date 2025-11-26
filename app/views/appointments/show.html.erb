@@ -1,9 +1,37 @@
-<h1> <%= @appointment.salon %></h1>
-<%= link_to "View the stylist", appointment_chats_path(@appointment), class: "btn btn-primary" %>
+<h1><%= @appointment.salon %></h1>
+
+<!-- Stylist Picture and Button -->
+<div class="d-flex align-items-start mb-3">
+  <!-- Stylist Picture on Left -->
+  <div class="me-3">
+    <% if @appointment.stylist.avatar.attached? %>
+      <%= image_tag @appointment.stylist.avatar, class: "rounded-circle", style: "width: 90px; height: 90px; object-fit: cover; border: 3px solid #4A5D4F;" %>
+    <% else %>
+      <%= image_tag "https://via.placeholder.com/90", class: "rounded-circle", style: "width: 90px; height: 90px; object-fit: cover; border: 3px solid #4A5D4F;" %>
+    <% end %>
+  </div>
+
+  <!-- View Stylist Button on Right -->
+  <div class="d-flex align-items-center">
+    <%= link_to "View the stylist", stylist_path(@appointment.stylist), class: "btn btn-primary" %>
+  </div>
+</div>
+
+<!-- Stylist Name Below Picture -->
 <p>
   <strong>Stylist:</strong>
   <%= @appointment.stylist.name %>
 </p>
+
+<!-- Salon Card Below Stylist Name -->
+<div class="card appointment-card mb-4">
+  <% if @appointment.image.attached? %>
+    <%= image_tag @appointment.image, class: "card-img-top", alt: @appointment.salon %>
+  <% else %>
+    <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
+  <% end %>
+</div>
+
 
 <p>
   <strong>Location:</strong>
@@ -16,17 +44,41 @@
 </p>
 
 <p>
-  <strong>Salon:</strong>
-  <%= @appointment.salon %>
-</p>
-
-<p>
   <strong>Description:</strong>
   <%= @appointment.content %>
 </p>
 
-<%= link_to "← Back", root_path %>
+<hr>
+
+<h3>Available Hairstyles & Services</h3>
+<% services = @appointment.services.split("\n") %>
+
+
+<% if @appointment.booked? %>
+  <p class="text-danger"><strong>This chair is already filled.</strong></p>
+
+  <%= button_to "Unbook Appointment",
+        unbook_appointment_path(@appointment),
+        method: :patch,
+        class: "btn btn-danger mb-3" %>
+
+<% else %>
+
+    <%= form_with url: check_in_appointment_path(@appointment), method: :post do %>
+    <% services.each_with_index do |service, index| %>
+      <div class="form-check mb-2">
+        <%= radio_button_tag :selected_service, service, false, class: "form-check-input" %>
+        <%= label_tag service, service, class: "form-check-label" %>
+      </div>
+    <% end %>
+
+    <%= submit_tag "Book Appointment", class: "btn btn-primary mt-3" %>
+  <% end %>
+<% end %>
+<hr>
+
+<%= link_to " Back", root_path, class: "btn btn-primary" %>
 <%= link_to "Go to chats", appointment_chats_path(@appointment), class: "btn btn-primary" %>
 <%= link_to "Ask HOPPS for help", new_chat_path(@appointment, appointment_id: @appointment.id), class: "btn btn-primary" %>
-<%= link_to "Message the stylist", appointment_chats_path(@appointment), class: "btn btn-primary" %>
+<%= button_to "Message the stylist", appointment_conversations_path(@appointment), method: :post, params: { appointment_id: @appointment.id }, class: "btn btn-primary" %>
 <% console %>

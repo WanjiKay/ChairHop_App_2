@@ -11,6 +11,7 @@ class User < ApplicationRecord
   has_many :conversations_as_stylist,  class_name: "Conversation", foreign_key: :stylist_id, dependent: :nullify
 
   has_many :reviews_for_stylist, class_name: "Review", foreign_key: :stylist_id, dependent: :nullify
+  has_many :reviews_by_customer, class_name: "Review", foreign_key: :customer_id, dependent: :nullify
 
   has_one_attached :avatar
 end

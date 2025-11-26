@@ -1,0 +1,78 @@
+<div class="container py-5">
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <!-- Header -->
+      <div class="mb-4">
+        <h1 class="text-primary fw-bold">Conversation</h1>
+        <p class="text-muted">
+          <strong>Appointment:</strong> <%= @conversation.appointment.salon %><br>
+          <strong>Customer:</strong> <%= @conversation.customer.name %><br>
+          <strong>Stylist:</strong> <%= @conversation.stylist.name %><br>
+          <strong>Time:</strong> <%= @conversation.appointment.time.strftime("%b %d, %Y at %I:%M %p") if @conversation.appointment.time.present? %>
+        </p>
+        <div class="d-flex gap-2">
+          <%= link_to "← Back to Appointment", appointment_path(@conversation.appointment), class: "btn btn-outline-primary" %>
+          <% unless @conversation.appointment.booked? %>
+            <%= link_to "Book Appointment", appointment_path(@conversation.appointment), class: "btn btn-primary" %>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="message-messages mb-4">
+        <% if @conversation.conversation_messages.any? %>
+          <% @conversation.conversation_messages.each do |message| %>
+            <div class="message-wrapper <%= message.role == 'customer' ? 'customer-message' : 'stylist-message' %>">
+              <% if message.role == 'stylist' %>
+                <% if @conversation.stylist.avatar.attached? %>
+                  <%= image_tag @conversation.stylist.avatar, class: "stylist-avatar rounded-circle" %>
+                <% else %>
+                  <%= image_tag "https://via.placeholder.com/48", class: "stylist-avatar rounded-circle" %>
+                <% end %>
+              <% end %>
+
+              <div class="message-bubble">
+                <strong><%= message.role == 'customer' ? 'Customer' : 'Stylist' %></strong>
+                <p class="mb-0"><%= simple_format(message.content) %></p>
+              </div>
+
+              <% if message.role == 'customer' %>
+                <% if @conversation.customer.avatar.attached? %>
+                  <%= image_tag @conversation.customer.avatar, class: "customer-avatar rounded-circle" %>
+                <% else %>
+                  <%= image_tag "https://via.placeholder.com/48", class: "customer-avatar rounded-circle" %>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <i class="fas fa-comments fa-4x"></i>
+            </div>
+            <h3>No messages yet</h3>
+            <p>Start the conversation by sending a message below.</p>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Message Form -->
+      <div class="message-form-section">
+        <h5 class="mb-3">Send a Message</h5>
+        <%= simple_form_for [@conversation, @conversation_message], url: conversation_conversation_messages_path(@conversation) do |f| %>
+          <%= f.error_notification %>
+
+          <div class="mb-3">
+            <%= f.input :content,
+                        as: :text,
+                        label: false,
+                        placeholder: "Type your message here...",
+                        input_html: { rows: 4, class: "form-control" } %>
+          </div>
+
+          <%= f.button :submit, "Send Message", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

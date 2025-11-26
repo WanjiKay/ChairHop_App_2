@@ -68,7 +68,8 @@ class MessagesController < ApplicationController
   def appointment_context
     return if @chat.appointment.nil?
     appointment = @chat.appointment
-    "Here is the context of the appointment: #{appointment.content}, #{appointment.time}, the location is: #{appointment.location}, the stylist's name is: #{appointment.stylist.name}."
+    "Here is the context of the appointment: #{appointment.content}, #{appointment.time}, the location is: #{appointment.location}, the stylist's name is: #{appointment.
+    .name}."
   end
 
   def instructions
