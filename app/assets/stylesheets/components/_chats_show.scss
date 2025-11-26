@@ -389,3 +389,21 @@
     padding: 1rem;
   }
 }
+
+.chat-avatar-header {
+  display: inline-block;
+  flex-shrink: 0;
+  max-width: 50px;
+  max-height: 50px;
+
+}
+
+.chat-header img.rounded-circle {
+  width: 48px !important;
+  height: 48px !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+  object-fit: cover !important;
+}

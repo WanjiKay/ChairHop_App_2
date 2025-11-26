@@ -92,8 +92,7 @@
 
         <!-- Message Input -->
         <div class="message-input-container mt-3">
-          <%= form_with url: chat_messages_path(@chat), method: :post, multipart: true, local: true,
-                        class: "message-input-form", id: "messageForm" do |f| %>
+          <%= simple_form_for [@chat, @message], class: "message-input-form", id: "messageForm" do |f| %>
             <div class="input-wrapper d-flex align-items-center gap-2">
               <label for="messagePhoto" class="btn btn-link upload-btn">
                 <i class="fas fa-image"></i>
@@ -135,8 +134,7 @@
         <% @chats.each do |chat| %>
           <%= link_to chat_path(chat), class: "conversation-item #{@chat.id == chat.id ? 'active' : ''}" do %>
             <div class="conversation-avatar">
-              <%= image_tag "https://images.unsplash.com/photo-1722292373839-fc27dc345ff0?q=80&w=987&auto=format&fit=crop",
-                            alt: "AI", class: "rounded-circle" %>
+              <%= image_tag "https://images.unsplash.com/photo-1722292373839-fc27dc345ff0?q=80&w=987&auto=format&fit=crop" %>
             </div>
             <div class="conversation-info">
               <h6 class="conversation-title">
