@@ -81,4 +81,3 @@
 <%= link_to "Go to chats", appointment_chats_path(@appointment), class: "btn btn-primary" %>
 <%= link_to "Ask HOPPS for help", new_chat_path(@appointment, appointment_id: @appointment.id), class: "btn btn-primary" %>
 <%= button_to "Message the stylist", appointment_conversations_path(@appointment), method: :post, params: { appointment_id: @appointment.id }, class: "btn btn-primary" %>
-<% console %>
