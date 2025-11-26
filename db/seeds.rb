@@ -9,6 +9,7 @@
 #   end
 require "open-uri"
 
+Chat.destroy_all
 Appointment.destroy_all
 User.destroy_all
 # -----------------------------------------
