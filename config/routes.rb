@@ -22,6 +22,8 @@ Rails.application.routes.draw do
     post "appointment/:id/check_in", to: "appointments#check_in", as: :check_in_appointment
   end
 
+  get "my_appointments", to: "appointments#my_appointments", as: :my_appointments
+
   resources :stylists, only: [:show]
 
   post "appointment/:id/check_in", to: "appointments#check_in", as: :check_in_appointment

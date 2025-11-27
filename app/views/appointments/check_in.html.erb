@@ -62,14 +62,10 @@
 
           <!-- Service and Price -->
           <div class="service-price-section">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h5 class="mb-1 text-primary fw-bold">Selected Service</h5>
-                <p class="mb-0 service-name"><%= @selected_service %></p>
-              </div>
-              <div class="price-badge">
-                <span class="display-6 fw-bold text-primary">$<%= @service_price %></span>
-              </div>
+            <div>
+              <h5 class="mb-1 text-primary fw-bold">Selected Service</h5>
+              <p class="mb-0 service-name"><%= @selected_service.split(" - $").first %></p>
+              <p class="mb-0 mt-2 fs-4 fw-bold text-primary">$<%= number_to_currency(@service_price, precision: 2, unit: '') %></p>
             </div>
           </div>
         </div>

@@ -1,0 +1,46 @@
+<div class="container my-5">
+  <h1 class="mb-4">My Booked Appointments</h1>
+
+  <% if @my_appointments.any? %>
+    <div class="row g-4">
+      <% @my_appointments.each do |appointment| %>
+        <div class="col-md-6">
+          <div class="card appointment-card">
+            <% if appointment.image.attached? %>
+              <%= image_tag appointment.image, class: "card-img-top", alt: appointment.salon %>
+            <% else %>
+              <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
+            <% end %>
+
+            <div class="card-body">
+              <h5 class="card-title"><%= appointment.salon %></h5>
+
+              <p class="card-text">
+                <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
+                <strong>Location:</strong> <%= appointment.location %><br>
+                <strong>Time:</strong> <%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %><br>
+                <% if appointment.selected_service.present? %>
+                  <strong>Service:</strong> <%= appointment.selected_service %>
+                <% end %>
+              </p>
+
+              <div class="d-flex gap-2">
+                <%= link_to "View Details", appointment_path(appointment), class: "btn btn-primary" %>
+                <%= button_to "Unbook", appointment_path(appointment), method: :delete,
+                    data: { confirm: "Are you sure you want to unbook this appointment?" },
+                    class: "btn btn-danger" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <p class="mb-0">You don't have any booked appointments yet.</p>
+      <%= link_to "Browse available appointments", appointments_path, class: "btn btn-primary mt-3" %>
+    </div>
+  <% end %>
+
+  <%= link_to "Back to Home", root_path, class: "btn btn-secondary mt-4" %>
+</div>
