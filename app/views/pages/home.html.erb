@@ -36,6 +36,15 @@
   </div>
 </div>
 
+
+    <% if signed_in %>
+      <div class="mt-4 mb-2">
+        <%= link_to my_appointments_path, class: "btn btn-primary" do %>
+          My Appointments
+        <% end %>
+      </div>
+    <% end %>
+
      <h3 class="mt-4 mb-3">Near By Appointments:</h3>
     <div class="row g-3">
       <% if @upcoming_appointments.present? %>
@@ -49,7 +58,7 @@
                   <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
                 <% end %>
                 <div class="card-body">
-                  <h5 class="card-title"><%= appointment.stylist.name %></h5>
+                  <h5 class="card-title"><%= appointment.salon %></h5>
                   <p class="card-text">
                     <%= appointment.location %>
                     <% if appointment.time.present? %>

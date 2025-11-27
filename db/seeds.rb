@@ -174,32 +174,53 @@ salon_locations = {
 # 12 APPOINTMENTS — USING salon + location
 # -----------------------------------------
 
+# -----------------------------------------
+# SALON-SPECIFIC IMAGE MAPPING
+# -----------------------------------------
+salon_specific_images = {
+  "Brows and Locks Salon" => [
+    "https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",  # Hair washing service
+    "https://images.unsplash.com/photo-1560869713-7d0a29430803?q=80&w=926&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",   # Curling iron styling
+    "https://plus.unsplash.com/premium_photo-1669675935927-0ed8935e6600?q=80&w=988&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"  # Precision cutting
+  ],
+  "Chic Studio" => [
+    "https://images.unsplash.com/photo-1633681926035-ec1ac984418a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",  # Luxury modern salon
+    "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",  # Chic salon interior
+    "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=1736&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"   # High-end dark salon
+  ],
+  "Glow Lounge" => [
+    "https://images.unsplash.com/photo-1595475884562-073c30d45670?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",  # Styling tools array
+    "https://images.unsplash.com/photo-1637777269327-c4d5c7944d7b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",   # Salon wash stations
+    "https://plus.unsplash.com/premium_photo-1664544673201-9f1809938ddd?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"   # Wooden combs
+  ],
+  "Downtown Cuts" => [
+    "https://images.unsplash.com/photo-1626379501846-0df4067b8bb9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",  # Modern salon interior
+    "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=988&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",   # Barber fade cut
+    "https://images.unsplash.com/photo-1614438865362-9137f7e3036e?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"   # Minimalist barbershop
+  ]
+}
+
 salon_names = salon_descriptions.keys
-images = ["https://images.unsplash.com/photo-1633681926035-ec1ac984418a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1560869713-7d0a29430803?q=80&w=926&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-"https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1595475884562-073c30d45670?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1637777269327-c4d5c7944d7b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-"https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=1736&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://plus.unsplash.com/premium_photo-1664544673201-9f1809938ddd?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1626379501846-0df4067b8bb9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-"https://plus.unsplash.com/premium_photo-1669675935927-0ed8935e6600?q=80&w=988&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=988&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.unsplash.com/photo-1614438865362-9137f7e3036e?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-"https://images.unsplash.com/photo-1581404788767-726320400cea?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"]
-i = 0
-12.times do
-  salon = salon_names.sample
-  appointment = Appointment.new(
-    time: Time.current + rand(1..24).hours,
-    salon: salon,                                 # SALON NAME
-    location: salon_locations[salon],             # ADDRESS
-    booked: false,
-    content: salon_descriptions[salon],           # Salon-specific description
-    services: service_text(salon_services[salon]),                      # List of services + prices
-    customer: customer_users.sample,
-    stylist: stylist_users.select { |u| stylist_salon_map[u.id] == salon }.sample
+
+# Create 3 appointments per salon with salon-specific images
+salon_names.each do |salon|
+  salon_images = salon_specific_images[salon]
+
+  3.times do |idx|
+    appointment = Appointment.new(
+      time: Time.current + rand(1..24).hours,
+      salon: salon,
+      location: salon_locations[salon],
+      booked: false,
+      content: salon_descriptions[salon],
+      services: service_text(salon_services[salon]),
+      customer: nil,
+      stylist: stylist_users.select { |u| stylist_salon_map[u.id] == salon }.sample
     )
-  file = URI.parse(images[i]).open
-  appointment.image.attach(io: file, filename: "nes.png", content_type: "image/png")
 
-
-  appointment.save!
-
-
-  i = i + 1
+    file = URI.parse(salon_images[idx]).open
+    appointment.image.attach(io: file, filename: "nes.png", content_type: "image/png")
+    appointment.save!
   end
+end
 puts "Seed complete: #{stylist_users.count} stylists, #{customer_users.count} customers, and 12 diverse appointments created."

@@ -12,6 +12,10 @@ class AppointmentsController < ApplicationController
       end
   end
 
+  def my_appointments
+    @my_appointments = current_user.appointments_as_customer.where(booked: true)
+  end
+
   # def check_in
   #   if @appointment.booked?
   #     redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
@@ -57,9 +61,9 @@ end
   def destroy
     if @appointment.customer == current_user
       @appointment.update(customer: nil, booked: false)
-      redirect_to appointments_path, notice: "Your appointment has been cancelled, let us know when you want to take another seat!"
+      redirect_back fallback_location: my_appointments_path, notice: "Your appointment has been cancelled, let us know when you want to take another seat!"
     else
-      redirect_to appointment_path, alert: "Sorry, you didn't book this seat."
+      redirect_back fallback_location: appointment_path(@appointment), alert: "Sorry, you didn't book this seat."
     end
   end
 

@@ -58,17 +58,19 @@
   <p class="text-danger"><strong>This chair is already filled.</strong></p>
 
   <%= button_to "Unbook Appointment",
-        unbook_appointment_path(@appointment),
-        method: :patch,
+        appointment_path(@appointment),
+        method: :delete,
+        data: { confirm: "Are you sure you want to unbook this appointment?" },
         class: "btn btn-danger mb-3" %>
 
 <% else %>
 
     <%= form_with url: check_in_appointment_path(@appointment), method: :post do %>
     <% services.each_with_index do |service, index| %>
+      <% radio_id = "selected_service_#{index}" %>
       <div class="form-check mb-2">
-        <%= radio_button_tag :selected_service, service, false, class: "form-check-input" %>
-        <%= label_tag service, service, class: "form-check-label" %>
+        <%= radio_button_tag :selected_service, service, false, id: radio_id, class: "form-check-input" %>
+        <%= label_tag radio_id, service, class: "form-check-label" %>
       </div>
     <% end %>
 
@@ -77,7 +79,7 @@
 <% end %>
 <hr>
 
-<%= link_to " Back", root_path, class: "btn btn-primary" %>
+<%= link_to " Back to Home", root_path, class: "btn btn-primary" %>
 <%= link_to "Go to chats", appointment_chats_path(@appointment), class: "btn btn-primary" %>
 <%= link_to "Ask HOPPS for help", new_chat_path(@appointment, appointment_id: @appointment.id), class: "btn btn-primary" %>
 <%= button_to "Message the stylist", appointment_conversations_path(@appointment), method: :post, params: { appointment_id: @appointment.id }, class: "btn btn-primary" %>

@@ -1,5 +1,5 @@
 class Appointment < ApplicationRecord
-  belongs_to :customer,class_name: "User"
+  belongs_to :customer,class_name: "User", optional: true
   belongs_to :stylist, class_name: "User"
   has_many :chats, dependent: :nullify
   has_one :conversation, dependent: :nullify

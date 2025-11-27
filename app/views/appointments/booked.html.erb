@@ -68,16 +68,12 @@
 
           <!-- Service and Price -->
           <div class="service-price-section">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h5 class="mb-1 text-primary fw-bold">
-                  <i class="fas fa-cut me-2"></i>Booked Service
-                </h5>
-                <p class="mb-0 service-name"><%= @appointment.selected_service %></p>
-              </div>
-              <div class="price-badge">
-                <span class="display-6 fw-bold text-primary">$<%= @service_price %></span>
-              </div>
+            <div>
+              <h5 class="mb-1 text-primary fw-bold">
+                <i class="fas fa-cut me-2"></i>Booked Service
+              </h5>
+              <p class="mb-0 service-name"><%= @appointment.selected_service.split(" - $").first %></p>
+              <p class="mb-0 mt-2 fs-4 fw-bold text-primary">$<%= number_to_currency(@service_price, precision: 2, unit: '') %></p>
             </div>
           </div>
 
@@ -94,9 +90,9 @@
           <h5 class="text-primary fw-bold text-center mb-3">What's Next?</h5>
           <div class="row g-3">
             <div class="col-md-6">
-              <%= link_to appointment_path(@appointment), class: "action-card" do %>
+              <%= link_to my_appointments_path, class: "action-card" do %>
                 <i class="fas fa-eye fa-2x mb-2"></i>
-                <p class="mb-0 fw-bold">View Appointment</p>
+                <p class="mb-0 fw-bold">View my Appointments</p>
               <% end %>
             </div>
             <div class="col-md-6">
