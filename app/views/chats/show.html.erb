@@ -134,7 +134,7 @@
         <% @chats.each do |chat| %>
           <%= link_to chat_path(chat), class: "conversation-item #{@chat.id == chat.id ? 'active' : ''}" do %>
             <div class="conversation-avatar">
-              <%= image_tag "https://images.unsplash.com/photo-1722292373839-fc27dc345ff0?q=80&w=987&auto=format&fit=crop" %>
+              <%= image_tag "https://images.unsplash.com/photo-1722292373839-fc27dc345ff0?q=80&w=987&auto=format&fit=crop", alt: "AI", class: "chat-avatar" %>
             </div>
             <div class="conversation-info">
               <h6 class="conversation-title">
