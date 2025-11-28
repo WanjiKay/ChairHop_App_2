@@ -14,8 +14,7 @@
             <% @chats.each do |chat| %>
               <%= link_to chat_path(chat), class: "conversation-item #{@chat.id == chat.id ? 'active' : ''}" do %>
                 <div class="conversation-avatar">
-                  <%= image_tag "https://images.unsplash.com/photo-1722292373839-fc27dc345ff0?q=80&w=987&auto=format&fit=crop",
-                                alt: "AI", class: "rounded-circle" %>
+
                 </div>
                 <div class="conversation-info">
                   <h6 class="conversation-title">
@@ -41,8 +40,7 @@
           <button class="btn btn-link d-md-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#chatSidebar">
             <i class="fas fa-bars"></i>
           </button>
-          <%= image_tag "https://images.unsplash.com/photo-1722292373839-fc27dc345ff0?q=80&w=987&auto=format&fit=crop",
-                        alt: "AI", class: "chat-avatar-header rounded-circle" %>
+
           <div class="ms-3">
             <h5 class="mb-0"><%= @chat.title.present? ? @chat.title : "Hopps" %></h5>
             <small class="text-muted">Online • Ready to help</small>
@@ -67,8 +65,6 @@
               <% else %>
                 <div class="message message-assistant">
                   <div class="message-avatar">
-                    <%= image_tag "https://images.unsplash.com/photo-1722292373839-fc27dc345ff0?q=80&w=987&auto=format&fit=crop",
-                                  alt: "AI", class: "rounded-circle" %>
                   </div>
                   <div class="message-bubble">
                     <div class="message-content">
@@ -134,7 +130,6 @@
         <% @chats.each do |chat| %>
           <%= link_to chat_path(chat), class: "conversation-item #{@chat.id == chat.id ? 'active' : ''}" do %>
             <div class="conversation-avatar">
-              <%= image_tag "https://images.unsplash.com/photo-1722292373839-fc27dc345ff0?q=80&w=987&auto=format&fit=crop", alt: "AI", class: "chat-avatar" %>
             </div>
             <div class="conversation-info">
               <h6 class="conversation-title">

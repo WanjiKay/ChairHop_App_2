@@ -57,6 +57,7 @@ gem "kramdown-parser-gfm"
 gem "sassc-rails"
 gem "image_processing", "~> 1.2"
 gem "solid_cable"
+gem "neighbor"
 
 group :development, :test do
   gem "dotenv-rails"
