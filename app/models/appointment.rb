@@ -5,12 +5,25 @@ class Appointment < ApplicationRecord
   has_one :conversation, dependent: :nullify
   has_one :review, dependent: :destroy
   has_one_attached :image
+  has_neighbors :embedding
+  after_create :set_embedding
   validate :user_cannot_book_multiple, on: :update
 
   validates :time, presence: true
   validates :location, presence: true
 
+
+
   private
+
+  def set_embedding
+    embedding = RubyLLM.embed("Time: #{time}.
+    Booked: #{booked}.
+    Location #{location}.
+    Stylist: #{stylist.name}.
+    Services: #{services}.")
+    update(embedding: embedding.vectors)
+  end
 
   def user_cannot_book_multiple
     if booked && customer && customer.appointments_as_stylist.where(booked: true).where.not(id: id).exists?
