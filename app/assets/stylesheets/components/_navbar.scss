@@ -2,40 +2,60 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0,75rem 1.5rem;
+  padding: 0.75rem 1.5rem;
   background: $primary;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   border-bottom: 2px solid lighten($primary, 10%);
+  position: relative;
+  z-index: 9999;
+
+  &.sticky-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: none;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+  }
 }
-.navbar-lewagon .navbar-collapse {
-  flex-grow: 0;
+
+.navbar-logo {
+  width: 42px;
 }
+
 .navbar-lewagon .navbar-brand img {
   width: 42px;
   border-radius: 6px;
 }
-.navbar-lewagon .nav-link{
+
+.navbar-lewagon .nav-link {
   color: $color-cream;
   font-weight: 500;
   margin: 0 0.5rem;
   transition: color 0.3s ease;
+
   &:hover {
     color: $color-beige;
     text-decoration: none;
   }
 }
+
 .navbar-lewagon .dropdown-menu {
   background-color: $color-cream;
   border: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  .dropdown-item{
+
+  .dropdown-item {
     color: $primary;
-    &:hover{
+
+    &:hover {
       background-color: lighten($color-cream, 25%);
       color: $primary;
     }
   }
 }
+
 .navbar-lewagon .btn-login {
   background-color: transparent;
   color: $color-cream;
@@ -44,6 +64,7 @@
   padding: 0.35rem 1rem;
   font-weight: 500;
   transition: all 0.3s ease;
+
   &:hover {
     background-color: $color-beige;
     color: white;
@@ -61,4 +82,59 @@
 
 .avatar-dropdown-toggle {
   cursor: pointer;
+}
+
+.btn-hopps {
+  background-color: #D8A7A7;
+  color: #fff !important;
+  padding: 6px 12px;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 18px;
+  border: none;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background-color: darken(#ff4081, 10%);
+    color: #fff;
+  }
+}
+
+.btn-book {
+  background-color: #5a3b1e;
+  color: #fff !important;
+  padding: 6px 12px;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 18px;
+  border: none;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background-color: darken(#5a3b1e, 10%);
+    color: #fff;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-lewagon {
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: none;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+    padding: 0.5rem 1rem;
+  }
+
+
+  .navbar-lewagon .nav-link {
+    margin: 0 0.25rem;
+    font-size: 13px;
+  }
+
+  .btn-hopps {
+    padding: 5px 10px;
+    font-size: 13px;
+  }
 }
