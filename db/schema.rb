@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_28_005719) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_29_151604) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "vector"
@@ -41,6 +41,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_28_005719) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "appointment_add_ons", force: :cascade do |t|
+    t.bigint "appointment_id", null: false
+    t.string "service_name"
+    t.decimal "price", precision: 8, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["appointment_id"], name: "index_appointment_add_ons_on_appointment_id"
   end
 
   create_table "appointments", force: :cascade do |t|
@@ -133,6 +142,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_28_005719) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "appointment_add_ons", "appointments"
   add_foreign_key "appointments", "users", column: "customer_id"
   add_foreign_key "appointments", "users", column: "stylist_id"
   add_foreign_key "chats", "appointments"

@@ -66,15 +66,28 @@
 <% else %>
 
     <%= form_with url: check_in_appointment_path(@appointment), method: :post do %>
+    <h4 class="mb-3">Select Your Main Service</h4>
     <% services.each_with_index do |service, index| %>
       <% radio_id = "selected_service_#{index}" %>
       <div class="form-check mb-2">
-        <%= radio_button_tag :selected_service, service, false, id: radio_id, class: "form-check-input" %>
+        <%= radio_button_tag :selected_service, service, false, id: radio_id, class: "form-check-input", required: true %>
         <%= label_tag radio_id, service, class: "form-check-label" %>
       </div>
     <% end %>
 
-    <%= submit_tag "Book Appointment", class: "btn btn-primary mt-3" %>
+    <hr class="my-4">
+
+    <h4 class="mb-3">Add-On Services (Optional)</h4>
+    <p class="text-muted small mb-3">Select any additional services you'd like to add:</p>
+    <% @appointment.relevant_add_ons.each_with_index do |add_on, index| %>
+      <% checkbox_id = "add_on_#{index}" %>
+      <div class="form-check mb-2">
+        <%= check_box_tag "selected_add_ons[]", add_on, false, id: checkbox_id, class: "form-check-input" %>
+        <%= label_tag checkbox_id, add_on, class: "form-check-label" %>
+      </div>
+    <% end %>
+
+    <%= submit_tag "Continue to Check-In", class: "btn btn-primary mt-3" %>
   <% end %>
 <% end %>
 <hr>

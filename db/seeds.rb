@@ -49,6 +49,7 @@ salon_descriptions = {
 service_list = {
   braids:                { name: "Protective Braids", price: 80 },
   silk_press:            { name: "Silk Press", price: 60 },
+  wash_and_go:            { name: "Wash & Go", price: 80 },
   loc_maintenance:       { name: "Loc Maintenance", price: 75 },
   womens_cut:            { name: "Women's Cut", price: 45 },
   mens_fade:             { name: "Men's Cut / Fade", price: 30 },
@@ -60,6 +61,7 @@ service_list = {
 salon_services = {
   "Glow Lounge" => [
     service_list[:braids],
+    service_list[:wash_and_go],
     service_list[:silk_press],
     service_list[:loc_maintenance],
     service_list[:womens_cut]

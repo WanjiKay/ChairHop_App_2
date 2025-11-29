@@ -65,14 +65,41 @@
             <div>
               <h5 class="mb-1 text-primary fw-bold">Selected Service</h5>
               <p class="mb-0 service-name"><%= @selected_service.split(" - $").first %></p>
-              <p class="mb-0 mt-2 fs-4 fw-bold text-primary">$<%= number_to_currency(@service_price, precision: 2, unit: '') %></p>
+              <p class="mb-0 mt-2 fs-5 fw-bold text-primary">$<%= number_to_currency(@service_price, precision: 2, unit: '') %></p>
+            </div>
+          </div>
+
+          <!-- Add-Ons Section -->
+          <% if @selected_add_ons.present? && @selected_add_ons.any? %>
+            <hr class="my-3">
+            <div class="add-ons-section">
+              <h5 class="mb-3 text-primary fw-bold">Add-On Services</h5>
+              <% @selected_add_ons.each do |add_on| %>
+                <div class="detail-row">
+                  <span class="detail-label"><%= add_on.split(" - $").first %></span>
+                  <span class="detail-value text-primary fw-bold">$<%= number_to_currency(add_on.split(" - $").last.to_f, precision: 2, unit: '') %></span>
+                </div>
+              <% end %>
+              <div class="detail-row mt-2 pt-2" style="border-top: 1px solid #dee2e6;">
+                <span class="detail-label fw-bold">Add-ons Subtotal:</span>
+                <span class="detail-value text-primary fw-bold">$<%= number_to_currency(@add_ons_total, precision: 2, unit: '') %></span>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Total Price -->
+          <hr class="my-3">
+          <div class="total-price-section">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="mb-0 text-primary fw-bold">Total Price:</h4>
+              <h3 class="mb-0 text-primary fw-bold">$<%= number_to_currency(@service_price + @add_ons_total, precision: 2, unit: '') %></h3>
             </div>
           </div>
         </div>
 
         <!-- Confirm Button -->
         <div class="text-center">
-          <%= button_to "Confirm", book_appointment_path(@appointment, selected_service: @selected_service), method: :post, class: "btn btn-primary btn-lg px-5 py-3 fw-bold", data: { turbo: false } %>
+          <%= button_to "Confirm", book_appointment_path(@appointment, selected_service: @selected_service, selected_add_ons: @selected_add_ons), method: :post, class: "btn btn-primary btn-lg px-5 py-3 fw-bold", data: { turbo: false } %>
 
           <div class="mt-3">
             <%= link_to "← Back to Appointment", appointment_path(@appointment), class: "btn btn-outline-secondary" %>
