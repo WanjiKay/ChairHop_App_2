@@ -11,6 +11,8 @@ class MessagesController < ApplicationController
     @message = Message.new(message_params)
     @message.chat = @chat
     @message.role = "User"
+    @embedding = RubyLLM.embed(params[:message][:content])
+    @appointments = Appointment.nearest_neighbors(:embedding, @embedding.vectors, distance: "euclidean").first(2)
     if @message.save
       if @message.photos.attached?
         process_file(@message.photos.first)
@@ -54,6 +56,12 @@ class MessagesController < ApplicationController
 
   def send_question(model: "gpt-4.1-nano", with: {})
     @ruby_llm_chat = RubyLLM.chat(model: model)
+    if @chat.appointment.nil?
+      instructions = instruction_without_appointment
+      instructions += @appointments.map { |appointment| appointment_prompt(appointment) }.join("\n\n")
+    else
+      instructions = instruction_with_appointment
+    end
     @response = @ruby_llm_chat.with_instructions(instructions).ask(@message.content, with: with)
   end
 
@@ -71,9 +79,37 @@ class MessagesController < ApplicationController
     "Here is the context of the appointment: #{appointment.content}, #{appointment.time}, the location is: #{appointment.location}, the stylist's name is: #{appointment.stylist.name}."
   end
 
-  def instructions
+  def instruction_with_appointment
     [SYSTEM_PROMPT, appointment_context]
     .compact.join("\n\n")
+  end
+
+  def instruction_without_appointment
+    [SYSTEM_PROMPT, chat_context_without_appointment]
+    .compact.join("\n\n")
+  end
+
+  def chat_context_without_appointment
+   "You are an assistant for an appointment booking app. \
+    Your task is to help the user pick and book an appointment from the options provided. \
+    Only use the appointment list provided to you for this turn. \
+    Never invnt new appointments, locations, times, stylists, or services. \
+    Never show appointments from earler messages unless the user explicitly refers to them. \
+    When the user selects an option (e.g. I want #1) lock in that appointment and do not show any other options. \
+    If the user picks a service from a multi-service appointment, do not ask for more services. Confirm the exact service they chose and proceed toward booking. \
+    When the useer says they want to book, provide only the check-in link for their chosen appointment, formatted as a markdown clickable link: [Check in here] (URL). \
+    Always keep the conversation context and continue where the user left off. Neer restart the search unless the user exp;icitly asks for ne times, dates, locations, or if the times and dates have already passed. \
+    Here are the nearest appointment available based on the user's question: "
+  end
+
+  def appointment_prompt(appointment)
+    "APPOINTMENT id: #{appointment.id},
+    time: #{appointment.time},
+    location: #{appointment.location},
+    stylist: #{appointment.stylist.name},
+    salon: #{appointment.salon},
+    services: #{appointment.services},
+    url: #{check_in_appointment_url(appointment)}"
   end
 
 end
