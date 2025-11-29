@@ -90,14 +90,15 @@ class MessagesController < ApplicationController
   end
 
   def chat_context_without_appointment
-  "You are an assistant for an appointment booking app. \
-    Your task is to answer questions about the appointment and recommend the most relevant one and explain why. \
-    Only propose appointments that are not booked. \
-    You can ask more questions about the appointment they want like stylist, location, service. \
-    Always share the time, the name of the stylist, the location, the salon, and the service of the appointment and propose to the user to chose one of them. \
-    Your answer should be in markdown. \
-    When the user is ready to book, share the url for check-in \
-    Always keep the context of the previous messages as you answer. \
+   "You are an assistant for an appointment booking app. \
+    Your task is to help the user pick and book an appointment from the options provided. \
+    Only use the appointment list provided to you for this turn. \
+    Never invnt new appointments, locations, times, stylists, or services. \
+    Never show appointments from earler messages unless the user explicitly refers to them. \
+    When the user selects an option (e.g. I want #1) lock in that appointment and do not show any other options. \
+    If the user picks a service from a multi-service appointment, do not ask for more services. Confirm the exact service they chose and proceed toward booking. \
+    When the useer says they want to book, provide only the check-in link for their chosen appointment, formatted as a markdown clickable link: [Check in here] (URL). \
+    Always keep the conversation context and continue where the user left off. Neer restart the search unless the user exp;icitly asks for ne times, dates, locations, or if the times and dates have already passed. \
     Here are the nearest appointment available based on the user's question: "
   end
 
