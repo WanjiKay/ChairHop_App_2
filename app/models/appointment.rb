@@ -11,6 +11,69 @@ class Appointment < ApplicationRecord
   validates :time, presence: true
   validates :location, presence: true
 
+  SALON_ADD_ONS = {
+    "Glow Lounge" => [
+      "Scalp Massage - $15",
+      "Scalp Treatment - $25",
+      "Deep Conditioning Treatment - $20",
+      "Hair Mask - $22",
+      "Hot Oil Treatment - $15",
+      "Hair Steaming - $18",
+      "Split-End Repair Treatment - $18",
+      "Bond Builder Treatment (Olaplex, K18) - $45",
+      "Toning / Gloss Refresh - $25"
+    ],
+    "Brows and Locks Salon" => [
+      "Deep Conditioning Treatment - $20",
+      "Scalp Treatment - $25",
+      "Split-End Repair Treatment - $18",
+      "Hair Mask - $22",
+      "Olaplex Treatment - $35",
+      "Keratin Smoothing Add-On - $40",
+      "Toning / Gloss Refresh - $25",
+      "Hot Oil Treatment - $15",
+      "Hair Steaming - $18",
+      "Extra-Long or Thick-Hair Charge - $15",
+      "Curl Definition Add-On - $20"
+    ],
+    "Chic Studio" => [
+      "Olaplex Treatment - $35",
+      "Hair Mask - $22",
+      "Deep Conditioning Treatment - $20",
+      "Split-End Repair Treatment - $18",
+      "Keratin Smoothing Add-On - $40",
+      "Toning / Gloss Refresh - $25",
+      "Hot Oil Treatment - $15",
+      "Scalp Treatment - $25",
+      "Hair Steaming - $18",
+      "Extra-Long or Thick-Hair Charge - $15",
+      "Curl Definition Add-On - $20",
+      "Bond Builder Treatment (Olaplex, K18) - $45"
+    ],
+    "Downtown Cuts" => [
+      "Beard Trim - $10",
+      "Beard Line-Up - $8",
+      "Razor Shape-Up - $10",
+      "Neck Razor Shave - $12",
+      "Beard Conditioning - $12",
+      "Hot Towel Treatment - $5",
+      "Hair Wash / Shampoo - $8",
+      "Scalp Massage - $15"
+    ]
+  }.freeze
+
+  # Default add-ons for salons not in the list
+  DEFAULT_ADD_ONS = [
+    "Scalp Massage - $15",
+    "Hair Wash / Shampoo - $8",
+    "Deep Conditioning Treatment - $20",
+    "Hot Towel Treatment - $5"
+  ].freeze
+
+  def relevant_add_ons
+    SALON_ADD_ONS[salon] || DEFAULT_ADD_ONS
+  end
+
   def total_add_ons_price
     appointment_add_ons.sum(:price)
   end

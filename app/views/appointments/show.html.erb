@@ -79,11 +79,11 @@
 
     <h4 class="mb-3">Add-On Services (Optional)</h4>
     <p class="text-muted small mb-3">Select any additional services you'd like to add:</p>
-    <% services.each_with_index do |service, index| %>
+    <% @appointment.relevant_add_ons.each_with_index do |add_on, index| %>
       <% checkbox_id = "add_on_#{index}" %>
       <div class="form-check mb-2">
-        <%= check_box_tag "selected_add_ons[]", service, false, id: checkbox_id, class: "form-check-input" %>
-        <%= label_tag checkbox_id, service, class: "form-check-label" %>
+        <%= check_box_tag "selected_add_ons[]", add_on, false, id: checkbox_id, class: "form-check-input" %>
+        <%= label_tag checkbox_id, add_on, class: "form-check-label" %>
       </div>
     <% end %>
 
