@@ -34,6 +34,8 @@ def check_in
   else
     @selected_service = params[:selected_service]
     @service_price = extract_price(@selected_service)
+    @selected_add_ons = params[:selected_add_ons] || []
+    @add_ons_total = calculate_add_ons_total(@selected_add_ons)
   end
 end
 
@@ -51,7 +53,17 @@ end
     if @appointment.booked?
       redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
     elsif @appointment.update(customer: current_user, booked: true, selected_service: params[:selected_service])
+      # Save add-ons if any were selected
+      if params[:selected_add_ons].present?
+        params[:selected_add_ons].each do |add_on_service|
+          @appointment.appointment_add_ons.create(
+            service_name: add_on_service,
+            price: extract_price(add_on_service)
+          )
+        end
+      end
       @service_price = extract_price(@appointment.selected_service)
+      @add_ons_total = @appointment.total_add_ons_price
       render :booked
     else
       redirect_to check_in_appointment_path(@appointment, selected_service: params[:selected_service]), alert: "Something went wrong."
@@ -75,5 +87,9 @@ end
 
   def extract_price(service_string)
     service_string.split(" - $").last.to_f
+  end
+
+  def calculate_add_ons_total(add_ons_array)
+    add_ons_array.sum { |add_on| extract_price(add_on) }
   end
 end

@@ -73,9 +73,42 @@
                 <i class="fas fa-cut me-2"></i>Booked Service
               </h5>
               <p class="mb-0 service-name"><%= @appointment.selected_service.split(" - $").first %></p>
-              <p class="mb-0 mt-2 fs-4 fw-bold text-primary">$<%= number_to_currency(@service_price, precision: 2, unit: '') %></p>
+              <p class="mb-0 mt-2 fs-5 fw-bold text-primary">$<%= number_to_currency(@service_price, precision: 2, unit: '') %></p>
             </div>
           </div>
+
+          <!-- Add-Ons Section -->
+          <% if @appointment.appointment_add_ons.any? %>
+            <hr class="my-3">
+            <div class="add-ons-section">
+              <h5 class="mb-3 text-primary fw-bold">
+                <i class="fas fa-plus-circle me-2"></i>Add-On Services
+              </h5>
+              <% @appointment.appointment_add_ons.each do |add_on| %>
+                <div class="detail-row">
+                  <span class="detail-label"><%= add_on.service_name.split(" - $").first %></span>
+                  <span class="detail-value text-primary fw-bold">$<%= number_to_currency(add_on.price, precision: 2, unit: '') %></span>
+                </div>
+              <% end %>
+              <div class="detail-row mt-2 pt-2" style="border-top: 1px solid #dee2e6;">
+                <span class="detail-label fw-bold">Add-ons Subtotal:</span>
+                <span class="detail-value text-primary fw-bold">$<%= number_to_currency(@add_ons_total, precision: 2, unit: '') %></span>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Total Price -->
+          <% if @appointment.appointment_add_ons.any? %>
+            <hr class="my-3">
+            <div class="total-price-section">
+              <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0 text-primary fw-bold">
+                  <i class="fas fa-receipt me-2"></i>Total Price:
+                </h4>
+                <h3 class="mb-0 text-primary fw-bold">$<%= number_to_currency(@appointment.total_price, precision: 2, unit: '') %></h3>
+              </div>
+            </div>
+          <% end %>
 
           <!-- Success Badge -->
           <div class="text-center mt-4">

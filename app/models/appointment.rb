@@ -4,11 +4,24 @@ class Appointment < ApplicationRecord
   has_many :chats, dependent: :nullify
   has_one :conversation, dependent: :nullify
   has_one :review, dependent: :destroy
+  has_many :appointment_add_ons, dependent: :destroy
   has_one_attached :image
   validate :user_cannot_book_multiple, on: :update
 
   validates :time, presence: true
   validates :location, presence: true
+
+  def total_add_ons_price
+    appointment_add_ons.sum(:price)
+  end
+
+  def base_service_price
+    selected_service ? selected_service.split(" - $").last.to_f : 0
+  end
+
+  def total_price
+    base_service_price + total_add_ons_price
+  end
 
   private
 
