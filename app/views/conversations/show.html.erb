@@ -19,42 +19,32 @@
       </div>
 
       <!-- Messages -->
-      <div class="message-messages mb-4">
-        <% if @conversation.conversation_messages.any? %>
-          <% @conversation.conversation_messages.each do |message| %>
-            <div class="message-wrapper <%= message.role == 'customer' ? 'customer-message' : 'stylist-message' %>">
-              <% if message.role == 'stylist' %>
-                <% if @conversation.stylist.avatar.attached? %>
-                  <%= image_tag @conversation.stylist.avatar, class: "stylist-avatar rounded-circle" %>
-                <% else %>
-                  <%= image_tag "https://via.placeholder.com/48", class: "stylist-avatar rounded-circle" %>
-                <% end %>
-              <% end %>
+<div class="message-messages mb-4">
 
-              <div class="message-bubble">
-                <strong><%= message.role == 'customer' ? 'Customer' : 'Stylist' %></strong>
-                <p class="mb-0"><%= simple_format(message.content) %></p>
-              </div>
+  <!-- Subscribe to updates -->
+  <%= turbo_stream_from "conversation_#{@conversation.id}_messages" %>
 
-              <% if message.role == 'customer' %>
-                <% if @conversation.customer.avatar.attached? %>
-                  <%= image_tag @conversation.customer.avatar, class: "customer-avatar rounded-circle" %>
-                <% else %>
-                  <%= image_tag "https://via.placeholder.com/48", class: "customer-avatar rounded-circle" %>
-                <% end %>
-              <% end %>
-            </div>
-          <% end %>
-        <% else %>
-          <div class="empty-state">
-            <div class="empty-state-icon">
-              <i class="fas fa-comments fa-4x"></i>
-            </div>
-            <h3>No messages yet</h3>
-            <p>Start the conversation by sending a message below.</p>
-          </div>
-        <% end %>
+  <!-- Initial render of all existing messages -->
+  <div id="conversation_messages">
+  <% @conversation.conversation_messages.each do |conversation_message| %>
+    <%= render "conversation_messages/conversation_message",
+               conversation_message: conversation_message %>
+  <% end %>
+</div>
+
+
+  <% if @conversation.conversation_messages.empty? %>
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <i class="fas fa-comments fa-4x"></i>
       </div>
+      <h3>No messages yet</h3>
+      <p>Start the conversation by sending a message below.</p>
+    </div>
+  <% end %>
+
+</div>
+
 
       <!-- Message Form -->
       <div class="message-form-section">
