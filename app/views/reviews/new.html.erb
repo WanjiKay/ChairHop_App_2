@@ -1,0 +1,36 @@
+<div class="container my-4">
+  <h1>Leave a review</h1>
+
+  <p>
+    You’re leaving a review for
+    <strong><%= @appointment.stylist.name %></strong>
+    about your appointment on
+    <%= @appointment.time.strftime("%b %e, %Y") %>
+    at
+    <%= @appointment.location %>.
+  </p>
+
+  <%= form_with model: @review,
+                url: appointment_reviews_path(@appointment),
+                local: true do |f| %>
+
+    <!-- Rating -->
+    <div class="mb-3">
+      <%= f.label :rating, "Rating (1–5)" %><br>
+      <%= f.select :rating, options_for_select(1..5), {}, class: "form-select" %>
+    </div>
+
+    <!-- Content -->
+    <div class="mb-3">
+      <%= f.label :content, "Tell us about your experience" %><br>
+      <%= f.text_area :content, rows: 4, class: "form-control" %>
+    </div>
+
+    <!-- Buttons -->
+    <div class="d-flex gap-2">
+      <%= link_to "Cancel", my_appointments_path, class: "btn btn-outline-secondary" %>
+      <%= f.submit "Submit review", class: "btn btn-primary" %>
+    </div>
+
+  <% end %>
+</div>
