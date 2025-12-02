@@ -1,32 +1,100 @@
-<h1><%= @stylist.name %></h1>
-<p><%= @stylist.location %></p>
-<p><%= @stylist.about %></p>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="stylist-profile-page">
+        <!-- Stylist Header -->
+        <div class="text-center mb-5">
+          <h1 class="text-primary fw-bold mb-3"><%= @stylist.name %></h1>
 
-<% if @stylist.avatar.attached? %>
-  <%= image_tag @stylist.avatar, alt: @stylist.name, class: "img-fluid rounded mb-3", style: "max-width: 300px;" %>
-<% end %>
+          <!-- Circular Profile Picture Below Name -->
+          <div class="profile-picture-wrapper mb-4">
+            <% if @stylist.avatar.attached? %>
+              <%= image_tag @stylist.avatar, class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" %>
+            <% else %>
+              <%= image_tag "https://via.placeholder.com/150", class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F;" %>
+            <% end %>
+          </div>
 
-<h2>Reviews</h2>
-<% if @reviews.any? %>
-  <% @reviews.each do |review| %>
-    <p><strong>Rating:</strong> <%= review.rating %>/5</p>
-    <p><%= review.content %></p>
-    <hr>
-  <% end %>
-<% else %>
-  <p>No reviews yet.</p>
-<% end %>
+          <p class="text-muted mb-2">
+            <i class="fas fa-map-marker-alt me-2"></i><%= @stylist.location %>
+          </p>
+        </div>
 
-<h2>Available Appointments</h2>
-<% if @appointments.any? %>
-  <% @appointments.each do |appt| %>
-    <p><%= appt.time.strftime("%b %d, %Y at %I:%M %p") if appt.time.present? %> • <%= appt.location %></p>
-    <%= link_to "View Appointment", appointment_path(appt), class: "btn btn-primary btn-sm mb-2" %>
-  <% end %>
-<% else %>
-  <p>No available appointments.</p>
-<% end %>
+        <!-- About Section -->
+        <div class="booking-details-card mb-4">
+          <h4 class="text-primary fw-bold mb-3">
+            <i class="fas fa-user me-2"></i>About
+          </h4>
+          <p class="text-muted mb-0"><%= @stylist.about %></p>
+        </div>
 
-<div class="mt-4">
-  <%= link_to "← Back", :back, class: "btn btn-outline-primary" %>
+        <!-- Reviews Section -->
+        <div class="booking-details-card mb-4">
+          <h4 class="text-primary fw-bold mb-3">
+            <i class="fas fa-star me-2"></i>Reviews
+          </h4>
+
+          <% if @reviews.any? %>
+            <% @reviews.each do |review| %>
+              <div class="review-item mb-3 pb-3" style="border-bottom: 1px solid #dee2e6;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div class="rating">
+                    <% review.rating.times do %>
+                      <i class="fas fa-star text-warning"></i>
+                    <% end %>
+                    <% (5 - review.rating).times do %>
+                      <i class="far fa-star text-warning"></i>
+                    <% end %>
+                    <span class="ms-2 text-muted"><%= review.rating %>/5</span>
+                  </div>
+                  <small class="text-muted">by <%= review.customer.name %></small>
+                </div>
+                <p class="mb-0"><%= review.content %></p>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="text-center py-4">
+              <i class="fas fa-comment-slash fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
+              <p class="text-muted mb-0">No reviews yet.</p>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Available Appointments Section -->
+        <div class="booking-details-card mb-4">
+          <h4 class="text-primary fw-bold mb-3">
+            <i class="fas fa-calendar-check me-2"></i>Available Appointments
+          </h4>
+
+          <% if @appointments.any? %>
+            <div class="appointments-list">
+              <% @appointments.each do |appt| %>
+                <div class="detail-row mb-3">
+                  <div>
+                    <i class="fas fa-clock me-2 text-primary"></i>
+                    <span class="detail-label"><%= appt.time.strftime("%b %d, %Y at %I:%M %p") if appt.time.present? %></span>
+                    <br>
+                    <small class="text-muted ms-4"><i class="fas fa-map-marker-alt me-2"></i><%= appt.location %></small>
+                  </div>
+                  <div>
+                    <%= link_to "View", appointment_path(appt), class: "btn btn-primary btn-sm" %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-4">
+              <i class="fas fa-calendar-times fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
+              <p class="text-muted mb-0">No available appointments at this time.</p>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Back Button -->
+        <div class="text-center mt-4">
+          <%= link_to "← Back", :back, class: "btn btn-outline-primary" %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

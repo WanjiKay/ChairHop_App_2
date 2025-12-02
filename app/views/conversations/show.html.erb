@@ -27,8 +27,7 @@
   <!-- Initial render of all existing messages -->
   <div id="conversation_messages">
   <% @conversation.conversation_messages.each do |conversation_message| %>
-    <%= render "conversation_messages/conversation_message",
-               conversation_message: conversation_message %>
+    <%= render "conversation_messages/conversation_message",conversation_message: conversation_message %>
   <% end %>
 </div>
 
@@ -45,11 +44,12 @@
 
 </div>
 
-
       <!-- Message Form -->
       <div class="message-form-section">
         <h5 class="mb-3">Send a Message</h5>
-        <%= simple_form_for [@conversation, @conversation_message], url: conversation_conversation_messages_path(@conversation) do |f| %>
+        <%= simple_form_for [@conversation, @conversation_message],
+            url: conversation_conversation_messages_path(@conversation),
+            html: { data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset" } } do |f| %>
           <%= f.error_notification %>
 
           <div class="mb-3">

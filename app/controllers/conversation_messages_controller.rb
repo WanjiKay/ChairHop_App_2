@@ -18,7 +18,7 @@ class ConversationMessagesController < ApplicationController
     if @conversation_message.save
       respond_to do |format|
         format.turbo_stream do
-          render turbo_stream: turbo_stream.append(:messages, partial: "conversation_messages/conversation_message",
+          render turbo_stream: turbo_stream.append(:conversation_messages, partial: "conversation_messages/conversation_message",
             locals: { conversation_message: @conversation_message })
         end
         format.html { redirect_to conversation_path(@conversation) }
