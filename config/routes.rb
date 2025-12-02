@@ -30,12 +30,12 @@ Rails.application.routes.draw do
   get "appointment/:id/confirmation", to: "appointments#confirmation", as: :confirmation_appointment
   post "appointment/:id/book", to: "appointments#book", as: :book_appointment
 
-  resources :chats, only: [:index, :new, :create, :show]
 
 
   resources :conversations, only: [:show] do
     resources :conversation_messages, only: [:create]
   end
+
   resources :chats, only: [:index, :new, :create, :show] do
     resources :messages, only: [:create]
   end

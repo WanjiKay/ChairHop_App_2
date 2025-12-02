@@ -8,8 +8,9 @@
   border-bottom: 2px solid lighten($primary, 10%);
   position: relative;
   z-index: 9999;
+  width: 100vw;
 
-  &.sticky-bottom {
+  &.sticky-top {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -115,6 +116,26 @@
     color: #fff;
   }
 }
+
+.hero-title-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 95px;
+  background-color: $primary;
+  width: 100%;
+}
+
+#site-title {
+  font-family: 'Fascinate', system-ui;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $color-cream;
+  text-align: center;
+  letter-spacing: 2px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+}
+
 
 @media (max-width: 768px) {
   .navbar-lewagon {

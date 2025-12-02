@@ -7,13 +7,13 @@ application.register("search-toggle", SearchToggleController)
 document.addEventListener("DOMContentLoaded", () => {
   const nav = document.getElementById("mobile-navbar");
   const heroSection = document.querySelector(".hero-section");
-  const heroHeight = heroSection ? heroSection.offsetHeight : 200;
+  const heroHeight = 0;
 
   window.addEventListener("scroll", () => {
     if (window.scrollY > heroHeight) {
-      nav.classList.add("sticky-bottom");
+      nav.classList.add("sticky-top");
     } else {
-      nav.classList.remove("sticky-bottom");
+      nav.classList.remove("sticky-top");
     }
   });
 });
