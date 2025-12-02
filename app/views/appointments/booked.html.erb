@@ -29,15 +29,17 @@
 
             <!-- Stylist Profile -->
             <div class="col-6">
-              <div class="profile-card">
-                <% if @appointment.stylist.avatar.attached? %>
-                  <%= image_tag @appointment.stylist.avatar, class: "profile-picture rounded-circle mb-3" %>
-                <% else %>
-                  <%= image_tag "https://via.placeholder.com/120", class: "profile-picture rounded-circle mb-3" %>
-                <% end %>
-                <h5 class="text-primary fw-bold">Your Stylist</h5>
-                <p class="text-muted mb-0"><%= @appointment.stylist.name %></p>
-              </div>
+              <%= link_to stylist_path(@appointment.stylist), class: "text-decoration-none" do %>
+                <div class="profile-card" style="cursor: pointer;">
+                  <% if @appointment.stylist.avatar.attached? %>
+                    <%= image_tag @appointment.stylist.avatar, class: "profile-picture rounded-circle mb-3" %>
+                  <% else %>
+                    <%= image_tag "https://via.placeholder.com/120", class: "profile-picture rounded-circle mb-3" %>
+                  <% end %>
+                  <h5 class="text-primary fw-bold">Your Stylist</h5>
+                  <p class="text-muted mb-0"><%= @appointment.stylist.name %></p>
+                </div>
+              <% end %>
             </div>
           </div>
         </div>

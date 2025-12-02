@@ -209,8 +209,34 @@ salon_names.each do |salon|
   salon_images = salon_specific_images[salon]
 
   3.times do |idx|
+    # Generate time within next 24 hours, constrained to 6 AM - 10 PM
+    # and always in the FUTURE
+    loop do
+      base_time = Time.current
+      random_hours_offset = rand(0..24)
+      appointment_time = base_time + random_hours_offset.hours
+
+      # Adjust to business hours (6 AM to 10 PM)
+      if appointment_time.hour < 6
+        # If before 6 AM, move to morning of that day
+        appointment_time = appointment_time.change(hour: rand(6..21), min: [0, 15, 30, 45].sample)
+      elsif appointment_time.hour >= 22
+        # If after 10 PM, move to next day morning/afternoon
+        appointment_time = (appointment_time + 1.day).change(hour: rand(6..21), min: [0, 15, 30, 45].sample)
+      else
+        # Already in business hours, just round to quarter hour
+        appointment_time = appointment_time.change(min: [0, 15, 30, 45].sample)
+      end
+
+      # Make sure appointment is in the future
+      if appointment_time > Time.current
+        @appointment_time = appointment_time
+        break
+      end
+    end
+
     appointment = Appointment.new(
-      time: Time.current + rand(1..24).hours,
+      time: @appointment_time,
       salon: salon,
       location: salon_locations[salon],
       booked: false,
