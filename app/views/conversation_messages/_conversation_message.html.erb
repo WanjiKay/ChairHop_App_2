@@ -1,0 +1,25 @@
+<div id="conversation_message_<%= conversation_message.id %>"
+     class="message-wrapper <%= conversation_message.role == 'customer' ? 'customer-message' : 'stylist-message' %>">
+
+  <% if conversation_message.role == 'stylist' %>
+    <% if conversation_message.conversation.stylist.avatar.attached? %>
+      <%= image_tag conversation_message.conversation.stylist.avatar, class: "stylist-avatar rounded-circle" %>
+    <% else %>
+      <%= image_tag "https://via.placeholder.com/48", class: "stylist-avatar rounded-circle" %>
+    <% end %>
+  <% end %>
+
+  <div class="message-bubble">
+    <strong><%= conversation_message.role.capitalize %></strong>
+    <p class="mb-0"><%= simple_format(conversation_message.content) %></p>
+  </div>
+
+  <% if conversation_message.role == 'customer' %>
+    <% if conversation_message.conversation.customer.avatar.attached? %>
+      <%= image_tag conversation_message.conversation.customer.avatar, class: "customer-avatar rounded-circle" %>
+    <% else %>
+      <%= image_tag "https://via.placeholder.com/48", class: "customer-avatar rounded-circle" %>
+    <% end %>
+  <% end %>
+
+</div>

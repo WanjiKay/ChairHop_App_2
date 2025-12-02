@@ -16,7 +16,13 @@ class ConversationMessagesController < ApplicationController
     end
 
     if @conversation_message.save
-      redirect_to @conversation
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.append(:conversation_messages, partial: "conversation_messages/conversation_message",
+            locals: { conversation_message: @conversation_message })
+        end
+        format.html { redirect_to conversation_path(@conversation) }
+      end
     else
       render "conversations/show", status: :unprocessable_entity
     end
