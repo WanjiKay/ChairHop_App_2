@@ -1,0 +1,19 @@
+meta_title: "ChairHop — Our chair is always open!"
+meta_description: >
+  ChairHop is an AI-powered stylist assistant that helps users find the right hairstylist,
+  explore appointment options, and get personalized hair advice. Users can upload photos,
+  ask questions, and chat with Hopper for tailored recommendations and booking support.
+meta_image: "cover.png" # This file should be in app/assets/images/
+
+# Open Graph
+og_title: "ChairHop — AI Stylist Assistant"
+og_description: "Find the perfect stylist, explore appointments, and get personalized hair advice with AI."
+og_type: "website"
+og_url: "https://chairhop.com" # or your actual domain
+og_image: "cover.png"
+
+# Twitter
+twitter_card: "summary_large_image"
+twitter_site: "@ChairHopApp"
+twitter_description: "Your AI-powered stylist assistant."
+twitter_image: "cover.png"
