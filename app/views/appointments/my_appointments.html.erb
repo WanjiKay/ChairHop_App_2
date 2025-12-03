@@ -28,22 +28,37 @@
 
               <div class="d-flex gap-2">
                 <%= link_to "View Details", appointment_path(appointment), class: "btn btn-primary" %>
-                <%= button_to "Unbook",
-                              appointment_path(appointment),
-                              method: :delete,
-                              data: { confirm: "Are you sure you want to unbook this appointment?" },
-                              class: "btn btn-danger" %>
+                <% if appointment.booked? %>
+                  <%= button_to "Unbook",
+                                appointment_path(appointment),
+                                method: :delete,
+                                data: { confirm: "Are you sure you want to unbook this appointment?" },
+                                class: "btn btn-danger" %>
+                <% end %>
+              </div>
+
+              <!-- STATUS BADGE -->
+              <div class="mt-3">
+                <% if appointment.completed? %>
+                  <span class="badge bg-success">Completed</span>
+                <% elsif appointment.booked? %>
+                  <span class="badge bg-info">Booked</span>
+                <% elsif appointment.cancelled? %>
+                  <span class="badge bg-secondary">Cancelled</span>
+                <% end %>
               </div>
 
               <!-- REVIEW BLOCK -->
-              <% if appointment.review.present? %>
-                <p class="mt-3 mb-0">
-                  Review submitted ✅
-                </p>
-              <% else %>
-                <%= link_to "Leave a review",
-                            new_appointment_review_path(appointment),
-                            class: "btn btn-outline-primary mt-3" %>
+              <% if appointment.completed? %>
+                <% if appointment.review.present? %>
+                  <p class="mt-3 mb-0 text-success">
+                    Review submitted ✅
+                  </p>
+                <% else %>
+                  <%= link_to "Leave a review",
+                              new_appointment_review_path(appointment),
+                              class: "btn btn-outline-primary mt-3" %>
+                <% end %>
               <% end %>
               <!-- END REVIEW BLOCK -->
 

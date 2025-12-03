@@ -1,9 +1,9 @@
 class AppointmentsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_appointment, only: [:show, :check_in, :confirmation, :book, :destroy]
+  before_action :set_appointment, only: [:show, :check_in, :confirmation, :book, :destroy, :complete]
 
   def index
-    @appointments = Appointment.where(booked: false)
+    @appointments = Appointment.where(status: :pending)
 
     # Handle simple search query with smart synonyms (from search bar)
     if params[:query].present?
@@ -64,7 +64,7 @@ class AppointmentsController < ApplicationController
   end
 
   def my_appointments
-    @my_appointments = current_user.appointments_as_customer.where(booked: true)
+    @my_appointments = current_user.appointments_as_customer.where(status: [:booked, :completed])
   end
 
   # def check_in
@@ -78,7 +78,7 @@ class AppointmentsController < ApplicationController
   # end
 
 def check_in
-  if @appointment.booked?
+  unless @appointment.pending?
     redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
   elsif params[:selected_service].blank?
     redirect_to appointment_path(@appointment), alert: "Please select a service first."
@@ -92,7 +92,7 @@ end
 
 
   def confirmation
-    if @appointment.booked?
+    unless @appointment.pending?
       redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
     else
       @selected_service = params[:selected_service]
@@ -101,9 +101,9 @@ end
   end
 
   def book
-    if @appointment.booked?
+    unless @appointment.pending?
       redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
-    elsif @appointment.update(customer: current_user, booked: true, selected_service: params[:selected_service])
+    elsif @appointment.update(customer: current_user, booked: true, status: :booked, selected_service: params[:selected_service])
       # Save add-ons if any were selected
       if params[:selected_add_ons].present?
         params[:selected_add_ons].each do |add_on_service|
@@ -123,10 +123,19 @@ end
 
   def destroy
     if @appointment.customer == current_user
-      @appointment.update(customer: nil, booked: false)
+      @appointment.update(customer: nil, booked: false, status: :cancelled)
       redirect_back fallback_location: my_appointments_path, notice: "Your appointment has been cancelled, let us know when you want to take another seat!"
     else
       redirect_back fallback_location: appointment_path(@appointment), alert: "Sorry, you didn't book this seat."
+    end
+  end
+
+  def complete
+    if @appointment.stylist == current_user && @appointment.booked?
+      @appointment.update(status: :completed)
+      redirect_back fallback_location: root_path, notice: "Appointment marked as completed!"
+    else
+      redirect_back fallback_location: root_path, alert: "You don't have permission to complete this appointment."
     end
   end
 

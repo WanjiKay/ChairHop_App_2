@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  get 'stylists/show'
   root to: "pages#home"
 
   devise_for :users
@@ -14,16 +13,17 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   resource :profile, only: [:show, :edit, :update]
-  get "/profile", to: "profile#show"
 
   resources :appointments do
     resources :chats, only: [:index, :show, :new, :create]
     resources :conversations, only: [:index, :show, :new, :create]
+    resources :reviews, only: [:new, :create]
 
     member do
       post :check_in
       get :confirmation
       post :book
+      patch :complete
     end
   end
 
@@ -31,20 +31,14 @@ Rails.application.routes.draw do
 
   resources :stylists, only: [:show]
 
-  post "appointment/:id/check_in", to: "appointments#check_in", as: :check_in_appointment
-  get "appointment/:id/confirmation", to: "appointments#confirmation", as: :confirmation_appointment
-  post "appointment/:id/book", to: "appointments#book", as: :book_appointment
-
-  resources :chats, only: [:index, :new, :create, :show]
-
+  resources :chats, only: [:index, :new, :create, :show] do
+    resources :messages, only: [:create]
+  end
 
   resources :conversations, only: [:show] do
     resources :conversation_messages, only: [:create]
   end
 
-  resources :chats, only: [:index, :new, :create, :show] do
-    resources :messages, only: [:create]
-  end
   resources :messages, only: [:index, :create]
 
 end

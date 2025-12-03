@@ -1,6 +1,7 @@
 class ReviewsController < ApplicationController
   before_action :authenticate_user!  # you use Devise
   before_action :set_appointment
+  before_action :authorize_review
 
   def new
     # prevent double reviews for the same appointment
@@ -36,5 +37,19 @@ class ReviewsController < ApplicationController
   def review_params
     # IMPORTANT: your model uses :content, not :comment
     params.require(:review).permit(:rating, :content)
+  end
+
+  def authorize_review
+    # Only the customer can review their own appointment
+    unless @appointment.customer == current_user
+      redirect_to my_appointments_path, alert: "You can only review your own appointments."
+      return
+    end
+
+    # Only completed appointments can be reviewed
+    unless @appointment.completed?
+      redirect_to my_appointments_path, alert: "You can only review completed appointments."
+      return
+    end
   end
 end
