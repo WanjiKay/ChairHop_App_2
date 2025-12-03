@@ -6,19 +6,16 @@
   background: $primary;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   border-bottom: 2px solid lighten($primary, 10%);
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 9999;
-  width: 100vw;
+  width: 100%;
+}
 
-  &.sticky-top {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    border-bottom: none;
-    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
-  }
+// You can delete the old &.sticky-top block entirely,
+// or leave this empty if you want to keep the selector:
+.navbar-lewagon.sticky-top {
+  // Using Bootstrap's sticky-top behavior + our base styles above.
 }
 
 .navbar-logo {

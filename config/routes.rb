@@ -31,10 +31,6 @@ Rails.application.routes.draw do
 
   resources :stylists, only: [:show]
 
-  post "appointment/:id/check_in", to: "appointments#check_in", as: :check_in_appointment
-  get "appointment/:id/confirmation", to: "appointments#confirmation", as: :confirmation_appointment
-  post "appointment/:id/book", to: "appointments#book", as: :book_appointment
-
   resources :chats, only: [:index, :new, :create, :show]
 
 

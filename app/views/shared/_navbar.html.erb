@@ -1,55 +1,60 @@
-<nav id="mobile-navbar" class="navbar navbar-expand-sm navbar-light navbar-lewagon">
-  <div class="container-fluid header-display-desktop" data-content-field="site-title">
+<nav id="mobile-navbar" class="navbar navbar-expand-sm navbar-light navbar-lewagon sticky-top">
+  <div class="container-fluid">
 
-    <!-- Logo / Site title -->
-    <div class="header-title-nav-wrapper">
+    <!-- Brand / Site Title -->
+    <div class="header-title-nav-wrapper d-flex align-items-center">
       <div class="header-title" data-animation-role="header-element">
         <div class="header-title-text">
-          <%= link_to root_path, id: "site-title", data: { animation_role: "header-element" } do %>
+          <%= link_to root_path, id: "site-title", class: "navbar-brand", data: { animation_role: "header-element" } do %>
             ChairHop
           <% end %>
         </div>
       </div>
 
-      <!-- Navigation links (empty as per your request) -->
-      <div class="header-nav">
-        <div class="header-nav-wrapper">
-          <nav class="header-nav-list">
-            <div class="header-nav-item header-nav-item--collection"></div>
-            <div class="header-nav-item header-nav-item--collection"></div>
-          </nav>
-        </div>
-      </div>
+      <!-- Mobile toggler (hamburger) -->
+      <button class="navbar-toggler ms-auto" type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
     </div>
 
-    <!-- Right-side actions -->
-    <div class="header-actions header-actions--right d-flex align-items-center gap-2">
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+      <div class="header-actions header-actions--right d-flex align-items-center gap-2 mt-2 mt-sm-0">
 
-      <% if user_signed_in? %>
-        <%= link_to "Hopps", chats_path, class: "btn btn-info btn-hopps" %>
+        <% if user_signed_in? %>
+          <%= link_to "Hopps", chats_path, class: "btn btn-info btn-hopps" %>
 
-        <div class="dropdown header-actions-action">
-          <a class="avatar-dropdown-toggle" id="navbarDropdown" aria-expanded="false" href="#">
-            <% if current_user&.avatar&.attached? %>
-              <%= image_tag url_for(current_user.avatar), class: "avatar-img", alt: "User menu" %>
-            <% else %>
-              <%= image_tag "profile.png", class: "avatar-img", alt: "User menu" %>
-            <% end %>
-          </a>
+          <div class="dropdown header-actions-action">
+            <a class="avatar-dropdown-toggle d-flex align-items-center" id="navbarDropdown"
+               href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <% if current_user&.avatar&.attached? %>
+                <%= image_tag url_for(current_user.avatar), class: "avatar-img", alt: "User menu" %>
+              <% else %>
+                <%= image_tag "profile.png", class: "avatar-img", alt: "User menu" %>
+              <% end %>
+            </a>
 
-          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <%= link_to "Profile", profile_path(edit: 1), class: "dropdown-item" %>
-            <%= link_to "Settings", edit_user_registration_path, class: "dropdown-item" %>
-            <%= link_to "Chats", chats_path, class: "dropdown-item" %>
-            <%= link_to "Log out", destroy_user_session_path, data: { turbo_method: :delete }, class: "dropdown-item" %>
+            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <%= link_to "Profile", profile_path(edit: 1), class: "dropdown-item" %>
+              <%= link_to "Settings", edit_user_registration_path, class: "dropdown-item" %>
+              <%= link_to "Chats", chats_path, class: "dropdown-item" %>
+              <%= link_to "Log out", destroy_user_session_path,
+                          data: { turbo_method: :delete },
+                          class: "dropdown-item" %>
+            </div>
           </div>
-        </div>
 
-      <% else %>
-        <%= link_to "Hopps", "#", class: "btn btn-info btn-hopps disabled", aria_disabled: true %>
-        <%= link_to "Book Now", new_user_session_path, class: "btn btn-primary btn-book" %>
-      <% end %>
+        <% else %>
+          <%= link_to "Hopps", "#", class: "btn btn-info btn-hopps disabled", aria_disabled: true %>
+          <%= link_to "Book Now", new_user_session_path, class: "btn btn-primary btn-book" %>
+        <% end %>
 
+      </div>
     </div>
   </div>
 </nav>
