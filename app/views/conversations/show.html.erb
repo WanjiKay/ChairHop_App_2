@@ -26,42 +26,43 @@
 
   <!-- Initial render of all existing messages -->
   <div id="conversation_messages">
-  <% @conversation.conversation_messages.each do |conversation_message| %>
-    <%= render "conversation_messages/conversation_message",conversation_message: conversation_message %>
-  <% end %>
-</div>
-
-
-  <% if @conversation.conversation_messages.empty? %>
-    <div class="empty-state">
-      <div class="empty-state-icon">
-        <i class="fas fa-comments fa-4x"></i>
+    <% if @conversation.conversation_messages.empty? %>
+      <div id="empty_state" class="empty-state">
+        <div class="empty-state-icon">
+          <i class="fas fa-comments fa-4x"></i>
+        </div>
+        <h3>No messages yet</h3>
+        <p>Start the conversation by sending a message below.</p>
       </div>
-      <h3>No messages yet</h3>
-      <p>Start the conversation by sending a message below.</p>
-    </div>
-  <% end %>
+    <% else %>
+      <% @conversation.conversation_messages.each do |conversation_message| %>
+        <%= render "conversation_messages/conversation_message", conversation_message: conversation_message %>
+      <% end %>
+    <% end %>
+  </div>
 
 </div>
 
       <!-- Message Form -->
       <div class="message-form-section">
         <h5 class="mb-3">Send a Message</h5>
-        <%= simple_form_for [@conversation, @conversation_message],
-            url: conversation_conversation_messages_path(@conversation),
-            html: { data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset" } } do |f| %>
-          <%= f.error_notification %>
+        <div id="new_conversation_message">
+          <%= simple_form_for [@conversation, @conversation_message],
+              url: conversation_conversation_messages_path(@conversation),
+              html: { data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset" } } do |f| %>
+            <%= f.error_notification %>
 
-          <div class="mb-3">
-            <%= f.input :content,
-                        as: :text,
-                        label: false,
-                        placeholder: "Type your message here...",
-                        input_html: { rows: 4, class: "form-control" } %>
-          </div>
+            <div class="mb-3">
+              <%= f.input :content,
+                          as: :text,
+                          label: false,
+                          placeholder: "Type your message here...",
+                          input_html: { rows: 4, class: "form-control" } %>
+            </div>
 
-          <%= f.button :submit, "Send Message", class: "btn btn-primary" %>
-        <% end %>
+            <%= f.button :submit, "Send Message", class: "btn btn-primary" %>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>

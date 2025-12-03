@@ -14,8 +14,10 @@ class Message < ApplicationRecord
   private
 
   def file_size_validation
-    if photos.attached? && photos.byte_size > MAX_FILE_SIZE_MB.megabytes
-      errors.add(:file, "size must be less than #{MAX_FILE_SIZE_MB}MB")
+    photos.each do |photo|
+      if photo.byte_size > MAX_FILE_SIZE_MB.megabytes
+        errors.add(:photos, "size must be less than #{MAX_FILE_SIZE_MB}MB")
+      end
     end
   end
 

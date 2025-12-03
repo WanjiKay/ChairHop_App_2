@@ -1,0 +1,101 @@
+<div class="chat-index-page">
+  <div class="container mt-4">
+
+    Chat with Hopps
+
+    <div class="text-center mb4">
+      <h1>New Chat</h1>
+      <p class="text-muted">Need help finding the perfect stylist and appointments, chat with Hopper</p>
+    </div>
+
+    <div class="row justify-content-center mb-4">
+      <div class="col-lg-10 col-xl-8">
+
+        <div class="upload-section">
+
+          <h4>Upload your hair inspo</h4>
+          <p class="text-muted mb-3">Share a picture and let Hopps help you find a stylist</p>
+
+          <%= simple_form_for :chat,
+                url: chats_path,
+                method: :post,
+                html: { multipart: true, class: "upload-form" },
+                local: true do |f| %>
+
+            <div class="upload-area" id="uploadArea">
+
+              <div class="upload-icon">
+                <i class="fas fa-image"></i>
+              </div>
+
+              <p class="upload-text">Click to upload or drag and drop</p>
+              <p class="upload-subtext">PNG, JPG, JPEG up to 20mb</p>
+
+              <%= f.input :photos, as: :file, input_html: { multiple: true } %>
+
+              <div class="preview-container d-none" id="previewContainer">
+                <img src="" alt="Preview" id="previewImage" class="preview-image">
+                <button type="button" class="btn btn-sm btn-danger remove-preview" id="removePreview">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- MESSAGE TEXT AREA -->
+            <div class="mt-3">
+              <%= f.text_area :content,class: "form-control",placeholder: "Describe what you're looking for or ask a question...",rows: 3 %>
+            </div>
+
+            <!-- SUBMIT BUTTON -->
+            <div class="mt-3 text-center">
+              <%= f.submit "Chat with Hopper", class: "btn btn-primary px-4" %>
+            </div>
+
+          <% end %>
+
+        </div>
+
+        <!-- QUICK START HOT TOPICS -->
+        <div class="quick-start-section mt-4">
+          <h5 class="text-center mb-3">Or try one of these to get the conversation going:</h5>
+
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <%= link_to chats_path(prompt: "Help me find a stylist for curly hair"),
+                    method: :post,
+                    data: {turbo: false},
+                    class: "quick-start-card" do %>
+                <i class="fas fa-user-tie mb-2"></i>
+                <p class="mb-0">Find a stylist for curly hair</p>
+              <% end %>
+            </div>
+
+            <div class="col-md-6">
+              <%= link_to chats_path(prompt: "Book an appointment for a haircut"),
+                    method: :post,
+                    class: "quick-start-card" do %>
+                <i class="fas fa-user-tie mb-2"></i>
+                <p class="mb-0">Book a haircut</p>
+              <% end %>
+            </div>
+
+            <div class="col-md-6">
+              <%= link_to chats_path(prompt: "Hair colour consultation"),
+                    method: :post,
+                    class: "quick-start-card" do %>
+                <i class="fas fa-user-tie mb-2"></i>
+                <p class="mb-0">Hair colour consultation</p>
+              <% end %>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+<%console%>
