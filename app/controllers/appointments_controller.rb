@@ -78,7 +78,7 @@ class AppointmentsController < ApplicationController
   # end
 
 def check_in
-  unless @appointment.pending?
+  if !@appointment.pending?
     redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
   elsif params[:selected_service].blank?
     redirect_to appointment_path(@appointment), alert: "Please select a service first."
@@ -92,7 +92,7 @@ end
 
 
   def confirmation
-    unless @appointment.pending?
+    if !@appointment.pending?
       redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
     else
       @selected_service = params[:selected_service]
@@ -101,7 +101,7 @@ end
   end
 
   def book
-    unless @appointment.pending?
+    if !@appointment.pending?
       redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
     elsif @appointment.update(customer: current_user, booked: true, status: :booked, selected_service: params[:selected_service])
       # Save add-ons if any were selected
