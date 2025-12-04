@@ -1,3 +1,7 @@
+<% content_for :meta_title, "#{@stylist.name}" %>
+<% content_for :meta_description, @stylist.about %>
+<% content_for :meta_image, cl_image_path(@stylist.avatar.path) %>
+
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-lg-8">
