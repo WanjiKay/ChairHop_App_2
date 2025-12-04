@@ -20,9 +20,11 @@ Rails.application.routes.draw do
     resources :reviews, only: [:new, :create]
 
     member do
+      get :check_in
       post :check_in
       get :confirmation
       post :book
+      get :booked
       patch :complete
     end
   end

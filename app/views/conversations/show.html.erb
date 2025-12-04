@@ -11,7 +11,7 @@
           <strong>Time:</strong> <%= @conversation.appointment.time.strftime("%b %d, %Y at %I:%M %p") if @conversation.appointment.time.present? %>
         </p>
         <div class="d-flex gap-2">
-          <%= link_to "← Back to Appointment", appointment_path(@conversation.appointment), class: "btn btn-outline-primary" %>
+          <%= link_to "Back to Appointment", appointment_path(@conversation.appointment), class: "btn btn-outline-primary" %>
           <% unless @conversation.appointment.booked? %>
             <%= link_to "Book Appointment", appointment_path(@conversation.appointment), class: "btn btn-primary" %>
           <% end %>

@@ -31,7 +31,7 @@
         <!-- Salon Image -->
         <% if @appointment.image.attached? %>
           <div class="salon-image-card mb-4">
-            <%= image_tag @appointment.image, class: "img-fluid rounded", alt: @appointment.salon, style: "width: 100%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);" %>
+            <%= image_tag @appointment.image, class: "rounded", alt: @appointment.salon, style: "width: 100%; height: 250px; object-fit: cover; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);" %>
           </div>
         <% end %>
 
@@ -75,6 +75,8 @@
                     class: "btn btn-danger" %>
             <% end %>
 
+            <%# Only stylists can mark appointments as completed %>
+            <%# Customers cannot complete appointments: || @appointment.customer == current_user %>
             <% if @appointment.stylist == current_user && @appointment.booked? %>
               <%= button_to "Mark as Completed",
                     complete_appointment_path(@appointment),
@@ -95,7 +97,7 @@
                 <% radio_id = "selected_service_#{index}" %>
                 <div class="form-check service-option mb-3 p-3" style="border: 2px solid #dee2e6; border-radius: 8px; transition: all 0.3s;">
                   <%= radio_button_tag :selected_service, service, false, id: radio_id, class: "form-check-input", required: true %>
-                  <%= label_tag radio_id, service, class: "form-check-label ms-2 fw-bold" %>
+                  <%= label_tag radio_id, service, class: "form-check-label ms-2 fw-bold", style: "color: #333333 !important; font-weight: 700 !important;" %>
                 </div>
               <% end %>
             </div>
@@ -111,7 +113,7 @@
                 <% checkbox_id = "add_on_#{index}" %>
                 <div class="form-check addon-option mb-3 p-3" style="border: 2px solid #dee2e6; border-radius: 8px;">
                   <%= check_box_tag "selected_add_ons[]", add_on, false, id: checkbox_id, class: "form-check-input" %>
-                  <%= label_tag checkbox_id, add_on, class: "form-check-label ms-2" %>
+                  <%= label_tag checkbox_id, add_on, class: "form-check-label ms-2", style: "color: #333333 !important; font-weight: 600 !important;" %>
                 </div>
               <% end %>
             </div>
@@ -161,5 +163,18 @@
   .service-option:hover, .addon-option:hover {
     border-color: #4A5D4F !important;
     background-color: rgba(74, 93, 79, 0.05);
+  }
+
+  /* Nuclear override for service option text colors */
+  .service-option .form-check-label,
+  .service-option label.form-check-label,
+  .addon-option .form-check-label,
+  .addon-option label.form-check-label {
+    color: #333333 !important;
+    font-weight: 600 !important;
+  }
+
+  .service-option .form-check-label {
+    font-weight: 700 !important;
   }
 </style>

@@ -242,7 +242,7 @@ salon_names.each do |salon|
       stylist: stylist_users.select { |u| stylist_salon_map[u.id] == salon }.sample
     )
 
-    file = URI.parse(salon_images[idx]).open
+    file = URI.parse(salon_images[idx % salon_images.length]).open
     appointment.image.attach(io: file, filename: "nes.png", content_type: "image/png")
     appointment.save!
   end
