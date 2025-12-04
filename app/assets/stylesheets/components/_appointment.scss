@@ -24,3 +24,19 @@
     font-weight: 600;
   }
 }
+
+// Service selection styling for appointment show page
+.service-option,
+.addon-option {
+  .form-check-label {
+    color: #333333 !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+  }
+}
+
+.service-option {
+  .form-check-label {
+    font-weight: 700 !important;
+  }
+}

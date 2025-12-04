@@ -5,7 +5,7 @@
     <% if conversation_message.conversation.stylist.avatar.attached? %>
       <%= image_tag conversation_message.conversation.stylist.avatar, class: "stylist-avatar rounded-circle" %>
     <% else %>
-      <%= image_tag "https://via.placeholder.com/48", class: "stylist-avatar rounded-circle" %>
+      <%= image_tag "profile.png", class: "stylist-avatar rounded-circle", alt: "Stylist" %>
     <% end %>
   <% end %>
 
@@ -18,7 +18,7 @@
     <% if conversation_message.conversation.customer.avatar.attached? %>
       <%= image_tag conversation_message.conversation.customer.avatar, class: "customer-avatar rounded-circle" %>
     <% else %>
-      <%= image_tag "https://via.placeholder.com/48", class: "customer-avatar rounded-circle" %>
+      <%= image_tag "profile.png", class: "customer-avatar rounded-circle", alt: "Customer" %>
     <% end %>
   <% end %>
 

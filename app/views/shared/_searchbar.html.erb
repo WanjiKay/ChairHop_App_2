@@ -3,7 +3,7 @@
   <button
     type="button"
     data-action="click->search-toggle#toggle"
-    class="custom-btn-ch mb-3">
+    class="btn btn-primary mb-3">
     Show Filters
   </button>
 
@@ -15,7 +15,8 @@
         <%= f.input :location,
               value: params[:location],
               placeholder: "City or Postal Code",
-              class: "form-control-ch" %>
+              class: "form-control-ch",
+              label_html: { style: 'color: #333333 !important; font-weight: 700 !important;' } %>
       </div>
 
       <div class="form-group-ch me-3">
@@ -28,17 +29,36 @@
               as: :string,
               value: params[:date],
               class: "form-control-ch datepicker",
-              placeholder: "Select Date"%>
+              placeholder: "Select Date",
+              label_html: { style: 'color: #333333 !important; font-weight: 700 !important;' } %>
       </div>
 <!-- I need to set ruby current date to my stimulus controller stimulus static values from ruby to js to be current date of the browser -->
 
 
       <div class="form-group-ch me-3">
-        <%= f.input :time,
-              value: params[:time],
-              class: "form-control-ch timepicker",
-              placeholder: "Select Time",
-              data: { search_toggle_target: "time" } %>
+        <%= f.input :time_from,
+              as: :string,
+              value: params[:time_from],
+              input_html: {
+                class: "form-control-ch",
+                type: "time"
+              },
+              label: "Time From",
+              placeholder: "From",
+              label_html: { style: 'color: #333333 !important; font-weight: 700 !important;' } %>
+      </div>
+
+      <div class="form-group-ch me-3">
+        <%= f.input :time_to,
+              as: :string,
+              value: params[:time_to],
+              input_html: {
+                class: "form-control-ch",
+                type: "time"
+              },
+              label: "Time To",
+              placeholder: "To",
+              label_html: { style: 'color: #333333 !important; font-weight: 700 !important;' } %>
       </div>
 
       <div class="form-group-ch me-3">
@@ -47,14 +67,32 @@
               collection: ["Haircut", "Trim", "Style", "Colour", "Wash & Blow Dry", "Facial"],
               input_html: { class: "me-2" },
               item_wrapper_class: "me-2",
+              item_label_class: "form-check-label",
               wrapper: false,
-              label: false %>
+              label_html: { style: 'color: #333333 !important; font-weight: 700 !important;' } %>
       </div>
 
       <div class="d-flex align-items-end mt-2">
-        <%= f.button :submit, "Search", class: "custom-btn" %>
+        <%= f.button :submit, "Search", class: "btn btn-primary" %>
       </div>
 
     <% end %>
   </div>
 </div>
+
+<style>
+  /* Nuclear override for search filter text colors */
+  [data-controller="search-toggle"] label.form-label,
+  [data-controller="search-toggle"] label.form-label.string.required,
+  [data-controller="search-toggle"] label.form-label.string.optional,
+  [data-controller="search-toggle"] .form-check-label,
+  [data-controller="search-toggle"] abbr {
+    color: #333333 !important;
+    font-weight: 700 !important;
+  }
+
+  [data-controller="search-toggle"] .form-check-label {
+    color: #333333 !important;
+    font-weight: 600 !important;
+  }
+</style>

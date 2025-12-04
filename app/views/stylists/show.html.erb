@@ -11,7 +11,7 @@
             <% if @stylist.avatar.attached? %>
               <%= image_tag @stylist.avatar, class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" %>
             <% else %>
-              <%= image_tag "https://via.placeholder.com/150", class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F;" %>
+              <%= image_tag "profile.png", class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F;" %>
             <% end %>
           </div>
 
@@ -92,7 +92,7 @@
 
         <!-- Back Button -->
         <div class="text-center mt-4">
-          <%= link_to "← Back", :back, class: "btn btn-outline-primary" %>
+          <%= link_to "Back", :back, class: "btn btn-outline-primary" %>
         </div>
       </div>
     </div>

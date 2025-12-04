@@ -17,14 +17,14 @@ class ConversationMessagesController < ApplicationController
 
     if @conversation_message.save
       respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.append(:conversation_messages, partial: "conversation_messages/conversation_message",
-            locals: { conversation_message: @conversation_message })
-        end
+        format.turbo_stream
         format.html { redirect_to conversation_path(@conversation) }
       end
     else
-      render "conversations/show", status: :unprocessable_entity
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("new_conversation_message", partial: "conversation_messages/form", locals: { conversation: @conversation, conversation_message: @conversation_message }) }
+        format.html { render "conversations/show", status: :unprocessable_entity }
+      end
     end
   end
 

@@ -13,6 +13,13 @@ class Appointment < ApplicationRecord
   validates :time, presence: true
   validates :location, presence: true
 
+  enum status: {
+    pending: 0,
+    booked: 1,
+    completed: 2,
+    cancelled: 3
+  }
+
   SALON_ADD_ONS = {
     "Glow Lounge" => [
       "Scalp Massage - $15",
