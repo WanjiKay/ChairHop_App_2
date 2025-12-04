@@ -21,11 +21,12 @@
 
   <!-- USER APPOINTMENTS LINK -->
   <% if defined?(user_signed_in?) && user_signed_in? %>
-    <div class="mb-3">
-      <%= link_to my_appointments_path, class: "btn btn-primary w-100" do %>
+    <div class="mb-3 text-start">
+      <%= link_to my_appointments_path, class: "btn btn-primary" do %>
         My Appointments
       <% end %>
     </div>
+
   <% end %>
 
   <!-- APPOINTMENTS SECTION -->

@@ -1,3 +1,84 @@
+// Override Bootstrap CSS variables for search filter forms
+[data-controller="search-toggle"] {
+  --bs-body-color: #333333 !important;
+
+  // Nuclear option: target ALL labels within search-toggle
+  label.form-label.string.required,
+  label.form-label.string.optional,
+  label.form-label {
+    color: #333333 !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+  }
+
+  // Target abbr tags
+  abbr[title="required"],
+  abbr {
+    color: #333333 !important;
+  }
+
+  // Target checkboxes
+  label.form-check-label,
+  .form-check label {
+    color: #333333 !important;
+    font-weight: 600 !important;
+  }
+
+  .form-container-ch {
+    max-width: 600px;
+    margin: 3rem auto;
+    padding: 3rem;
+    background: $color-cream;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba($color-soft-gray, 0.6);
+    color: #333333 !important;
+
+    // Target all Simple Form labels with very high specificity
+    label,
+    label.form-label,
+    .form-label,
+    label.string,
+    label.optional,
+    label.required,
+    label.form-label.string.required,
+    label.form-label.string.optional,
+    abbr,
+    abbr[title] {
+      color: #333333 !important;
+      font-weight: 700 !important;
+      font-size: 1rem !important;
+    }
+
+    // Target checkbox and radio labels with very high specificity
+    .form-check-label,
+    label.form-check-label,
+    input[type="checkbox"] + label,
+    input[type="radio"] + label {
+      color: #333333 !important;
+      font-weight: 600 !important;
+      font-size: 0.95rem !important;
+    }
+
+    // Target input text
+    input,
+    input.form-control,
+    input.form-control-ch,
+    .form-control,
+    .form-control-ch {
+      color: #333333 !important;
+    }
+
+    // Target all text within the form
+    div,
+    span,
+    p {
+      color: #333333 !important;
+    }
+  }
+}
+
+// Fallback for direct .form-container-ch usage
 .form-container-ch{
   max-width: 600px;
   margin: 3rem auto;
@@ -6,9 +87,38 @@
   border-radius: 12px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba($color-soft-gray, 0.6);
+  --bs-body-color: #333333 !important;
+  color: #333333 !important;
+
+  label,
+  .form-label,
+  abbr {
+    color: #333333 !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+  }
+
+  .form-check-label {
+    color: #333333 !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+  }
 }
 .form-group-ch{
   margin-bottom: 1.75 rem;
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: $primary;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+  }
+  .form-check-label {
+    font-weight: 600;
+    color: $color-dark-text;
+    font-size: 0.95rem;
+  }
 }
 label-ch{
   display: block;
@@ -24,13 +134,13 @@ label-ch{
   padding: 0.9rem 1.25rem;
   font-size: 1rem;
   line-height: 1.5;
-  color: $dark;
+  color: $color-dark-text;
   background: #fff;
   border: 1px solid $color-soft-gray;
   border-radius: 8px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   &:focus{
-    color: $dark;
+    color: $color-dark-text;
     background: #fff;
     border-color: $primary;
     outline: 0;

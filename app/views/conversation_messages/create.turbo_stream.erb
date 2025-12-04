@@ -1,0 +1,24 @@
+<%# Remove empty state if it exists %>
+<%= turbo_stream.remove "empty_state" %>
+
+<%# Reset the form by replacing the form with a fresh one %>
+<%= turbo_stream.update "new_conversation_message" do %>
+  <%= simple_form_for [@conversation, ConversationMessage.new],
+      url: conversation_conversation_messages_path(@conversation),
+      html: {
+        id: "new_conversation_message",
+        data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset" }
+      } do |f| %>
+    <%= f.error_notification %>
+
+    <div class="mb-3">
+      <%= f.input :content,
+                  as: :text,
+                  label: false,
+                  placeholder: "Type your message here...",
+                  input_html: { rows: 4, class: "form-control" } %>
+    </div>
+
+    <%= f.button :submit, "Send Message", class: "btn btn-primary" %>
+  <% end %>
+<% end %>

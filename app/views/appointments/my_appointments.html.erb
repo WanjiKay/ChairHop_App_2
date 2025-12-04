@@ -1,75 +1,161 @@
 <div class="container my-5">
-  <h1 class="mb-4">My Booked Appointments</h1>
+  <h1 class="mb-4">My Appointments</h1>
 
   <% if @my_appointments.any? %>
-    <div class="row g-4">
-      <% @my_appointments.each do |appointment| %>
-        <div class="col-md-6">
-          <div class="card appointment-card">
-            <% if appointment.image.attached? %>
-              <%= image_tag appointment.image, class: "card-img-top", alt: appointment.salon %>
-            <% else %>
-              <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400",
-                            class: "card-img-top",
-                            alt: "Salon" %>
-            <% end %>
+    <% booked_appointments = @my_appointments.select(&:booked?) %>
+    <% completed_appointments = @my_appointments.select(&:completed?) %>
+    <% cancelled_appointments = @my_appointments.select(&:cancelled?) %>
 
-            <div class="card-body">
-              <h5 class="card-title"><%= appointment.salon %></h5>
+    <!-- Booked Appointments Section -->
+    <% if booked_appointments.any? %>
+      <h3 class="text-primary mb-3">Upcoming Appointments</h3>
+      <div class="row g-4 mb-5">
+        <% booked_appointments.each do |appointment| %>
+          <div class="col-md-6">
+            <div class="card appointment-card">
+              <% if appointment.image.attached? %>
+                <%= image_tag appointment.image, class: "card-img-top", alt: appointment.salon %>
+              <% else %>
+                <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400",
+                              class: "card-img-top",
+                              alt: "Salon" %>
+              <% end %>
 
-              <p class="card-text">
-                <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
-                <strong>Location:</strong> <%= appointment.location %><br>
-                <strong>Time:</strong> <%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %><br>
-                <% if appointment.selected_service.present? %>
-                  <strong>Service:</strong> <%= appointment.selected_service %>
-                <% end %>
-              </p>
+              <div class="card-body">
+                <h5 class="card-title"><%= appointment.salon %></h5>
 
-              <div class="d-flex gap-2">
-                <%= link_to "View Details", appointment_path(appointment), class: "btn btn-primary" %>
-                <% if appointment.booked? %>
+                <p class="card-text">
+                  <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
+                  <strong>Location:</strong> <%= appointment.location %><br>
+                  <strong>Time:</strong> <%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %><br>
+                  <% if appointment.selected_service.present? %>
+                    <strong>Service:</strong> <%= appointment.selected_service %>
+                  <% end %>
+                </p>
+
+                <div class="d-flex gap-2">
+                  <%= link_to "View Details", appointment_path(appointment), class: "btn btn-primary" %>
                   <%= button_to "Unbook",
                                 appointment_path(appointment),
                                 method: :delete,
                                 data: { confirm: "Are you sure you want to unbook this appointment?" },
                                 class: "btn btn-danger" %>
-                <% end %>
-              </div>
+                </div>
 
-              <!-- STATUS BADGE -->
-              <div class="mt-3">
-                <% if appointment.completed? %>
-                  <span class="badge bg-success">Completed</span>
-                <% elsif appointment.booked? %>
+                <div class="mt-3">
                   <span class="badge bg-info">Booked</span>
-                <% elsif appointment.cancelled? %>
-                  <span class="badge bg-secondary">Cancelled</span>
-                <% end %>
+                </div>
               </div>
-
-              <!-- REVIEW BLOCK -->
-              <% if appointment.completed? %>
-                <% if appointment.review.present? %>
-                  <p class="mt-3 mb-0 text-success">
-                    Review submitted ✅
-                  </p>
-                <% else %>
-                  <%= link_to "Leave a review",
-                              new_appointment_review_path(appointment),
-                              class: "btn btn-outline-primary mt-3" %>
-                <% end %>
-              <% end %>
-              <!-- END REVIEW BLOCK -->
-
             </div>
           </div>
-        </div>
-      <% end %>
-    </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Completed Appointments Section -->
+    <% if completed_appointments.any? %>
+      <h3 class="text-success mb-3">Completed Appointments</h3>
+      <div class="row g-4 mb-5">
+        <% completed_appointments.each do |appointment| %>
+          <div class="col-md-6">
+            <div class="card appointment-card border-success">
+              <% if appointment.image.attached? %>
+                <%= image_tag appointment.image, class: "card-img-top", alt: appointment.salon %>
+              <% else %>
+                <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400",
+                              class: "card-img-top",
+                              alt: "Salon" %>
+              <% end %>
+
+              <div class="card-body">
+                <h5 class="card-title"><%= appointment.salon %></h5>
+
+                <p class="card-text">
+                  <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
+                  <strong>Location:</strong> <%= appointment.location %><br>
+                  <strong>Time:</strong> <%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %><br>
+                  <% if appointment.selected_service.present? %>
+                    <strong>Service:</strong> <%= appointment.selected_service %>
+                  <% end %>
+                </p>
+
+                <div class="d-flex gap-2 mb-3">
+                  <%= link_to "View Details", appointment_path(appointment), class: "btn btn-primary" %>
+                  <% if appointment.review.blank? %>
+                    <%= link_to "Leave a Review",
+                                new_appointment_review_path(appointment),
+                                class: "btn btn-outline-primary" %>
+                  <% end %>
+                </div>
+
+                <div class="mb-3">
+                  <span class="badge bg-success">Completed</span>
+                </div>
+
+                <!-- REVIEW STAR RATING -->
+                <% if appointment.review.present? %>
+                  <div class="mt-3">
+                    <strong class="text-muted d-block mb-1">Your Rating:</strong>
+                    <div>
+                      <% appointment.review.rating.times do %>
+                        <i class="fas fa-star text-warning"></i>
+                      <% end %>
+                      <% (5 - appointment.review.rating).times do %>
+                        <i class="far fa-star text-warning"></i>
+                      <% end %>
+                      <span class="ms-2"><%= appointment.review.rating %>/5</span>
+                    </div>
+                  </div>
+                <% end %>
+                <!-- END REVIEW STAR RATING -->
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- Cancelled Appointments Section -->
+    <% if cancelled_appointments.any? %>
+      <h3 class="text-muted mb-3">Cancelled Appointments</h3>
+      <div class="row g-4 mb-5">
+        <% cancelled_appointments.each do |appointment| %>
+          <div class="col-md-6">
+            <div class="card appointment-card border-secondary opacity-75">
+              <% if appointment.image.attached? %>
+                <%= image_tag appointment.image, class: "card-img-top", alt: appointment.salon %>
+              <% else %>
+                <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400",
+                              class: "card-img-top",
+                              alt: "Salon" %>
+              <% end %>
+
+              <div class="card-body">
+                <h5 class="card-title text-muted"><%= appointment.salon %></h5>
+
+                <p class="card-text text-muted">
+                  <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
+                  <strong>Location:</strong> <%= appointment.location %><br>
+                  <strong>Time:</strong> <%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %><br>
+                  <% if appointment.selected_service.present? %>
+                    <strong>Service:</strong> <%= appointment.selected_service %>
+                  <% end %>
+                </p>
+
+                <%= link_to "View Details", appointment_path(appointment), class: "btn btn-outline-secondary" %>
+
+                <div class="mt-3">
+                  <span class="badge bg-secondary">Cancelled</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
   <% else %>
     <div class="alert alert-info">
-      <p class="mb-0">You don't have any booked appointments yet.</p>
+      <p class="mb-0">You don't have any appointments yet.</p>
       <%= link_to "Browse available appointments", appointments_path, class: "btn btn-primary mt-3" %>
     </div>
   <% end %>

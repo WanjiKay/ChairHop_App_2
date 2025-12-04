@@ -1,6 +1,6 @@
 class AppointmentsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_appointment, only: [:show, :check_in, :confirmation, :book, :destroy, :complete]
+  before_action :set_appointment, only: [:show, :check_in, :confirmation, :book, :booked, :destroy, :complete]
 
   def index
     @appointments = Appointment.where(status: :pending)
@@ -41,12 +41,33 @@ class AppointmentsController < ApplicationController
         end
       end
 
-      if search_params[:time].present?
-        time_input = search_params[:time].strip
-        # Use HH12 for 12-hour format and ILIKE for case-insensitive matching
-        # This handles formats like: "7:00 am", "7:00 AM", "07:00 am", "7 am", etc.
-        time_term = "%#{time_input}%"
-        @appointments = @appointments.where("TO_CHAR(time, 'HH12:MI AM') ILIKE ?", time_term)
+      # Handle time range filtering
+      if search_params[:time_from].present? || search_params[:time_to].present?
+        if search_params[:time_from].present? && search_params[:time_to].present?
+          # Both time_from and time_to are present - filter between the range
+          time_from = Time.parse(search_params[:time_from])
+          time_to = Time.parse(search_params[:time_to])
+          @appointments = @appointments.where(
+            "EXTRACT(HOUR FROM time) * 60 + EXTRACT(MINUTE FROM time) >= ? AND
+             EXTRACT(HOUR FROM time) * 60 + EXTRACT(MINUTE FROM time) <= ?",
+            time_from.hour * 60 + time_from.min,
+            time_to.hour * 60 + time_to.min
+          )
+        elsif search_params[:time_from].present?
+          # Only time_from is present - filter appointments at or after this time
+          time_from = Time.parse(search_params[:time_from])
+          @appointments = @appointments.where(
+            "EXTRACT(HOUR FROM time) * 60 + EXTRACT(MINUTE FROM time) >= ?",
+            time_from.hour * 60 + time_from.min
+          )
+        elsif search_params[:time_to].present?
+          # Only time_to is present - filter appointments at or before this time
+          time_to = Time.parse(search_params[:time_to])
+          @appointments = @appointments.where(
+            "EXTRACT(HOUR FROM time) * 60 + EXTRACT(MINUTE FROM time) <= ?",
+            time_to.hour * 60 + time_to.min
+          )
+        end
       end
 
       if search_params[:service].present?
@@ -64,7 +85,7 @@ class AppointmentsController < ApplicationController
   end
 
   def my_appointments
-    @my_appointments = current_user.appointments_as_customer.where(status: [:booked, :completed])
+    @my_appointments = current_user.appointments_as_customer.where(status: [:booked, :completed, :cancelled])
   end
 
   # def check_in
@@ -80,13 +101,48 @@ class AppointmentsController < ApplicationController
 def check_in
   if !@appointment.pending?
     redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
-  elsif params[:selected_service].blank?
-    redirect_to appointment_path(@appointment), alert: "Please select a service first."
+    return
+  end
+
+  # Handle GET requests - try to restore from session
+  if request.get?
+    session_key = "appointment_#{@appointment.id}_selections"
+    Rails.logger.debug "GET check_in: Session key: #{session_key}"
+    Rails.logger.debug "GET check_in: Session data: #{session[session_key].inspect}"
+    Rails.logger.debug "GET check_in: All session keys: #{session.keys.inspect}"
+
+    if session[session_key].present? && session[session_key]["selected_service"].present?
+      # Restore selections from session (using string keys)
+      @selected_service = session[session_key]["selected_service"]
+      @selected_add_ons = session[session_key]["selected_add_ons"] || []
+      @service_price = extract_price(@selected_service)
+      @add_ons_total = calculate_add_ons_total(@selected_add_ons)
+      Rails.logger.debug "GET check_in: Restored service: #{@selected_service}"
+    else
+      # No valid session data, redirect back to appointment page
+      Rails.logger.debug "GET check_in: No valid session data found, redirecting"
+      redirect_to appointment_path(@appointment), notice: "Please select your services to continue."
+      return
+    end
   else
-    @selected_service = params[:selected_service]
-    @service_price = extract_price(@selected_service)
-    @selected_add_ons = params[:selected_add_ons] || []
-    @add_ons_total = calculate_add_ons_total(@selected_add_ons)
+    # Handle POST requests - store selections in session and redirect
+    if params[:selected_service].blank?
+      redirect_to appointment_path(@appointment), alert: "Please select a service first."
+      return
+    end
+
+    # Store in session for later retrieval (using string keys for consistency)
+    session_key = "appointment_#{@appointment.id}_selections"
+    session[session_key] = {
+      "selected_service" => params[:selected_service],
+      "selected_add_ons" => params[:selected_add_ons] || []
+    }
+    Rails.logger.debug "POST check_in: Stored in session: #{session[session_key].inspect}"
+    Rails.logger.debug "POST check_in: Session keys after store: #{session.keys.inspect}"
+
+    # Redirect to GET check_in to prevent form resubmission and enable browser back
+    redirect_to check_in_appointment_path(@appointment)
+    return
   end
 end
 
@@ -113,17 +169,32 @@ end
           )
         end
       end
-      @service_price = extract_price(@appointment.selected_service)
-      @add_ons_total = @appointment.total_add_ons_price
-      render :booked
+
+      # Clear session data after successful booking
+      session.delete("appointment_#{@appointment.id}_selections")
+
+      redirect_to booked_appointment_path(@appointment), notice: "Appointment successfully booked!"
     else
       redirect_to check_in_appointment_path(@appointment, selected_service: params[:selected_service]), alert: "Something went wrong."
+    end
+  end
+
+  def booked
+    if @appointment.booked? && @appointment.customer == current_user
+      @service_price = extract_price(@appointment.selected_service)
+      @add_ons_total = @appointment.total_add_ons_price
+    else
+      redirect_to appointments_path, alert: "Appointment not found or not booked."
     end
   end
 
   def destroy
     if @appointment.customer == current_user
       @appointment.update(customer: nil, booked: false, status: :cancelled)
+
+      # Clear session data when unbooking
+      session.delete("appointment_#{@appointment.id}_selections")
+
       redirect_back fallback_location: my_appointments_path, notice: "Your appointment has been cancelled, let us know when you want to take another seat!"
     else
       redirect_back fallback_location: appointment_path(@appointment), alert: "Sorry, you didn't book this seat."
@@ -146,6 +217,7 @@ end
   end
 
   def extract_price(service_string)
+    return 0.0 if service_string.blank?
     service_string.split(" - $").last.to_f
   end
 

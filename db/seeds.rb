@@ -211,16 +211,18 @@ salon_names.each do |salon|
   3.times do |idx|
     # 50/50 chance of today or tomorrow
     # Generate time within business hours (6 AM - 10 PM)
-    loop do
-      # Randomly pick today or tomorrow
-      day_offset = [0, 1].sample
-      base_date = Time.current.to_date + day_offset.days
+    day_offset = [0, 1].sample
+  base_date = Time.zone.today + day_offset
 
-      # Generate random time within business hours
-      appointment_time = base_date.to_time.change(
-        hour: rand(6..21),
-        min: [0, 15, 30, 45].sample
+    loop do
+      appointment_time = Time.zone.local(
+        base_date.year,
+        base_date.month,
+        base_date.day,
+        rand(6..21),                           # 6 AM – 9 PM
+        [0, 15, 30, 45].sample                 # quarter hours
       )
+
 
       # Make sure appointment is in the future
       if appointment_time > Time.current
@@ -240,7 +242,7 @@ salon_names.each do |salon|
       stylist: stylist_users.select { |u| stylist_salon_map[u.id] == salon }.sample
     )
 
-    file = URI.parse(salon_images[idx]).open
+    file = URI.parse(salon_images[idx % salon_images.length]).open
     appointment.image.attach(io: file, filename: "nes.png", content_type: "image/png")
     appointment.save!
   end
