@@ -27,6 +27,7 @@ class ChatsController < ApplicationController
 
   # Create a new chat
   def create
+
     prompt        = params[:prompt]
     chat_content  = prompt.presence || params.dig(:chat, :content)
     chat_photos   = params.dig(:chat, :photos)
@@ -36,7 +37,10 @@ class ChatsController < ApplicationController
       model_id: "gpt-4.1-nano",
       customer: current_user,
     )
-
+    if params[:appointment_id].present?
+      @appointment = Appointment.find(params[:appointment_id])
+      @chat.appointment = @appointment
+    end
     if @chat.save
       @message = Message.new(
         content: chat_content,
@@ -151,4 +155,26 @@ class ChatsController < ApplicationController
 
     Here are the nearest appointments available based on the user's question:"
   end
+
+  def appointment_prompt(appointment)
+    "APPOINTMENT id: #{appointment.id},
+    time: #{appointment.time},
+    location: #{appointment.location},
+    stylist: #{appointment.stylist.name},
+    salon: #{appointment.salon},
+    services: #{appointment.services},
+    url: #{check_in_appointment_url(appointment)}"
+  end
+
+  def instruction_with_appointment
+    [SYSTEM_PROMPT, appointment_context]
+    .compact.join("\n\n")
+  end
+
+  def appointment_context
+    return if @chat.appointment.nil?
+    appointment = @chat.appointment
+    "Here is the context of the appointment: #{appointment.content}, #{appointment.time}, the location is: #{appointment.location}, the stylist's name is: #{appointment.stylist.name}."
+  end
+
 end

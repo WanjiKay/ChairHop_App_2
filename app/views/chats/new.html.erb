@@ -1,6 +1,14 @@
 <div class="chat-index-page">
   <div class="container mt-4">
 
+    <% if params[:appointment_id].present? %>
+      <div class="mb-3">
+        <%= link_to appointment_path(params[:appointment_id]), class: "btn btn-outline-primary" do %>
+          <i class="fas fa-arrow-left me-2"></i>Back to Appointment
+        <% end %>
+      </div>
+    <% end %>
+
     Chat with Hopps
 
     <div class="text-center mb4">
@@ -21,6 +29,7 @@
                 method: :post,
                 html: { multipart: true, class: "upload-form" },
                 local: true do |f| %>
+                <%= hidden_field_tag :appointment_id, params[:appointment_id] %>
 
             <div class="upload-area" id="uploadArea">
 
@@ -63,28 +72,27 @@
           <div class="row g-3">
 
             <div class="col-md-6">
-              <%= link_to chats_path(prompt: "Help me find a stylist for curly hair"),
+              <%= button_to chats_path(prompt: "Help me find a stylist for curly hair", appointment_id: params[:appointment_id]),
                     method: :post,
-                    data: {turbo: false},
-                    class: "quick-start-card" do %>
+                    class: "quick-start-card w-100 border-0" do %>
                 <i class="fas fa-user-tie mb-2"></i>
                 <p class="mb-0">Find a stylist for curly hair</p>
               <% end %>
             </div>
 
             <div class="col-md-6">
-              <%= link_to chats_path(prompt: "Book an appointment for a haircut"),
+              <%= button_to chats_path(prompt: "Book an appointment for a haircut", appointment_id: params[:appointment_id]),
                     method: :post,
-                    class: "quick-start-card" do %>
+                    class: "quick-start-card w-100 border-0" do %>
                 <i class="fas fa-user-tie mb-2"></i>
                 <p class="mb-0">Book a haircut</p>
               <% end %>
             </div>
 
             <div class="col-md-6">
-              <%= link_to chats_path(prompt: "Hair colour consultation"),
+              <%= button_to chats_path(prompt: "Hair colour consultation", appointment_id: params[:appointment_id]),
                     method: :post,
-                    class: "quick-start-card" do %>
+                    class: "quick-start-card w-100 border-0" do %>
                 <i class="fas fa-user-tie mb-2"></i>
                 <p class="mb-0">Hair colour consultation</p>
               <% end %>

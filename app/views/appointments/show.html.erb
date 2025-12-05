@@ -129,20 +129,8 @@
           <h5 class="text-primary fw-bold text-center mb-3">Quick Actions</h5>
           <div class="row g-3">
             <div class="col-md-6">
-              <%= link_to root_path, class: "action-card" do %>
-                <i class="fas fa-home fa-2x mb-2"></i>
-                <p class="mb-0 fw-bold">Back to Home</p>
-              <% end %>
-            </div>
-            <div class="col-md-6">
-              <%= link_to appointment_chats_path(@appointment), class: "action-card" do %>
-                <i class="fas fa-comments fa-2x mb-2"></i>
-                <p class="mb-0 fw-bold">View Chats</p>
-              <% end %>
-            </div>
-            <div class="col-md-6">
               <%= link_to new_chat_path(appointment_id: @appointment.id), class: "action-card" do %>
-                <i class="fas fa-robot fa-2x mb-2"></i>
+                <span style="font-size: 2rem;" class="mb-2 d-block">🐰</span>
                 <p class="mb-0 fw-bold">Ask HOPPS for Help</p>
               <% end %>
             </div>
