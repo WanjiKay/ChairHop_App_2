@@ -104,6 +104,9 @@ class Appointment < ApplicationRecord
     Stylist: #{stylist.name}.
     Services: #{services}.")
     update(embedding: embedding.vectors)
+  rescue RubyLLM::RateLimitError => e
+    # Silently skip embedding if rate limit is hit (can be regenerated later)
+    Rails.logger.warn "Skipping embedding for appointment #{id}: #{e.message}"
   end
 
   def user_cannot_book_multiple

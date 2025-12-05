@@ -9,14 +9,40 @@
 #   end
 require "open-uri"
 
-# Clean up all existing data
-ConversationMessage.destroy_all
-Conversation.destroy_all
-Message.destroy_all
-Chat.destroy_all
-Review.destroy_all
-Appointment.destroy_all
-User.destroy_all
+# Clean up seed data but preserve customer bookings and their users
+puts "Cleaning up old seed data while preserving customer appointments..."
+
+# Find appointments that belong to customers (booked or have a customer assigned)
+customer_appointments = Appointment.where.not(customer_id: nil)
+customer_appointment_ids = customer_appointments.pluck(:id)
+
+# Find users who are customers (have made appointments)
+customer_user_ids = customer_appointments.pluck(:customer_id).uniq
+
+# Find stylists who have customer appointments (preserve them too)
+stylist_user_ids = customer_appointments.pluck(:stylist_id).uniq
+
+# Preserve these users
+preserved_user_ids = (customer_user_ids + stylist_user_ids).uniq
+
+puts "Preserving #{customer_appointments.count} customer appointments and #{preserved_user_ids.count} users..."
+
+# Only destroy conversations/messages for appointments we're deleting
+ConversationMessage.joins(:conversation).where.not(conversations: { appointment_id: customer_appointment_ids }).destroy_all
+Conversation.where.not(appointment_id: customer_appointment_ids).destroy_all
+
+# Only destroy chats and messages that don't belong to preserved customers
+Message.joins(:chat).where.not(chats: { customer_id: customer_user_ids }).destroy_all
+Chat.where.not(customer_id: customer_user_ids).destroy_all
+
+# Only destroy reviews for appointments we're deleting
+Review.where.not(appointment_id: customer_appointment_ids).destroy_all
+
+# Only destroy appointments without customers (unbooked seed appointments)
+Appointment.where(customer_id: nil).destroy_all
+
+# Only destroy users who are not preserved (not customers or stylists with customer appointments)
+User.where.not(id: preserved_user_ids).destroy_all
 # -----------------------------------------
 # SALON-SPECIFIC DESCRIPTIONS (appointment.content)
 # -----------------------------------------
@@ -205,24 +231,34 @@ salon_specific_images = {
 salon_names = salon_descriptions.keys
 
 # Create 3 appointments per salon with salon-specific images
+# Track appointments created to avoid rate limiting (15 per 60s)
+appointments_created = 0
+
 salon_names.each do |salon|
   salon_images = salon_specific_images[salon]
 
-  3.times do |idx|
+  # Create 3 appointments: 1 morning, 2 afternoon
+  appointment_times = []
+
+  # 1 morning appointment (7 AM - 12 PM)
+  appointment_times << { period: 'morning', hour_range: (7..11) }
+
+  # 2 afternoon appointments (1 PM - 9 PM)
+  2.times { appointment_times << { period: 'afternoon', hour_range: (13..20) } }
+
+  appointment_times.each_with_index do |time_slot, idx|
     # 50/50 chance of today or tomorrow
-    # Generate time within business hours (6 AM - 10 PM)
     day_offset = [0, 1].sample
-  base_date = Time.zone.today + day_offset
+    base_date = Time.zone.today + day_offset
 
     loop do
       appointment_time = Time.zone.local(
         base_date.year,
         base_date.month,
         base_date.day,
-        rand(6..21),                           # 6 AM – 9 PM
-        [0, 15, 30, 45].sample                 # quarter hours
+        rand(time_slot[:hour_range]),         # Use specific hour range
+        [0, 15, 30, 45].sample                # quarter hours
       )
-
 
       # Make sure appointment is in the future
       if appointment_time > Time.current
@@ -245,6 +281,8 @@ salon_names.each do |salon|
     file = URI.parse(salon_images[idx % salon_images.length]).open
     appointment.image.attach(io: file, filename: "nes.png", content_type: "image/png")
     appointment.save!
+
+    appointments_created += 1
   end
 end
-puts "Seed complete: #{stylist_users.count} stylists, #{customer_users.count} customers, and 12 diverse appointments created."
+puts "Seed complete: #{stylist_users.count} stylists, #{customer_users.count} customers, and #{appointments_created} diverse appointments created."
