@@ -53,13 +53,32 @@ class ChatsController < ApplicationController
         @message.photos.attach(chat_photos)
       end
 
-    # Embeddings
-      @embedding = RubyLLM.embed(@message.content)
-      @appointments = Appointment.nearest_neighbors(
-        :embedding,
-        @embedding.vectors,
-        distance: "euclidean"
-      ).first(2)
+    # Embeddings - only for general chats without appointments
+      if @chat.appointment.nil?
+        begin
+          @embedding = RubyLLM.embed(@message.content)
+          @appointments = Appointment.nearest_neighbors(
+            :embedding,
+            @embedding.vectors,
+            distance: "euclidean"
+          ).first(2)
+        rescue RubyLLM::RateLimitError => e
+          # Fallback to recent appointments when rate limit is hit
+          Rails.logger.warn("RubyLLM rate limit exceeded: #{e.message}")
+          @appointments = Appointment.where(booked: false)
+                                     .order(created_at: :desc)
+                                     .limit(2)
+          flash[:notice] = "AI search temporarily unavailable (rate limit). Showing recent appointments."
+        rescue StandardError => e
+          # Handle any other embedding errors
+          Rails.logger.error("Embedding error: #{e.message}")
+          @appointments = Appointment.where(booked: false)
+                                     .order(created_at: :desc)
+                                     .limit(2)
+        end
+      else
+        @appointments = []
+      end
 
       if @message.save
         if @message.photos.attached?
