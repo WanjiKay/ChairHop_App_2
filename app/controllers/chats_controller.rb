@@ -45,7 +45,7 @@ class ChatsController < ApplicationController
       @message = Message.new(
         content: chat_content,
         chat: @chat,
-        role: "User"
+        role: "user"
       )
 
     # Attach photos correctly

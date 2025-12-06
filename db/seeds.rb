@@ -240,7 +240,7 @@ salon_names.each do |salon|
   # Create 3 appointments: 1 morning, 2 afternoon
   appointment_times = []
 
-  # 1 morning appointment (7 AM - 12 PM)
+  # 1 morning appointment (6 AM - 12 PM)
   appointment_times << { period: 'morning', hour_range: (7..11) }
 
   # 2 afternoon appointments (1 PM - 9 PM)

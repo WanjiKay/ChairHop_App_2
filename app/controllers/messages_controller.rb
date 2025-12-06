@@ -10,7 +10,7 @@ class MessagesController < ApplicationController
   def create
     @message = Message.new(message_params)
     @message.chat = @chat
-    @message.role = "User"
+    @message.role = "user"
     @embedding = RubyLLM.embed(params[:message][:content])
     @appointments = Appointment.nearest_neighbors(:embedding, @embedding.vectors, distance: "euclidean").first(2)
     if @message.save
