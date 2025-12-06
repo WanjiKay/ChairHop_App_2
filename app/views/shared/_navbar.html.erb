@@ -27,7 +27,7 @@
       <div class="header-actions header-actions--right d-flex align-items-center gap-2 mt-2 mt-sm-0">
 
         <% if user_signed_in? %>
-          <%= link_to "Hopps", chats_path, class: "btn btn-info btn-hopps" %>
+          <%= link_to "Hopps", new_chat_path, class: "btn btn-info btn-hopps" %>
 
           <div class="dropdown header-actions-action">
             <a class="avatar-dropdown-toggle d-flex align-items-center" id="navbarDropdown"
@@ -43,6 +43,7 @@
               <%= link_to "Profile", profile_path(edit: 1), class: "dropdown-item" %>
               <%= link_to "Settings", edit_user_registration_path, class: "dropdown-item" %>
               <%= link_to "Chats", chats_path, class: "dropdown-item" %>
+              <%= link_to "Conversations", conversations_path, class: "dropdown-item" %>
               <%= link_to "Log out", destroy_user_session_path,
                           data: { turbo_method: :delete },
                           class: "dropdown-item" %>

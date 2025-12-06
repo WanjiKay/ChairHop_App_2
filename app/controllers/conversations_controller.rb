@@ -7,7 +7,19 @@ class ConversationsController < ApplicationController
       @conversations = Conversation.where(appointment: @appointment)
                                    .where("customer_id = ? OR stylist_id = ?", current_user.id, current_user.id)
     else
+      # Load all conversations where the user is either customer or stylist
+      # Separate into conversations as customer and as stylist
+      @conversations_as_customer = Conversation.where(customer_id: current_user.id)
+                                               .includes(:stylist, :appointment, :conversation_messages)
+                                               .order(updated_at: :desc)
+
+      @conversations_as_stylist = Conversation.where(stylist_id: current_user.id)
+                                              .includes(:customer, :appointment, :conversation_messages)
+                                              .order(updated_at: :desc)
+
       @conversations = Conversation.where("customer_id = ? OR stylist_id = ?", current_user.id, current_user.id)
+                                   .includes(:customer, :stylist, :appointment, :conversation_messages)
+                                   .order(updated_at: :desc)
     end
   end
 

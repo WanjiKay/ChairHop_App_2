@@ -2,7 +2,8 @@ class Message < ApplicationRecord
   belongs_to :chat
   has_many_attached :photos
 
-  validates :content, length: { minimum: 10, maximum: 1000 }, if: -> { role == "user" }
+  validates :content, length: { minimum: 1, maximum: 1000 }, if: -> { role == "user" && photos.blank? }
+  validate :content_or_photos_present, if: -> { role == "user" }
   validates :role, presence: true
   validates :chat, presence: true
   validate :file_size_validation
@@ -12,6 +13,12 @@ class Message < ApplicationRecord
   MAX_USER_MESSAGES = 15
 
   private
+
+  def content_or_photos_present
+    if content.blank? && photos.blank?
+      errors.add(:base, "Message must have either content or photos")
+    end
+  end
 
   def file_size_validation
     photos.each do |photo|
