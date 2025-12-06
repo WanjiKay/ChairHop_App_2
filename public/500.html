@@ -1,66 +1,277 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html class="no-js" lang="en">
+
 <head>
-  <title>We're sorry, but we are still taking out our rollers (500)</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>ChairHop</title>
+
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  <script type="text/javascript" src="//use.typekit.net/cjr2qkp.js"></script>
+  <script type="text/javascript">
+    try {
+      Typekit.load();
+    } catch (e) {}
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
   <style>
-  .rails-default-error-page {
-    background-color: #EFEFEF;
-    color: #2E2F30;
-    text-align: center;
-    font-family: arial, sans-serif;
-    margin: 0;
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    ul,
+    ol,
+    img,
+    .button,
+    .line,
+    .button-group,
+    .triangle-group,
+    .text-label,
+    .form-extra-links-row {
+      margin-top: 20px;
+    }
 
-  .rails-default-error-page div.dialog {
-    width: 95%;
-    max-width: 33em;
-    margin: 4em auto 0;
-  }
+    h1:first-child,
+    h2:first-child,
+    h3:first-child,
+    h4:first-child,
+    p:first-child,
+    ul:first-child,
+    ol:first-child,
+    img:first-child,
+    .button:first-child,
+    .line:first-child {
+      margin-top: 0px;
+    }
 
-  .rails-default-error-page div.dialog > div {
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #BBB;
-    border-top: #B00100 solid 4px;
-    border-top-left-radius: 9px;
-    border-top-right-radius: 9px;
-    background-color: white;
-    padding: 7px 12% 0;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-  }
+    h1:empty,
+    h2:empty,
+    h3:empty,
+    h4:empty,
+    p:empty,
+    ul:empty,
+    ol:empty {
+      margin-top: 0px;
+    }
 
-  .rails-default-error-page h1 {
-    font-size: 100%;
-    color: #730E15;
-    line-height: 1.5em;
-  }
+    li,
+    h1+p,
+    h2+p,
+    h3+p,
+    h4+p,
+    p+p {
+      margin-top: 10px;
+    }
 
-  .rails-default-error-page div.dialog > p {
-    margin: 0 0 1em;
-    padding: 1em;
-    background-color: #F7F7F7;
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #999;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-top-color: #DADADA;
-    color: #666;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-  }
+    li:first-child,
+    h1+p:first-child,
+    h2+p:first-child,
+    h3+p:first-child,
+    h4+p:first-child,
+    p+p:first-child {
+      margin-top: 0px;
+    }
+
+    li:empty,
+    h1+p:empty,
+    h2+p:empty,
+    h3+p:empty,
+    h4+p:empty,
+    p+p:empty {
+      margin-top: 0px;
+    }
+
+    body,
+    html,
+    main {
+      font-family: myriad-pro, 'Myriad Pro', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-style: normal;
+      font-weight: 300;
+      font-size: 100%;
+      font-size: 20px;
+      line-height: 26px;
+      color: #555555;
+    }
+
+    a {
+      color: #377ABD;
+      text-decoration: none;
+    }
+
+    outline:0 a:visited {
+      color: #999999;
+      text-decoration: underline;
+      outline: 0;
+    }
+
+    a:hover {
+      color: #377ABD;
+    }
+
+    a:active {
+      color: #285989;
+    }
+
+    .uppercase {
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    h1,
+    h2,
+    h3,
+    .h1,
+    .h2,
+    .h3,
+    p {
+      font-family: myriad-pro, 'Myriad Pro', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-style: normal;
+      font-weight: 300;
+      margin: 0;
+      -webkit-margin-before: 0;
+      -webkit-margin-after: 0;
+      -webkit-margin-start: 0;
+      -webkit-margin-end: 0;
+    }
+
+    h1 {
+      font-size: 90px;
+      line-height: 90px;
+      padding-top: 3px;
+      padding-bottom: 3px;
+      color: #D9232E;
+    }
+
+    h2 {
+      font-size: 32px;
+      line-height: 40px;
+      font-weight: 400;
+      padding-top: 3px;
+      padding-bottom: 3px;
+    }
+
+    h3 {
+      font-size: 20px;
+      line-height: 25px;
+      padding-top: 3px;
+      padding-bottom: 3px;
+    }
+
+    @media only screen and (min-width: 768px) {
+      h1 {
+        font-size: 130px;
+        line-height: 130px;
+      }
+      h2 {
+        font-size: 40px;
+        line-height: 45px;
+      }
+      h3 {
+        font-size: 22px;
+        line-height: 28px;
+      }
+    }
+
+    @media only screen and (min-width: 980px) {
+      h1 {
+        font-size: 190px;
+        line-height: 190px;
+      }
+      h2 {
+        font-size: 45px;
+        line-height: 50px;
+      }
+    }
+
+    /*//////BASIC LAYOUT//////*/
+
+    header {
+      display: block;
+      padding: 15px;
+      margin: 0 auto;
+      max-width: 1600px;
+    }
+
+    header a {
+      display: inline-block;
+      vertical-align: middle;
+      height: 40px;
+      margin-right: 15px;
+      max-width: 300px;
+    }
+
+    header img {
+      display: block;
+      height: 40px;
+    }
+
+    header span {
+      display: inline-block;
+      vertical-align: middle;
+
+      font-size: 16px;
+      line-height: 1;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #777;
+    }
+
+    section {
+      position: relative;
+      display: block;
+      padding: 15px;
+      margin: 0 auto;
+      max-width: 1600px;
+      text-align: center;
+      height: calc(100vh - 60px);
+    }
+
+    section #content {
+      position: absolute;
+      display: block;
+      width: calc(100% - 30px);
+      height: auto;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .type {
+      display: inline-block;
+
+      font-size: 16px;
+      line-height: 1;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #ccc;
+
+      margin-bottom: 30px
+    }
   </style>
 </head>
 
-<body class="rails-default-error-page">
-  <!-- This file lives in public/500.html -->
-  <div class="dialog">
-    <div>
-      <h1>We're sorry, but this salon is not ready. Lets go back and find one thats open.</h1>
-    </div>
-    <p>If you are the salon owner, lets take a look at your chairs.</p>
-  </div>
+<body>
+  <main>
+    <header>
+      <a href="/">
+        <img src="http://www.microstrategy.com/getmedia/3534c22d-a593-4ecc-bbec-c8c6ac3deab5/microstrategy-logo" />
+      </a>
+      <span class="title">ChairHop</span>
+    </header>
+    <section>
+      <div id="content">
+        <h1>500</h1>
+        <p class="type">We are still taking out our rollers</p>
+        <h2>We're sorry, but this salon is not ready. Lets go back and find one thats open.</h2>
+        <p>If you are the salon owner, lets take a look at your chairs.</p>
+        <p><a href="/">Return home&nbsp;&raquo;</a></p>
+      </div>
+    </section>
+  </main>
 </body>
+
 </html>
