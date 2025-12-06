@@ -35,6 +35,6 @@ class ConversationMessagesController < ApplicationController
   end
 
   def conversation_message_params
-    params.require(:conversation_message).permit(:content)
+    params.require(:conversation_message).permit(:content, photos: [])
   end
 end

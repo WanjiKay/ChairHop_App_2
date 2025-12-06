@@ -55,3 +55,194 @@
     <%= link_to "Edit Profile", edit_profile_path, class: "btn btn-primary" %>
   <% end %>
 </div>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="stylist-profile-page">
+        <!-- Profile Header -->
+        <div class="text-center mb-5">
+          <h1 class="text-primary fw-bold mb-3"><%= current_user.name || "My Profile" %></h1>
+
+          <!-- Circular Profile Picture -->
+          <div class="profile-picture-wrapper mb-4">
+            <% if current_user.avatar.attached? %>
+              <%= image_tag current_user.avatar, class: "profile-picture rounded-circle", alt: current_user.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" %>
+            <% else %>
+              <%= image_tag "profile.png", class: "profile-picture rounded-circle", alt: "Profile", style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F;" %>
+            <% end %>
+          </div>
+
+          <p class="text-muted mb-2">
+            <i class="fas fa-envelope me-2"></i><%= current_user.email %>
+          </p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="booking-details-card mb-4">
+          <h4 class="text-primary fw-bold mb-3">
+            <i class="fas fa-bolt me-2"></i>Quick Actions
+          </h4>
+
+          <div class="row g-3">
+            <!-- My Chats with Hopps -->
+            <div class="col-md-6">
+              <%= link_to chats_path, class: "action-card d-block text-decoration-none" do %>
+                <div class="d-flex align-items-center p-3 border rounded hover-shadow">
+                  <div class="me-3">
+                    <i class="fas fa-robot fa-2x text-primary"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0 text-primary fw-bold">My Chats with Hopps</h6>
+                    <small class="text-muted">AI assistant conversations</small>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <!-- Conversations with Stylists -->
+            <div class="col-md-6">
+              <%= link_to conversations_path, class: "action-card d-block text-decoration-none" do %>
+                <div class="d-flex align-items-center p-3 border rounded hover-shadow">
+                  <div class="me-3">
+                    <i class="fas fa-comments fa-2x text-primary"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0 text-primary fw-bold">Stylist Conversations</h6>
+                    <small class="text-muted">Messages with hair stylists</small>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <!-- My Appointments -->
+            <div class="col-md-6">
+              <%= link_to my_appointments_path, class: "action-card d-block text-decoration-none" do %>
+                <div class="d-flex align-items-center p-3 border rounded hover-shadow">
+                  <div class="me-3">
+                    <i class="fas fa-calendar-alt fa-2x text-primary"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0 text-primary fw-bold">My Appointments</h6>
+                    <small class="text-muted">View and manage your bookings</small>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <!-- Start New Chat -->
+            <div class="col-md-6">
+              <%= link_to new_chat_path, class: "action-card d-block text-decoration-none" do %>
+                <div class="d-flex align-items-center p-3 border rounded hover-shadow">
+                  <div class="me-3">
+                    <i class="fas fa-plus-circle fa-2x text-primary"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0 text-primary fw-bold">Start New Chat</h6>
+                    <small class="text-muted">Chat with Hopps to find stylists</small>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <!-- Browse Appointments -->
+            <div class="col-md-6">
+              <%= link_to root_path, class: "action-card d-block text-decoration-none" do %>
+                <div class="d-flex align-items-center p-3 border rounded hover-shadow">
+                  <div class="me-3">
+                    <i class="fas fa-search fa-2x text-primary"></i>
+                  </div>
+                  <div>
+                    <h6 class="mb-0 text-primary fw-bold">Browse Appointments</h6>
+                    <small class="text-muted">Find available time slots</small>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Information -->
+        <div class="booking-details-card mb-4">
+          <h4 class="text-primary fw-bold mb-3">
+            <i class="fas fa-user me-2"></i>Account Information
+          </h4>
+
+          <div class="detail-row mb-3">
+            <span class="detail-label"><i class="fas fa-user me-2"></i>Name:</span>
+            <span class="detail-value"><%= current_user.name || "Not set" %></span>
+          </div>
+
+          <div class="detail-row mb-3">
+            <span class="detail-label"><i class="fas fa-envelope me-2"></i>Email:</span>
+            <span class="detail-value"><%= current_user.email %></span>
+          </div>
+
+          <div class="detail-row mb-3">
+            <span class="detail-label"><i class="fas fa-calendar me-2"></i>Member Since:</span>
+            <span class="detail-value"><%= current_user.created_at.strftime("%B %d, %Y") %></span>
+          </div>
+
+          <div class="mt-4">
+            <%= link_to edit_profile_path, class: "btn btn-outline-primary" do %>
+              <i class="fas fa-edit me-2"></i>Edit Profile
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="booking-details-card mb-4">
+          <h4 class="text-primary fw-bold mb-3">
+            <i class="fas fa-chart-bar me-2"></i>Activity
+          </h4>
+
+          <div class="row text-center">
+            <div class="col-md-3 mb-3">
+              <div class="p-3 bg-light rounded">
+                <h3 class="text-primary mb-0"><%= current_user.appointments_as_customer.count %></h3>
+                <small class="text-muted">Appointments</small>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="p-3 bg-light rounded">
+                <h3 class="text-primary mb-0"><%= current_user.chats.with_messages.count %></h3>
+                <small class="text-muted">AI Chats</small>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="p-3 bg-light rounded">
+                <h3 class="text-primary mb-0"><%= current_user.conversations_as_customer.count %></h3>
+                <small class="text-muted">Conversations</small>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="p-3 bg-light rounded">
+                <h3 class="text-primary mb-0"><%= current_user.reviews_by_customer.count %></h3>
+                <small class="text-muted">Reviews</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="text-center mt-4">
+          <%= link_to "Back to Home", root_path, class: "btn btn-outline-primary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.hover-shadow {
+  transition: all 0.3s ease;
+}
+
+.hover-shadow:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.action-card:hover .text-primary {
+  opacity: 0.8;
+}
+</style>

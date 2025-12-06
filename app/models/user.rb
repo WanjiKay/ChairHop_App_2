@@ -6,7 +6,7 @@ class User < ApplicationRecord
 
   has_many :appointments_as_customer, class_name: "Appointment", foreign_key: :customer_id, dependent: :nullify
   has_many :appointments_as_stylist, class_name: "Appointment", foreign_key: :stylist_id, dependent: :nullify
-  has_many :chats
+  has_many :chats, foreign_key: :customer_id, dependent: :destroy
   has_many :conversations_as_customer, class_name: "Conversation", foreign_key: :customer_id, dependent: :nullify
   has_many :conversations_as_stylist,  class_name: "Conversation", foreign_key: :stylist_id, dependent: :nullify
 

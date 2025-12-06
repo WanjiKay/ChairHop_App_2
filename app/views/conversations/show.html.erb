@@ -49,7 +49,7 @@
         <div id="new_conversation_message">
           <%= simple_form_for [@conversation, @conversation_message],
               url: conversation_conversation_messages_path(@conversation),
-              html: { data: { controller: "reset-form", action: "turbo:submit-end->reset-form#reset" } } do |f| %>
+              html: { id: "conversationMessageForm" } do |f| %>
             <%= f.error_notification %>
 
             <div class="mb-3">
@@ -57,7 +57,21 @@
                           as: :text,
                           label: false,
                           placeholder: "Type your message here...",
-                          input_html: { rows: 4, class: "form-control" } %>
+                          input_html: { rows: 4, class: "form-control", id: "conversationTextarea" } %>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <label for="conversationPhoto" class="btn btn-outline-secondary">
+                <i class="fas fa-image me-2"></i>Attach Image
+              </label>
+              <%= f.input :photos, as: :file, input_html: { accept: "image/*", class: "d-none", id: "conversationPhoto", multiple: true }, label: false, wrapper: false %>
+            </div>
+
+            <div class="image-preview d-none" id="conversationImagePreview">
+              <img src="" alt="Preview" id="conversationPreviewImg" style="max-width: 200px; max-height: 200px; border-radius: 8px;">
+              <button type="button" class="btn btn-sm btn-danger ms-2" id="removeConversationImage">
+                <i class="fas fa-times"></i> Remove
+              </button>
             </div>
 
             <%= f.button :submit, "Send Message", class: "btn btn-primary" %>
@@ -67,3 +81,63 @@
     </div>
   </div>
 </div>
+
+<script>
+// Auto-scroll to bottom when page loads
+function scrollToBottom() {
+  const messagesContainer = document.querySelector('.message-messages');
+  if (messagesContainer) {
+    // Get all message wrappers
+    const messages = messagesContainer.querySelectorAll('.message-wrapper');
+    if (messages.length > 0) {
+      // Scroll the last message into view
+      const lastMessage = messages[messages.length - 1];
+      lastMessage.scrollIntoView({ behavior: 'instant', block: 'end' });
+    } else {
+      // Fallback to scrollTop if no messages
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  }
+}
+
+// Run on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', scrollToBottom);
+
+// Run on full page load (after images)
+window.addEventListener('load', scrollToBottom);
+
+// Run after a short delay as additional fallback
+setTimeout(scrollToBottom, 200);
+
+// Also scroll when new messages arrive via Turbo Stream
+document.addEventListener('turbo:frame-load', scrollToBottom);
+
+// Image preview for conversation messages
+document.addEventListener('DOMContentLoaded', function() {
+  const photoInput = document.getElementById('conversationPhoto');
+  const imagePreview = document.getElementById('conversationImagePreview');
+  const previewImg = document.getElementById('conversationPreviewImg');
+  const removeImage = document.getElementById('removeConversationImage');
+
+  if (photoInput) {
+    photoInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          imagePreview.classList.remove('d-none');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  if (removeImage) {
+    removeImage.addEventListener('click', function() {
+      photoInput.value = '';
+      imagePreview.classList.add('d-none');
+    });
+  }
+});
+</script>

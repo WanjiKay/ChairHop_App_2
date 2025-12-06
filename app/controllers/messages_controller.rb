@@ -11,18 +11,70 @@ class MessagesController < ApplicationController
     @message = Message.new(message_params)
     @message.chat = @chat
     @message.role = "user"
-    @embedding = RubyLLM.embed(params[:message][:content])
-    @appointments = Appointment.nearest_neighbors(:embedding, @embedding.vectors, distance: "euclidean").first(2)
-    if @message.save
-      if @message.photos.attached?
-        process_file(@message.photos.first)
-      else
-        send_question
+
+    # Handle embedding with error handling - only for general chats without appointments
+    if @chat.appointment.nil?
+      begin
+        @embedding = RubyLLM.embed(params[:message][:content])
+        @appointments = Appointment.nearest_neighbors(:embedding, @embedding.vectors, distance: "euclidean").first(2)
+      rescue RubyLLM::RateLimitError => e
+        Rails.logger.warn("RubyLLM rate limit exceeded: #{e.message}")
+        @appointments = Appointment.where(booked: false).order(created_at: :desc).limit(2)
+      rescue StandardError => e
+        Rails.logger.error("Embedding error: #{e.message}")
+        @appointments = Appointment.where(booked: false).order(created_at: :desc).limit(2)
       end
-      Message.create(role: "assistant", content: @response.content, chat: @chat)
-      book_appointment(@message.content)
-      redirect_to chat_path(@chat)
     else
+      @appointments = []
+    end
+
+    if @message.save
+      begin
+        if @message.photos.attached?
+          process_file(@message.photos.first)
+        else
+          send_question
+        end
+        Message.create(role: "assistant", content: @response.content, chat: @chat)
+        book_appointment(@message.content)
+        redirect_to chat_path(@chat)
+      rescue StandardError => e
+        Rails.logger.error("AI response error: #{e.message}")
+        Rails.logger.error(e.backtrace.join("\n"))
+        @message.destroy # Remove the saved user message since we couldn't get a response
+        @message = Message.new # Create a fresh message instance for the form
+
+        # Load development mode tokens if needed
+        if Rails.env.development? && @chat.model_id.present?
+          @input_tokens = @chat.messages.pluck(:input_tokens).compact.sum
+          @output_tokens = @chat.messages.pluck(:output_tokens).compact.sum
+          begin
+            @context_window = RubyLLM.models.find(@chat.model_id).context_window
+          rescue
+            @context_window = nil
+          end
+        end
+
+        flash.now[:alert] = "There was an error processing your message: #{e.message}. Please try again."
+        render "chats/show", status: :unprocessable_entity
+      end
+    else
+      # Log validation errors for debugging
+      Rails.logger.error("Message validation failed: #{@message.errors.full_messages.join(', ')}")
+
+      flash.now[:alert] = @message.errors.full_messages.join(", ")
+
+      # Load development mode tokens if needed
+      if Rails.env.development? && @chat.model_id.present?
+        @input_tokens = @chat.messages.pluck(:input_tokens).compact.sum
+        @output_tokens = @chat.messages.pluck(:output_tokens).compact.sum
+        begin
+          @context_window = RubyLLM.models.find(@chat.model_id).context_window
+        rescue
+          @context_window = nil
+        end
+      end
+
       render "chats/show", status: :unprocessable_entity
     end
   end

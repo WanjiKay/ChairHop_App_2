@@ -1,11 +1,13 @@
 class ProfilesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_user
 
   # GET /profile
   def show
-    # You can use this flag in your view if you want read-only vs edit modes
-    @editing = params[:edit].present?
+    @user = current_user
+  end
+
+  def edit
+    @user = current_user
   end
 
   # GET /profile/edit
@@ -17,29 +19,17 @@ class ProfilesController < ApplicationController
 
   # PATCH /profile
   def update
+    @user = current_user
     if @user.update(user_params)
-      redirect_to edit_profile_path, notice: "Profile updated."
+      redirect_to profile_path, notice: "Profile updated successfully."
     else
-      @editing = true
-      render :show, status: :unprocessable_entity
+      render :edit, status: :unprocessable_entity
     end
   end
 
   private
 
-  def set_user
-    # Always use the currently logged-in user
-    @user = current_user
-  end
-
   def user_params
-    # Adjust these fields based on what your User model actually has
-    params.require(:user).permit(
-      :name,
-      :location,
-      :username,
-      :about,
-      :avatar
-    )
+    params.require(:user).permit(:name, :email, :avatar)
   end
 end
