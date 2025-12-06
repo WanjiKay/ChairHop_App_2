@@ -202,9 +202,20 @@ end
   end
 
   def complete
-    if @appointment.stylist == current_user && @appointment.booked?
+    # Check if user is either the customer or stylist
+    is_customer = @appointment.customer == current_user
+    is_stylist = @appointment.stylist == current_user
+
+    # Check if appointment time has passed
+    time_has_passed = @appointment.time < Time.current
+
+    if (is_customer || is_stylist) && @appointment.booked? && time_has_passed
       @appointment.update(status: :completed)
       redirect_back fallback_location: root_path, notice: "Appointment marked as completed!"
+    elsif !time_has_passed
+      redirect_back fallback_location: root_path, alert: "This appointment hasn't occurred yet."
+    elsif !@appointment.booked?
+      redirect_back fallback_location: root_path, alert: "This appointment is not booked."
     else
       redirect_back fallback_location: root_path, alert: "You don't have permission to complete this appointment."
     end
