@@ -1,46 +1,28 @@
 <nav id="mobile-navbar" class="navbar navbar-expand-sm navbar-light navbar-lewagon sticky-top">
   <div class="container-fluid">
 
-    <!-- Brand / Site Title -->
+    <!-- Brand -->
     <%= link_to root_path, id: "site-title", class: "navbar-brand" do %>
       ChairHop
     <% end %>
 
-    <!-- Mobile toggler (hamburger) -->
-    <button class="navbar-toggler ms-auto" type="button" aria-label="Toggle navigation">
+    <!-- Mobile Hamburger -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-supported"
+            aria-controls="navbar-supported" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Collapsible menu -->
-    <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-      <% if user_signed_in? %>
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <%= link_to "Profile", edit_profile_path, class: "nav-link" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to "Settings", edit_user_registration_path, class: "nav-link" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to "Log out",
-                        destroy_user_session_path,
-                        data: { turbo_method: :delete },
-                        class: "nav-link" %>
-          </li>
-        </ul>
-      <% else %>
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <%= link_to "Book Now", new_user_session_path, class: "nav-link" %>
-          </li>
-        </ul>
-      <% end %>
-      <div class="header-actions header-actions--right d-flex align-items-center gap-2 mt-2 mt-sm-0">
+    <!-- Collapsible Menu -->
+    <div class="collapse navbar-collapse" id="navbar-supported">
+
+      <!-- Push items to the right -->
+      <div class="ms-auto d-flex align-items-center gap-2">
 
         <% if user_signed_in? %>
+
           <%= link_to "Hopps", new_chat_path, class: "btn btn-info btn-hopps" %>
 
-          <div class="dropdown header-actions-action">
+          <div class="dropdown">
             <a class="avatar-dropdown-toggle d-flex align-items-center" id="navbarDropdown"
                href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <% if current_user&.avatar&.attached? %>
@@ -62,11 +44,15 @@
           </div>
 
         <% else %>
+
           <%= link_to "Hopps", "#", class: "btn btn-info btn-hopps disabled", aria_disabled: true %>
           <%= link_to "Book Now", new_user_session_path, class: "btn btn-primary btn-book" %>
+
         <% end %>
 
-      </div>
-    </div>
+      </div> <!-- end right-container -->
+
+    </div> <!-- end collapse -->
+
   </div>
 </nav>
