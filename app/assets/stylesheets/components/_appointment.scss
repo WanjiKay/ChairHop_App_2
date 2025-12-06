@@ -40,3 +40,45 @@
     font-weight: 700 !important;
   }
 }
+
+// Mobile
+
+@media (max-width: 480px) {
+  .appointment-details-page {
+    padding: 1rem !important;
+
+    .appointment-card {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 14px;
+
+      img {
+        height: 180px; // smaller for phones
+        width: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+      }
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .badge {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.75rem;
+    }
+  }
+
+  .service-option,
+  .addon-option {
+    margin: 0.75rem 0;
+
+    .form-check-label {
+      font-size: 0.95rem !important;
+    }
+  }
+}
