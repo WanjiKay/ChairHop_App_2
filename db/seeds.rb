@@ -156,7 +156,7 @@ stylists = [
 ]
 
 stylist_avatar = ["https://images.unsplash.com/photo-1676340619040-8688de9fd331?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D","https://images.unsplash.com/photo-1639747280804-dd2d6b3d88ac?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D","https://images.unsplash.com/photo-1650050594038-55b4c4a86cc2?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D","https://images.unsplash.com/photo-1654110455429-cf322b40a906?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"]
-
+puts "Creating stylist users with specialized profiles..."
 i=0
 stylist_salon_map = {}
 stylist_users = stylists.map do |s|
@@ -176,7 +176,7 @@ stylist_users = stylists.map do |s|
   i = i + 1
   stylist
   end
-
+  puts "creating customer users..."
 # -----------------------------------------
 # CUSTOMERS (NO ABOUT FIELD)
 # -----------------------------------------
@@ -230,45 +230,40 @@ salon_specific_images = {
 
 salon_names = salon_descriptions.keys
 
-# Create 3 appointments per salon with salon-specific images
-# Track appointments created to avoid rate limiting (15 per 60s)
 appointments_created = 0
 
 salon_names.each do |salon|
   salon_images = salon_specific_images[salon]
 
-  # Create 3 appointments: 1 morning, 2 afternoon
-  appointment_times = []
+  # 1 morning appointment, 2 afternoon appointments
+  time_slots = [
+    { label: "morning",   hour_range: (7..10) },
+    { label: "afternoon", hour_range: (12..22) },
+    { label: "afternoon", hour_range: (12..22) }
+  ]
 
-  # 1 morning appointment (6 AM - 12 PM)
-  appointment_times << { period: 'morning', hour_range: (7..11) }
+  puts "Creating appointments for #{salon}..."
 
-  # 2 afternoon appointments (1 PM - 9 PM)
-  2.times { appointment_times << { period: 'afternoon', hour_range: (13..20) } }
+  time_slots.each_with_index do |slot, idx|
+    # Random hour from range
+    hour = rand(slot[:hour_range])
 
-  appointment_times.each_with_index do |time_slot, idx|
-    # 50/50 chance of today or tomorrow
-    day_offset = [0, 1].sample
-    base_date = Time.zone.today + day_offset
+    # Generate time for TODAY
+    appointment_time = Time.zone.local(
+      Time.zone.today.year,
+      Time.zone.today.month,
+      Time.zone.today.day,
+      hour,
+      0
+    )
 
-    loop do
-      appointment_time = Time.zone.local(
-        base_date.year,
-        base_date.month,
-        base_date.day,
-        rand(time_slot[:hour_range]),         # Use specific hour range
-        [0, 15, 30, 45].sample                # quarter hours
-      )
+    # If time already passed → push to tomorrow
+    appointment_time += 1.day if appointment_time <= Time.current
 
-      # Make sure appointment is in the future
-      if appointment_time > Time.current
-        @appointment_time = appointment_time
-        break
-      end
-    end
+    puts "Creating #{slot[:label]} appointment at #{appointment_time}..."
 
     appointment = Appointment.new(
-      time: @appointment_time,
+      time: appointment_time,
       salon: salon,
       location: salon_locations[salon],
       booked: false,
@@ -281,8 +276,8 @@ salon_names.each do |salon|
     file = URI.parse(salon_images[idx % salon_images.length]).open
     appointment.image.attach(io: file, filename: "nes.png", content_type: "image/png")
     appointment.save!
-
-    appointments_created += 1
   end
 end
-puts "Seed complete: #{stylist_users.count} stylists, #{customer_users.count} customers, and #{appointments_created} diverse appointments created."
+
+
+puts "Seed complete: #{appointments_created} appointments created."

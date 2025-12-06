@@ -1,104 +1,112 @@
 <div class="chat-show-page">
-  <div class="container-fluid">
-    <div class="row">
-
-      <!-- Sidebar -->
-      <div class="col-lg-3 col-md-4 d-none d-md-block chat-sidebar">
-        <h4>Conversations</h4>
-        <%= link_to chats_path, class: "btn btn-primary btn-sm mb-3" do %>
-          <i class="fas fa-plus"></i> New Chat
-        <% end %>
-
-        <div class="conversations-list">
-          <% if defined?(@chats) && @chats.present? %>
-            <% @chats.each do |chat| %>
-              <%= link_to chat_path(chat), class: "conversation-item #{@chat.id == chat.id ? 'active' : ''}" do %>
-                <div class="conversation-avatar">
-
-                </div>
-                <div class="conversation-info">
-                  <h6 class="conversation-title">
-                    <%= chat.title.present? ? truncate(chat.title, length: 25) : "Hopps" %>
-                  </h6>
-                  <p class="conversation-preview">
-                    <% if chat.messages.any? %>
-                      <%= truncate(chat.messages.last.content, length: 35) %>
-                    <% else %>
-                      New conversation
-                    <% end %>
-                  </p>
-                </div>
-              <% end %>
-            <% end %>
+  <div class="container">
+    <!-- Flash Messages -->
+    <% if flash[:alert] || flash[:notice] %>
+      <div class="row">
+        <div class="col-12">
+          <% if flash[:alert] %>
+            <div class="alert alert-warning alert-dismissible fade show m-2" role="alert">
+              <%= flash[:alert] %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% end %>
+          <% if flash[:notice] %>
+            <div class="alert alert-info alert-dismissible fade show m-2" role="alert">
+              <%= flash[:notice] %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
           <% end %>
         </div>
       </div>
+    <% end %>
+
+    <div class="row justify-content-center">
 
       <!-- Main Chat Area -->
-      <div class="col-lg-9 col-md-8 chat-main">
+      <div class="col-12 col-xl-10 chat-main">
         <div class="chat-header d-flex align-items-center mb-3">
-          <button class="btn btn-link d-md-none me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#chatSidebar">
-            <i class="fas fa-bars"></i>
-          </button>
-
-          <div class="ms-3">
+          <%= link_to chats_path, class: "btn btn-link me-2", title: "Back to All Chats" do %>
+            <i class="fas fa-arrow-left"></i>
+          <% end %>
+          <%= image_tag "icons/favicon-96x96.png", class: "chat-avatar-header rounded-circle", alt: "Hopps" %>
+          <div class="ms-3 flex-grow-1">
             <h5 class="mb-0"><%= @chat.title.present? ? @chat.title : "Hopps" %></h5>
-            <small class="text-muted">Online • Ready to help</small>
+            <% if @chat.appointment.present? %>
+              <small class="text-muted d-block">
+                <i class="fas fa-calendar me-1"></i>
+                <%= @chat.appointment.salon %> - <%= @chat.appointment.time.strftime("%b %d, %Y at %I:%M %p") if @chat.appointment.time.present? %>
+              </small>
+              <%= link_to appointment_path(@chat.appointment), class: "badge bg-primary text-decoration-none mt-1", target: "_blank" do %>
+                <i class="fas fa-external-link-alt me-1"></i> View Appointment
+              <% end %>
+            <% else %>
+              <small class="text-muted">Online • Ready to help</small>
+            <% end %>
           </div>
-          <%= link_to chats_path, class: "btn btn-outline-primary btn-sm ms-auto" do %>
+          <%= link_to new_chat_path, class: "btn btn-outline-primary btn-sm ms-auto" do %>
             <i class="fas fa-plus"></i> New Chat
           <% end %>
         </div>
 
-        <div class="messages-container" id="messagesContainer">
+        <div class="message-messages" id="messagesContainer">
           <% if @chat.messages.any? %>
             <% @chat.messages.each do |message| %>
               <% if message.role == 'user' %>
-                <div class="message message-user">
-                  <div class="message-content">
-                    <%= simple_format(message.content) %>
+                <div class="message-wrapper user-message">
+                  <div class="message-bubble">
+                    <strong>You</strong>
+                    <% if message.content.present? %>
+                      <div class="mb-0"><%= markdown_to_html(message.content).html_safe %></div>
+                    <% end %>
+                    <% if message.photos.attached? %>
+                      <div class="message-images mt-2">
+                        <% message.photos.each do |photo| %>
+                          <%= link_to photo.url, target: "_blank" do %>
+                            <%= image_tag photo, class: "message-image", style: "max-width: 300px; max-height: 300px; border-radius: 8px; display: block; margin-bottom: 0.5rem;" %>
+                          <% end %>
+                        <% end %>
+                      </div>
+                    <% end %>
                   </div>
-                  <div class="message-time">
-                    <%= message.created_at.strftime("%I:%M %p") %>
-                  </div>
+                  <% if current_user.avatar.attached? %>
+                    <%= image_tag current_user.avatar, class: "customer-avatar rounded-circle" %>
+                  <% else %>
+                    <%= image_tag "profile.png", class: "customer-avatar rounded-circle", alt: "User" %>
+                  <% end %>
                 </div>
               <% else %>
-                <div class="message message-assistant">
-                  <div class="message-avatar">
-                  </div>
+                <div class="message-wrapper assistant-message">
+                  <%= image_tag "icons/favicon-96x96.png", class: "assistant-avatar rounded-circle", alt: "Hopps" %>
                   <div class="message-bubble">
-                    <div class="message-content">
-                      <%= simple_format(message.content) %>
-                    </div>
-                    <div class="message-time">
-                      <%= message.created_at.strftime("%I:%M %p") %>
-                    </div>
+                    <strong>Hopps</strong>
+                    <div class="mb-0"><%= markdown_to_html(message.content).html_safe %></div>
                   </div>
                 </div>
               <% end %>
             <% end %>
           <% else %>
-            <div class="empty-chat-state text-center py-5">
-              <i class="fas fa-comments fa-4x mb-3"></i>
-              <h4>Start a conversation</h4>
-              <p class="text-muted">Send a message or upload an image to begin</p>
+            <div class="empty-state">
+              <div class="empty-state-icon">
+                <i class="fas fa-comments fa-4x"></i>
+              </div>
+              <h3>Start a conversation</h3>
+              <p>Send a message or upload an image to begin</p>
             </div>
           <% end %>
         </div>
 
         <!-- Message Input -->
         <div class="message-input-container mt-3">
-          <%= simple_form_for [@chat, @message], class: "message-input-form", id: "messageForm" do |f| %>
+          <%= simple_form_for [@chat, @message], html: { class: "message-input-form", id: "messageForm" } do |f| %>
             <div class="input-wrapper d-flex align-items-center gap-2">
               <label for="messagePhoto" class="btn btn-link upload-btn">
                 <i class="fas fa-image"></i>
               </label>
-              <%= f.file_field :photo, accept: "image/*", class: "d-none", id: "messagePhoto" %>
-              <%= f.text_area :content, class: "form-control message-input flex-grow-1",
-                               placeholder: "Type your message...", rows: 1, id: "messageTextarea" %>
-              <%= f.submit class: "btn btn-primary send-btn" do %>
+              <%= f.input :photos, as: :file, input_html: { accept: "image/*", class: "d-none", id: "messagePhoto" }, label: false, wrapper: false %>
+              <%= f.input :content, as: :text, input_html: { class: "form-control message-input flex-grow-1", placeholder: "Type your message...", rows: 1, id: "messageTextarea" }, label: false, wrapper: false %>
+              <button type="submit" class="btn btn-primary send-btn">
                 <i class="fas fa-paper-plane"></i>
-              <% end %>
+              </button>
             </div>
 
             <div class="image-preview d-none" id="imagePreview">
@@ -114,49 +122,34 @@
   </div>
 </div>
 
-<!-- Sidebar for Mobile -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="chatSidebar">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title">Conversations</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-  </div>
-  <div class="offcanvas-body">
-    <%= link_to chats_path, class: "btn btn-primary w-100 mb-3" do %>
-      <i class="fas fa-plus"></i> New Chat
-    <% end %>
-
-    <div class="conversations-list">
-      <% if defined?(@chats) && @chats.present? %>
-        <% @chats.each do |chat| %>
-          <%= link_to chat_path(chat), class: "conversation-item #{@chat.id == chat.id ? 'active' : ''}" do %>
-            <div class="conversation-avatar">
-            </div>
-            <div class="conversation-info">
-              <h6 class="conversation-title">
-                <%= chat.title.present? ? truncate(chat.title, length: 25) : "Hopps" %>
-              </h6>
-              <p class="conversation-preview">
-                <% if chat.messages.any? %>
-                  <%= truncate(chat.messages.last.content, length: 35) %>
-                <% else %>
-                  New conversation
-                <% end %>
-              </p>
-            </div>
-          <% end %>
-        <% end %>
-      <% end %>
-    </div>
-  </div>
-</div>
-
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Auto-scroll to bottom of messages
+// Auto-scroll to bottom when page loads
+function scrollToBottom() {
   const messagesContainer = document.getElementById('messagesContainer');
   if (messagesContainer) {
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    // Get all message wrappers
+    const messages = messagesContainer.querySelectorAll('.message-wrapper');
+    if (messages.length > 0) {
+      // Scroll the last message into view
+      const lastMessage = messages[messages.length - 1];
+      lastMessage.scrollIntoView({ behavior: 'instant', block: 'end' });
+    } else {
+      // Fallback to scrollTop if no messages
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
   }
+}
+
+// Run on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', scrollToBottom);
+
+// Run on full page load (after images)
+window.addEventListener('load', scrollToBottom);
+
+// Run after a short delay as additional fallback
+setTimeout(scrollToBottom, 200);
+
+document.addEventListener('DOMContentLoaded', function() {
 
   // Auto-resize textarea
   const textarea = document.getElementById('messageTextarea');

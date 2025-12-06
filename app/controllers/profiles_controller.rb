@@ -1,24 +1,26 @@
 class ProfilesController < ApplicationController
+  before_action :authenticate_user!
 
   def show
-    @user = User.first_or_create!(
-      name: "Jane Doe",
-      location: "Brooklyn, NY",
-      username: "janedoe",
-      about: "Plant parent, weekend woodworker, and iced coffee enthusiast."
-    )
-    @editing = params[:edit].present?
+    @user = current_user
+  end
+
+  def edit
+    @user = current_user
   end
 
   def update
-    @user = User.first
-    permitted = params.require(:user).permit(:name, :location, :userame, :about, :password_confirmation)
-    permitted.except!(:password, :password_confirmation)
-    if permitted[:password].blank? && @user.update(permitted)
-        redirect_to profiile_path, notice: "Profile updated."
+    @user = current_user
+    if @user.update(user_params)
+      redirect_to profile_path, notice: "Profile updated successfully."
     else
-      @editing = true
-      render :show, status: :unprocessable_entity
+      render :edit, status: :unprocessable_entity
     end
+  end
+
+  private
+
+  def user_params
+    params.require(:user).permit(:name, :email, :avatar)
   end
 end

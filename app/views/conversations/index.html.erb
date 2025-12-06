@@ -1,0 +1,139 @@
+<div class="chat-index-page">
+  <div class="container py-4">
+
+    <!-- Header -->
+    <div class="text-center mb-4">
+      <h1>My Conversations with Stylists</h1>
+      <p class="text-muted">View all your messages with hair stylists</p>
+    </div>
+
+    <!-- Back Button -->
+    <div class="text-center mb-4">
+      <%= link_to profile_path, class: "btn btn-outline-primary" do %>
+        <i class="fas fa-arrow-left me-2"></i> Back to Profile
+      <% end %>
+    </div>
+
+    <!-- Conversations as Customer Section -->
+    <div class="mb-5">
+      <h2 class="message-list-title">
+        <i class="fas fa-user me-2"></i>Conversations with My Stylists
+      </h2>
+
+      <% if @conversations_as_customer.any? %>
+        <div class="message-list">
+          <% @conversations_as_customer.each do |conversation| %>
+            <%= link_to conversation_path(conversation), class: "message-item text-decoration-none" do %>
+              <div class="message-avatar">
+                <% if conversation.stylist.avatar.attached? %>
+                  <%= image_tag conversation.stylist.avatar, class: "ai-avatar-img rounded-circle", alt: conversation.stylist.name %>
+                <% else %>
+                  <%= image_tag "profile.png", class: "ai-avatar-img rounded-circle", alt: conversation.stylist.name %>
+                <% end %>
+              </div>
+              <div class="message-content">
+                <div class="message-header">
+                  <h3 class="message-title">
+                    <%= conversation.stylist.name %>
+                  </h3>
+                  <span class="message-time">
+                    <%= time_ago_in_words(conversation.updated_at) %> ago
+                  </span>
+                </div>
+                <p class="message-preview">
+                  <% if conversation.conversation_messages.any? %>
+                    <%= truncate(conversation.conversation_messages.last.content, length: 100) %>
+                  <% else %>
+                    No messages yet
+                  <% end %>
+                </p>
+                <div class="message-meta">
+                  <small>
+                    <i class="fas fa-calendar me-1"></i>
+                    <%= conversation.appointment.salon %> - <%= conversation.appointment.time.strftime("%b %d, %Y") if conversation.appointment.time.present? %>
+                  </small>
+                  <small class="ms-3">
+                    <i class="fas fa-message me-1"></i>
+                    <%= pluralize(conversation.conversation_messages.count, 'message') %>
+                  </small>
+                </div>
+              </div>
+              <div class="message-badge">
+                <%= link_to appointment_path(conversation.appointment), class: "badge bg-primary text-decoration-none", onclick: "event.stopPropagation();" do %>
+                  View Appointment
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fas fa-comments fa-4x"></i>
+          </div>
+          <h3>No Conversations Yet</h3>
+          <p>When you message a stylist about an appointment, the conversation will appear here</p>
+          <%= link_to root_path, class: "btn btn-primary mt-3" do %>
+            <i class="fas fa-search me-2"></i> Browse Appointments
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Conversations as Stylist Section -->
+    <% if @conversations_as_stylist.any? %>
+      <div class="mb-5">
+        <h2 class="message-list-title">
+          <i class="fas fa-scissors me-2"></i>Conversations with My Clients
+        </h2>
+
+        <div class="message-list">
+          <% @conversations_as_stylist.each do |conversation| %>
+            <%= link_to conversation_path(conversation), class: "message-item text-decoration-none" do %>
+              <div class="message-avatar">
+                <% if conversation.customer.avatar.attached? %>
+                  <%= image_tag conversation.customer.avatar, class: "ai-avatar-img rounded-circle", alt: conversation.customer.name %>
+                <% else %>
+                  <%= image_tag "profile.png", class: "ai-avatar-img rounded-circle", alt: conversation.customer.name %>
+                <% end %>
+              </div>
+              <div class="message-content">
+                <div class="message-header">
+                  <h3 class="message-title">
+                    <%= conversation.customer.name %>
+                  </h3>
+                  <span class="message-time">
+                    <%= time_ago_in_words(conversation.updated_at) %> ago
+                  </span>
+                </div>
+                <p class="message-preview">
+                  <% if conversation.conversation_messages.any? %>
+                    <%= truncate(conversation.conversation_messages.last.content, length: 100) %>
+                  <% else %>
+                    No messages yet
+                  <% end %>
+                </p>
+                <div class="message-meta">
+                  <small>
+                    <i class="fas fa-calendar me-1"></i>
+                    <%= conversation.appointment.salon %> - <%= conversation.appointment.time.strftime("%b %d, %Y") if conversation.appointment.time.present? %>
+                  </small>
+                  <small class="ms-3">
+                    <i class="fas fa-message me-1"></i>
+                    <%= pluralize(conversation.conversation_messages.count, 'message') %>
+                  </small>
+                </div>
+              </div>
+              <div class="message-badge">
+                <%= link_to appointment_path(conversation.appointment), class: "badge bg-primary text-decoration-none", onclick: "event.stopPropagation();" do %>
+                  View Appointment
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+  </div>
+</div>
