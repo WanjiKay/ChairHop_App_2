@@ -10,13 +10,11 @@
   top: 0;
   z-index: 9999;
   width: 100%;
+  margin: 0; // kill any top gap
 }
 
-// You can delete the old &.sticky-top block entirely,
-// or leave this empty if you want to keep the selector:
-.navbar-lewagon.sticky-top {
-  // Using Bootstrap's sticky-top behavior + our base styles above.
-}
+// Using Bootstrap's sticky-top behavior + our base styles above.
+.navbar-lewagon.sticky-top { }
 
 .navbar-logo {
   width: 42px;
@@ -133,7 +131,53 @@
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
 }
 
+/* ----- Brand + burger layout ----- */
 
+#mobile-navbar .container-fluid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+}
+
+/* Burger button */
+
+.navbar-toggler {
+  border: none;
+  background: transparent;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Custom 3-line burger icon */
+.navbar-toggler-icon {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: $color-cream;
+  position: relative;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 24px;
+  height: 2px;
+  background-color: $color-cream;
+}
+
+.navbar-toggler-icon::before {
+  top: -6px;
+}
+
+.navbar-toggler-icon::after {
+  top: 6px;
+}
+
+/* ----- Collapse behavior (mobile vs desktop) ----- */
+
+/* Mobile: menu hidden until .show is added */
 @media (max-width: 768px) {
   .navbar-lewagon {
     left: 0;
@@ -145,7 +189,6 @@
     padding: 0.5rem 1rem;
   }
 
-
   .navbar-lewagon .nav-link {
     margin: 0 0.25rem;
     font-size: 13px;
@@ -155,4 +198,44 @@
     padding: 5px 10px;
     font-size: 13px;
   }
+
+  .collapse.navbar-collapse {
+    display: none;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .collapse.navbar-collapse.show {
+    display: block;
+    background: $primary;
+  }
+
+  .collapse.navbar-collapse .nav-link {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: $color-cream;
+  }
+}
+
+/* Desktop & tablet: show links inline, hide burger */
+@media (min-width: 769px) {
+  .navbar-toggler {
+    display: none;
+  }
+
+  .collapse.navbar-collapse {
+    display: flex !important;
+    justify-content: flex-end;
+  }
+
+  .collapse.navbar-collapse .nav-link {
+    color: $color-cream;
+    margin-left: 1rem;
+  }
+}
+
+/* Global safety for top gap */
+body {
+  margin: 0;
+  padding: 0;
 }

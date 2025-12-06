@@ -13,7 +13,6 @@
 ActiveRecord::Schema[7.1].define(version: 2025_12_03_001119) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "vector"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -64,7 +63,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_03_001119) do
     t.text "services"
     t.string "salon"
     t.string "selected_service"
-    t.vector "embedding", limit: 1536
+    t.jsonb "embedding", default: [], null: false
     t.integer "status", default: 0, null: false
     t.index ["customer_id"], name: "index_appointments_on_customer_id"
     t.index ["stylist_id"], name: "index_appointments_on_stylist_id"
