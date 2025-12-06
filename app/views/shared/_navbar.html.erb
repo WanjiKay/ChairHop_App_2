@@ -2,28 +2,39 @@
   <div class="container-fluid">
 
     <!-- Brand / Site Title -->
-    <div class="header-title-nav-wrapper d-flex align-items-center">
-      <div class="header-title" data-animation-role="header-element">
-        <div class="header-title-text">
-          <%= link_to root_path, id: "site-title", class: "navbar-brand", data: { animation_role: "header-element" } do %>
-            ChairHop
-          <% end %>
-        </div>
-      </div>
+    <%= link_to root_path, id: "site-title", class: "navbar-brand" do %>
+      ChairHop
+    <% end %>
 
-      <!-- Mobile toggler (hamburger) -->
-      <button class="navbar-toggler ms-auto" type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    </div>
+    <!-- Mobile toggler (hamburger) -->
+    <button class="navbar-toggler ms-auto" type="button" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <!-- Collapsible content -->
+    <!-- Collapsible menu -->
     <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+      <% if user_signed_in? %>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <%= link_to "Profile", edit_profile_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Settings", edit_user_registration_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Log out",
+                        destroy_user_session_path,
+                        data: { turbo_method: :delete },
+                        class: "nav-link" %>
+          </li>
+        </ul>
+      <% else %>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <%= link_to "Book Now", new_user_session_path, class: "nav-link" %>
+          </li>
+        </ul>
+      <% end %>
       <div class="header-actions header-actions--right d-flex align-items-center gap-2 mt-2 mt-sm-0">
 
         <% if user_signed_in? %>
