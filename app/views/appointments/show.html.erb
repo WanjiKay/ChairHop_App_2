@@ -75,9 +75,8 @@
                     class: "btn btn-danger" %>
             <% end %>
 
-            <%# Only stylists can mark appointments as completed %>
-            <%# Customers cannot complete appointments: || @appointment.customer == current_user %>
-            <% if @appointment.stylist == current_user && @appointment.booked? %>
+            <%# Both customers and stylists can mark appointments as completed after the time has passed %>
+            <% if (@appointment.stylist == current_user || @appointment.customer == current_user) && @appointment.booked? && @appointment.time < Time.current %>
               <%= button_to "Mark as Completed",
                     complete_appointment_path(@appointment),
                     method: :patch,
