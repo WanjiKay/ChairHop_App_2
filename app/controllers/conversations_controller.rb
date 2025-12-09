@@ -52,7 +52,7 @@ class ConversationsController < ApplicationController
     @conversation = Conversation.find_by(appointment: @appointment)
 
     if @conversation
-      redirect_to @conversation
+      redirect_to conversation_path(@conversation)
     else
       @conversation = Conversation.new
       @conversation.appointment = @appointment
@@ -61,7 +61,7 @@ class ConversationsController < ApplicationController
       @conversation.stylist = @appointment.stylist
 
       if @conversation.save
-        redirect_to @conversation
+        redirect_to conversation_path(@conversation)
       else
         flash.now[:alert] = "Failed to create conversation."
         render :new, status: :unprocessable_entity

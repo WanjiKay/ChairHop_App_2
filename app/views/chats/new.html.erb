@@ -38,9 +38,18 @@
               </div>
 
               <p class="upload-text">Click to upload or drag and drop</p>
-              <p class="upload-subtext">PNG, JPG, JPEG up to 20mb</p>
+              <p class="upload-subtext">PNG, JPG, JPEG up to 10mb</p>
 
-              <%= f.input :photos, as: :file, input_html: { multiple: true } %>
+              <%= f.input :photos,
+                          as: :file,
+                          input_html: {
+                            multiple: false,
+                            accept: 'image/*',
+                            class: 'upload-input',
+                            id: 'chatPhotoInput'
+                          },
+                          label: false,
+                          wrapper: false %>
 
               <div class="preview-container d-none" id="previewContainer">
                 <img src="" alt="Preview" id="previewImage" class="preview-image">
@@ -106,4 +115,73 @@
 
   </div>
 </div>
-<%console%>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const uploadArea = document.getElementById('uploadArea');
+  const fileInput = document.getElementById('chatPhotoInput');
+  const previewContainer = document.getElementById('previewContainer');
+  const previewImage = document.getElementById('previewImage');
+  const removePreview = document.getElementById('removePreview');
+
+  // Click to upload
+  if (uploadArea && fileInput) {
+    uploadArea.addEventListener('click', function(e) {
+      if (e.target !== removePreview && !removePreview.contains(e.target)) {
+        fileInput.click();
+      }
+    });
+
+    // File input change
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImage.src = e.target.result;
+          previewContainer.classList.remove('d-none');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Remove preview
+    if (removePreview) {
+      removePreview.addEventListener('click', function(e) {
+        e.stopPropagation();
+        fileInput.value = '';
+        previewContainer.classList.add('d-none');
+        previewImage.src = '';
+      });
+    }
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      uploadArea.classList.add('drag-over');
+    });
+
+    uploadArea.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      uploadArea.classList.remove('drag-over');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      uploadArea.classList.remove('drag-over');
+
+      const files = e.dataTransfer.files;
+      if (files.length > 0 && files[0].type.startsWith('image/')) {
+        fileInput.files = files;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImage.src = e.target.result;
+          previewContainer.classList.remove('d-none');
+        };
+        reader.readAsDataURL(files[0]);
+      }
+    });
+  }
+});
+</script>
