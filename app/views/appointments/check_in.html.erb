@@ -104,7 +104,7 @@
           <%= button_to "Confirm", book_appointment_path(@appointment, selected_service: @selected_service, selected_add_ons: @selected_add_ons), method: :post, class: "btn btn-primary btn-lg px-5 py-3 fw-bold", data: { turbo: false } %>
 
           <div class="mt-3">
-            <%= link_to "Back to Appointment", appointment_path(@appointment), class: "btn btn-outline-secondary" %>
+            <%= link_to "←Back to Appointment", appointment_path(@appointment), class: "btn btn-outline-secondary" %>
           </div>
         </div>
       </div>
