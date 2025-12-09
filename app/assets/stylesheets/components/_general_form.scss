@@ -201,3 +201,125 @@ label-ch{
     box-shadow: 0 0 0 3px rgba($primary, 0.3);
   }
 }
+
+@media (max-width: 480px) {
+
+  /* Main search-toggle container */
+  [data-controller="search-toggle"] {
+
+    .form-container-ch {
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+
+      label,
+      .form-label,
+      abbr {
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+      }
+
+      .form-check-label {
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+      }
+
+      input,
+      .form-control,
+      .form-control-ch {
+        font-size: 0.95rem !important;
+        padding: 0.7rem 1rem;
+      }
+
+      div,
+      span,
+      p {
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  /* Fallback container */
+  .form-container-ch {
+    padding: 1.5rem;
+    border-radius: 10px;
+
+    label,
+    .form-label,
+    abbr {
+      font-size: 0.9rem !important;
+      font-weight: 600 !important;
+    }
+
+    .form-check-label {
+      font-size: 0.9rem !important;
+    }
+  }
+
+  /* Form group spacing */
+  .form-group-ch {
+    margin-bottom: 1.25rem !important;
+
+    label {
+      font-size: 0.9rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .form-check-label {
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Custom label */
+  label-ch {
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.4px;
+  }
+
+  /* Inputs */
+  .form-control-ch {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($primary, 0.15);
+    }
+  }
+
+  /* Buttons (primary) */
+  .custom-btn-ch {
+    padding: 0.55rem 1rem;
+    min-width: 120px;
+    font-size: 0.95rem;
+
+    &:hover,
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($primary, 0.25);
+    }
+  }
+
+  /* Ghost buttons */
+  .custom-btn--ghost {
+    padding: 0.55rem 1rem;
+    font-size: 0.95rem;
+
+    &:hover,
+    &:focus {
+      box-shadow: 0 0 0 3px rgba($primary, 0.25);
+    }
+  }
+
+  /* Profile header spacing */
+  .profile-header {
+    margin-bottom: 2rem;
+    padding-bottom: 0.75rem;
+  }
+
+  /* Card: profile viewer */
+  .profile-view-card {
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+}

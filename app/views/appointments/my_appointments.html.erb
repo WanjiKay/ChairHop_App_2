@@ -14,7 +14,7 @@
           <div class="col-md-6">
             <div class="card appointment-card">
               <% if appointment.image.attached? %>
-                <%= image_tag appointment.image, class: "card-img-top", alt: appointment.salon %>
+                <%= cl_image_tag appointment.image.key, class: "card-img-top", alt: appointment.salon %>
               <% else %>
                 <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400",
                               class: "card-img-top",

@@ -432,3 +432,148 @@
   display: inline-block !important;
   object-fit: cover !important;
 }
+
+@media (max-width: 480px) {
+
+  /* MAIN PAGE */
+  .chat-show-page {
+    padding: 0.5rem 0;
+
+    .container {
+      height: calc(100vh - 1rem);
+    }
+  }
+
+  /* SIDEBAR (auto-hide on mobile) */
+  .chat-sidebar {
+    display: none !important;   // sidebar becomes offcanvas ONLY
+  }
+
+  .offcanvas {
+    width: 85% !important;
+    max-width: 300px !important;
+  }
+
+  /* CHAT HEADER */
+  .chat-header {
+    padding: 1rem;
+    flex-direction: row;
+    gap: 0.5rem;
+
+    h5 {
+      font-size: 1rem;
+    }
+
+    small {
+      font-size: 0.8rem;
+    }
+
+    .chat-avatar-header {
+      width: 40px !important;
+      height: 40px !important;
+    }
+  }
+
+  /* MESSAGE LIST */
+  .message-messages {
+    padding: 0.75rem;
+    margin: 0.25rem;
+    border-radius: $border-radius-lg;
+  }
+
+  .message-wrapper {
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    .assistant-avatar,
+    .stylist-avatar,
+    .customer-avatar {
+      width: 38px !important;
+      height: 38px !important;
+      border-width: 2px;
+    }
+  }
+
+  /* MESSAGE BUBBLES */
+  .message-bubble {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    max-width: 80%;
+
+    strong {
+      font-size: 0.8rem;
+    }
+  }
+
+  .user-message .message-bubble {
+    max-width: 80%;
+  }
+
+  /* INPUT AREA */
+  .message-input-container {
+    padding: 0.75rem;
+  }
+
+  .message-input-form {
+    .input-wrapper {
+      gap: 0.35rem;
+    }
+
+    .upload-btn {
+      font-size: 1.25rem;
+      padding: 0.35rem;
+    }
+
+    .message-input {
+      padding: 0.6rem 0.75rem;
+      max-height: 90px;
+      font-size: 0.9rem;
+    }
+
+    .send-btn {
+      width: 40px;
+      height: 40px;
+
+      i {
+        font-size: 0.9rem;
+      }
+    }
+  }
+
+  /* IMAGE PREVIEW */
+  .image-preview img {
+    max-width: 110px;
+    max-height: 110px;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    padding: 3rem 1rem;
+
+    h3 {
+      font-size: 1.25rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
+  }
+
+  /* CONVERSATION LIST INSIDE OFFCANVAS */
+  .conversation-item {
+    padding: 0.75rem 1rem;
+
+    .conversation-title {
+      font-size: 0.9rem;
+    }
+
+    .conversation-preview {
+      font-size: 0.8rem;
+    }
+
+    .conversation-avatar img {
+      width: 38px;
+      height: 38px;
+    }
+  }
+}

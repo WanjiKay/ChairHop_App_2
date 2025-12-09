@@ -1,20 +1,44 @@
+header,
+.navbar,
+.navbar-wrapper,
+#mobile-navbar,
+.container-fluid:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .navbar-lewagon {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1.5rem;
+
   background: $primary;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   border-bottom: 2px solid lighten($primary, 10%);
+
   position: sticky;
-  top: 0;
+  top: 0;     // <- absolutely no space above
+  left: 0;
+  right: 0;
+
+  margin: 0 !important;     // kills top margin
+  padding-top: 0.75rem;     // keeps your intended padding
   z-index: 9999;
   width: 100%;
-  margin: 0; // kill any top gap
 }
 
 // Using Bootstrap's sticky-top behavior + our base styles above.
-.navbar-lewagon.sticky-top { }
+.navbar-lewagon.sticky-top {
+  top: 0 !important;
+  margin-top: 0 !important;
+  border-top: none !important;
+ }
 
 .navbar-logo {
   width: 42px;
