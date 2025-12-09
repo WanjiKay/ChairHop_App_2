@@ -127,27 +127,21 @@
 function scrollToBottom() {
   const messagesContainer = document.getElementById('messagesContainer');
   if (messagesContainer) {
-    // Get all message wrappers
-    const messages = messagesContainer.querySelectorAll('.message-wrapper');
-    if (messages.length > 0) {
-      // Scroll the last message into view
-      const lastMessage = messages[messages.length - 1];
-      lastMessage.scrollIntoView({ behavior: 'instant', block: 'end' });
-    } else {
-      // Fallback to scrollTop if no messages
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 }
 
 // Run on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', scrollToBottom);
 
-// Run on full page load (after images)
+// Run on full page load (after images and content render)
 window.addEventListener('load', scrollToBottom);
 
+// Run after Turbo loads content
+document.addEventListener('turbo:load', scrollToBottom);
+
 // Run after a short delay as additional fallback
-setTimeout(scrollToBottom, 200);
+setTimeout(scrollToBottom, 100);
 
 document.addEventListener('DOMContentLoaded', function() {
 

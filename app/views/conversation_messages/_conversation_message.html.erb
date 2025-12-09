@@ -17,7 +17,7 @@
     <% if conversation_message.photos.attached? %>
       <div class="message-images mt-2">
         <% conversation_message.photos.each do |photo| %>
-          <%= link_to photo.url, target: "_blank" do %>
+          <%= link_to url_for(photo), target: "_blank" do %>
             <%= image_tag photo, class: "message-image", style: "max-width: 300px; max-height: 300px; border-radius: 8px; display: block; margin-bottom: 0.5rem;" %>
           <% end %>
         <% end %>
