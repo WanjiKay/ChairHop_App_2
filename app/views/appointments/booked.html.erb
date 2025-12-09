@@ -18,7 +18,7 @@
             <div class="col-6">
               <div class="profile-card">
                 <% if current_user.avatar.attached? %>
-                  <%= image_tag current_user.avatar, class: "profile-picture rounded-circle mb-3" %>
+                  <%= cl_image_tag current_user.avatar.key, class: "profile-picture rounded-circle mb-3" %>
                 <% else %>
                   <%= image_tag "profile.png", class: "profile-picture rounded-circle mb-3", alt: "User profile" %>
                 <% end %>
@@ -32,7 +32,7 @@
               <%= link_to stylist_path(@appointment.stylist), class: "text-decoration-none" do %>
                 <div class="profile-card" style="cursor: pointer;">
                   <% if @appointment.stylist.avatar.attached? %>
-                    <%= image_tag @appointment.stylist.avatar, class: "profile-picture rounded-circle mb-3" %>
+                    <%= cl_image_tag @appointment.stylist.avatar.key, class: "profile-picture rounded-circle mb-3" %>
                   <% else %>
                     <%= image_tag "profile.png", class: "profile-picture rounded-circle mb-3", alt: "Stylist profile" %>
                   <% end %>

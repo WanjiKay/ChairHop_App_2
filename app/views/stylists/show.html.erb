@@ -1,6 +1,6 @@
 <% content_for :meta_title, "#{@stylist.name}" %>
 <% content_for :meta_description, @stylist.about %>
-<% content_for :meta_image, cl_image_path(@stylist.avatar.path) %>
+<% content_for :meta_image, cl_image_path(@stylist.avatar.key) %>
 
 <div class="container py-5">
   <div class="row justify-content-center">
@@ -13,7 +13,7 @@
           <!-- Circular Profile Picture Below Name -->
           <div class="profile-picture-wrapper mb-4">
             <% if @stylist.avatar.attached? %>
-              <%= image_tag @stylist.avatar, class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" %>
+              <%= cl_image_tag @stylist.avatar.key, class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" %>
             <% else %>
               <%= image_tag "profile.png", class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F;" %>
             <% end %>

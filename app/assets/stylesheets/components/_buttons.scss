@@ -47,3 +47,33 @@
 .hopps-btn:hover {
   transform: scale(1.08);
 }
+
+/* ----------------------------------
+   PHONE OPTIMIZATION (max-width: 480px)
+   ---------------------------------- */
+@media (max-width: 480px) {
+
+  .hopps-wrapper {
+    top: auto !important;
+    bottom: 20px !important;
+    right: 15px !important;
+    transform: none !important;   // cleaner on phone
+  }
+
+  .hopps-btn {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    max-width: 48px !important;
+    max-height: 48px !important;
+
+    box-shadow: 0 3px 6px rgba(0,0,0,0.18) !important;
+    font-size: 0.85rem !important;
+  }
+
+  .hopps-label {
+    margin-top: 4px !important;
+    font-size: 0.7rem !important;
+  }
+}

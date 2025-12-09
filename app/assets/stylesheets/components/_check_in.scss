@@ -131,3 +131,86 @@
     }
   }
 }
+
+
+@media (max-width: 480px) {
+
+  .check-in-page {
+    padding: 1rem;
+    border-radius: $border-radius-lg;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  }
+
+  /* PROFILES SECTION */
+  .profiles-section {
+
+    .profile-card {
+      padding: 1rem;
+      border-radius: $border-radius-md;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    }
+
+    .profile-picture {
+      width: 85px;
+      height: 85px;
+      border-width: 3px;
+    }
+
+    h5 {
+      font-size: 0.95rem;
+      margin-bottom: 0.2rem;
+    }
+  }
+
+  /* BOOKING DETAILS */
+  .booking-details-card {
+    padding: 1.25rem;
+    border-radius: $border-radius-lg;
+
+    h4 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .detail-row {
+      padding: 0.5rem 0;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.15rem;
+
+      .detail-label {
+        font-size: 0.9rem;
+      }
+
+      .detail-value {
+        font-size: 0.9rem;
+        margin-top: 0;
+        text-align: left !important;
+      }
+    }
+
+    /* SERVICE PRICE PANEL */
+    .service-price-section {
+      padding: 1rem;
+      border-radius: $border-radius-md;
+
+      .service-name {
+        font-size: 0.95rem;
+      }
+
+      .d-flex {
+        flex-direction: column !important;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .price-badge {
+        margin-top: 0.5rem;
+
+        span {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+}

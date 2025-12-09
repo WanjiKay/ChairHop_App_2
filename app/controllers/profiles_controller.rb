@@ -1,6 +1,7 @@
 class ProfilesController < ApplicationController
   before_action :authenticate_user!
 
+  # GET /profile
   def show
     @user = current_user
   end
@@ -9,6 +10,14 @@ class ProfilesController < ApplicationController
     @user = current_user
   end
 
+  # GET /profile/edit
+  def edit
+    # Reuse the show template, but force editing mode
+    @editing = true
+    render :show
+  end
+
+  # PATCH /profile
   def update
     @user = current_user
     if @user.update(user_params)

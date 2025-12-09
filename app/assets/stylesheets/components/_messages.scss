@@ -353,3 +353,165 @@
     }
   }
 }
+
+@media (max-width: 480px) {
+
+  /* Page header */
+  .message-index-page {
+    padding-bottom: 2rem;
+
+    h1 {
+      font-size: 1.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .text-muted {
+      font-size: 0.95rem;
+    }
+  }
+
+  /* Message list title */
+  .message-list-title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Upload section */
+  .upload-section {
+    padding: 1.25rem;
+    border-radius: $border-radius-lg;
+
+    h4 {
+      font-size: 1.1rem;
+    }
+
+    .form-control {
+      padding: 0.65rem 0.85rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  .upload-area {
+    padding: 1.75rem 1rem;
+    border-radius: $border-radius-lg;
+
+    .upload-icon {
+      font-size: 2.4rem;
+    }
+
+    .upload-text {
+      font-size: 1rem;
+    }
+
+    .upload-subtext {
+      font-size: 0.85rem;
+    }
+  }
+
+  .preview-image {
+    max-height: 200px;
+  }
+
+  .remove-preview {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Message feed */
+  .message-messages {
+    padding: 1rem;
+    max-height: 60vh;
+    border-radius: $border-radius-lg;
+  }
+
+  .assistant-avatar,
+  .stylist-avatar,
+  .customer-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .message-bubble {
+    max-width: 85%;
+    font-size: 0.9rem;
+    padding: 0.85rem 1rem;
+
+    strong {
+      font-size: 0.8rem;
+    }
+  }
+
+  /* Message list items */
+  .message-item {
+    padding: 1rem;
+
+    &:hover {
+      transform: none; /* prevent janky push on mobile */
+    }
+  }
+
+  .ai-avatar-img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .message-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .message-title {
+    font-size: 1rem;
+  }
+
+  .message-time {
+    margin-left: 0;
+    margin-top: 0.2rem;
+    font-size: 0.75rem;
+  }
+
+  .message-preview {
+    font-size: 0.85rem;
+    white-space: normal;
+  }
+
+  /* Badges adjust spacing */
+  .message-badge .badge {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.65rem;
+  }
+
+  /* Empty state */
+  .empty-state {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .empty-state-icon {
+    font-size: 2.5rem;
+  }
+
+  .empty-state p {
+    font-size: 0.95rem;
+  }
+
+  /* Quick start section */
+  .quick-start-card {
+    padding: 1rem;
+
+    i {
+      font-size: 1.3rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Floating action button */
+  .message-fab {
+    width: 52px;
+    height: 52px;
+    bottom: 16px;
+    right: 16px;
+  }
+}

@@ -204,3 +204,67 @@
     }
   }
 }
+
+@media (max-width: 480px) {
+
+  .booked-confirmation-page {
+    padding: 0.75rem;
+    border-radius: $border-radius-lg;
+    box-shadow: none;
+  }
+
+  .success-title {
+    font-size: 1.6rem;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .success-subtitle {
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .success-icon-large {
+    font-size: 3.2rem;
+  }
+
+  .profiles-section {
+    padding: 0.75rem;
+
+    .profile-card {
+      padding: 0.75rem;
+    }
+
+    .profile-picture {
+      width: 85px;
+      height: 85px;
+      border-width: 3px;
+    }
+  }
+
+  .quick-actions-section {
+    padding: 0.75rem;
+
+    h5 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .action-card {
+    padding: 0.75rem;
+    border-radius: $border-radius-md;
+    gap: 0.4rem;  // more compact
+    i {
+      font-size: 1.3rem !important;
+    }
+    p {
+      font-size: 0.8rem;
+    }
+  }
+
+  .booking-status-badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}
