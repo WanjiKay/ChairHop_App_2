@@ -3,8 +3,8 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # For Heroku: Set APP_HOST environment variable to your Heroku domain
   # e.g., APP_HOST=chairhop.herokuapp.com or APP_HOST=yourdomain.com
-  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "localhost:3000") }
-  config.action_controller.default_url_options = { host: ENV.fetch("APP_HOST", "localhost:3000") }
+  config.action_mailer.default_url_options = { host: ENV.fetch("www.chairhop.ca", "localhost:3000") }
+  config.action_controller.default_url_options = { host: ENV.fetch("www.chairhop.ca", "localhost:3000") }
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
