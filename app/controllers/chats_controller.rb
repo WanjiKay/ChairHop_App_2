@@ -116,9 +116,25 @@ class ChatsController < ApplicationController
       end
 
       # Only proceed with AI response if message was saved successfully
-      begin
+      # begin
+        # if @message.photos.attached?
+        #   # process_file(@message.photos.first)
+        #   send_question(image_url: Rails.application.routes.url_helpers.url_for(@message.photos.first, only_path: false))
+        # else
+        #   send_question
+        # end
+
         if @message.photos.attached?
-          process_file(@message.photos.first)
+          host     = Rails.application.config.action_controller.default_url_options[:host]
+          protocol = Rails.application.config.action_controller.default_url_options[:protocol]
+
+          image_url = Rails.application.routes.url_helpers.rails_blob_url(
+            @message.photos.first,
+            host: host,
+            protocol: protocol
+          )
+
+          send_question(image_url: image_url)
         else
           send_question
         end
@@ -128,17 +144,17 @@ class ChatsController < ApplicationController
           content: @response.content,
           chat: @chat
         )
-      rescue StandardError => e
-        Rails.logger.error("AI response error: #{e.message}")
-        flash.now[:alert] = "Failed to get AI response. Please try again."
-        @chat = Chat.new(title: chat_title)
-        if params[:appointment_id].present?
-          @appointment = Appointment.find(params[:appointment_id])
-        end
-        @already_rendered = true
-        render :new, status: :unprocessable_entity
-        raise ActiveRecord::Rollback
-      end
+      # rescue StandardError => e
+      #   Rails.logger.error("AI response error: #{e.message}")
+      #   flash.now[:alert] = "Failed to get AI response. Please try again."
+      #   @chat = Chat.new(title: chat_title)
+      #   if params[:appointment_id].present?
+      #     @appointment = Appointment.find(params[:appointment_id])
+      #   end
+      #   @already_rendered = true
+      #   render :new, status: :unprocessable_entity
+      #   raise ActiveRecord::Rollback
+      # end
     end
 
     # Only redirect if we successfully created everything and haven't already rendered
@@ -185,7 +201,7 @@ class ChatsController < ApplicationController
     # Auto-select correct model if image is attached
     model ||= image_url.present? ? "gpt-4o" : "gpt-4.1-nano"
 
-    @ruby_llm_chat = RubyLLM.chat(model)
+    @ruby_llm_chat = RubyLLM.chat(model: model)
 
     instructions = if @chat.appointment.nil?
       instruction_without_appointment +
@@ -197,9 +213,11 @@ class ChatsController < ApplicationController
     content = @message.content.presence || "What do you see in this image?"
 
     @ruby_llm_chat = @ruby_llm_chat.with_instructions(instructions)
-    @ruby_llm_chat = @ruby_llm_chat.with_image(url: image_url) if image_url.present?
-
-    @response = @ruby_llm_chat.ask(content)
+    if image_url.present?
+         @response = @ruby_llm_chat.ask(content, with: { image: image_url })
+    else
+        @response = @ruby_llm_chat.ask(content)
+    end
   end
 
 

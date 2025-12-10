@@ -143,14 +143,22 @@ document.addEventListener('turbo:load', scrollToBottom);
 // Run after a short delay as additional fallback
 setTimeout(scrollToBottom, 100);
 
-document.addEventListener('DOMContentLoaded', function() {
+function initMessageUI() {
 
   // Auto-resize textarea
   const textarea = document.getElementById('messageTextarea');
   if (textarea) {
-    textarea.addEventListener('input', function() {
+     textarea.style.height = textarea.scrollHeight + "px";
+     textarea.addEventListener('input', function() {
       this.style.height = 'auto';
-      this.style.height = (this.scrollHeight) + 'px';
+      this.style.height = this.scrollHeight + 'px';
+    });
+
+    textarea.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById('messageForm').requestSubmit();
+      }
     });
   }
 
@@ -180,15 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
       imagePreview.classList.add('d-none');
     });
   }
-
-  // Submit on Enter (Shift+Enter for new line)
-  if (textarea) {
-    textarea.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        document.getElementById('messageForm').submit();
-      }
-    });
-  }
-});
+}
+document.addEventListener('DOMContentLoaded', initMessageUI);
+document.addEventListener('turbo:load', initMessageUI);
 </script>
