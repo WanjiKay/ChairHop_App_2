@@ -118,8 +118,11 @@ class ChatsController < ApplicationController
       instruction_with_appointment
     end
 
+    content = @message.content.presence || "What do you see in this image?"
+
+    @ruby_llm_chat = @ruby_llm_chat.with_instructions(instructions)
+
     if image_url.present?
-      content = @message.content.presence || "What do you see in this image?"
       @response = @ruby_llm_chat.ask(content, with: { image: image_url })
     else
       @response = @ruby_llm_chat.ask(content)

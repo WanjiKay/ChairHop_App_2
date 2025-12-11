@@ -12,7 +12,7 @@ class MessagesController < ApplicationController
     @message.role = "user"
 
     # --------- EMBEDDING LOGIC ----------
-    if @chat.appointment.nil? && params[:message][:content].present?
+    if @chat.appointment.nil? && params[:message][:content].present? && @chat.messages.where(role: "user").empty?
       begin
         @embedding = RubyLLM.embed(params[:message][:content])
         @appointments = Appointment.nearest_neighbors(:embedding, @embedding.vectors,
@@ -88,16 +88,18 @@ class MessagesController < ApplicationController
   def ask_ai_for_message(model: "gpt-4.1-nano", image_url: nil)
     model = "gpt-4o" if image_url.present?
 
-    chat = RubyLLM.chat(model)
+    chat = RubyLLM.chat(model: model)
 
     # Build instructions
-    instructions =
+    base_instructions =
       if @chat.appointment.nil?
         instruction_without_appointment +
           @appointments.map { |a| appointment_prompt(a) }.join("\n\n")
       else
         instruction_with_appointment
       end
+
+    instructions = base_instructions + conversation_history
 
     # Build user text
     user_text = @message.content.presence || "What do you see in this image?"
@@ -150,14 +152,46 @@ class MessagesController < ApplicationController
 
   def instruction_with_appointment
     "You are a helpful assistant. The user is asking about their appointment. " \
-    "Provide details about the appointment and assist with any changes or cancellations."
+    "Provide details about the appointment and assist with any changes or cancellations.\n\n" +
+    appointment_context
+  end
+
+  def appointment_context
+    return "" if @chat.appointment.nil?
+    appointment = @chat.appointment
+
+    <<~CONTEXT
+      Here is the appointment information:
+      - Time: #{appointment.time&.strftime('%A, %B %d, %Y at %H:%M')}
+      - Location: #{appointment.location}
+      - Salon: #{appointment.salon}
+      - Stylist: #{appointment.stylist&.name}
+      - Selected Service: #{appointment.selected_service}
+      - Available Services: #{appointment.services}
+      - Status: #{appointment.status}
+
+      Always use ONLY this information when answering questions about the appointment.
+      Never invent or guess appointment details.
+    CONTEXT
   end
 
   def appointment_prompt(appointment)
     if appointment.booked?
-      "Appointment on #{appointment.date} at #{appointment.time} is booked."
+      "Appointment on #{appointment.time&.strftime('%B %d, %Y at %H:%M')} is booked."
     else
-      "Available appointment on #{appointment.date} at #{appointment.time}."
+      "Available appointment on #{appointment.time&.strftime('%B %d, %Y at %H:%M')}."
     end
+  end
+
+  def conversation_history
+    previous = @chat.messages.order(:created_at)
+    return "" if previous.empty?
+
+    history = previous.map do |m|
+      role = m.role == "user" ? "Customer" : "Assistant"
+      "#{role}: #{m.content}"
+    end.join("\n\n")
+
+    "\n\n--- Conversation so far ---\n#{history}\n--- End of conversation ---\n\nContinue the conversation naturally. Remember what appointments were offered."
   end
 end
