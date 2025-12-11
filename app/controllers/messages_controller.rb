@@ -76,9 +76,7 @@ class MessagesController < ApplicationController
   def process_file(attachment)
     return unless attachment.image?
 
-    host = Rails.application.config.action_controller.default_url_options[:host] || "localhost:3000"
-    image_url = Rails.application.routes.url_helpers.url_for(attachment, host: host)
-
+    image_url = attachment.url
     ask_ai_for_message(model: "gpt-4o", image_url: image_url)
   end
 
@@ -104,12 +102,15 @@ class MessagesController < ApplicationController
     # Build user text
     user_text = @message.content.presence || "What do you see in this image?"
 
-    # Apply instructions and image
+    # Apply instructions
     chat = chat.with_instructions(instructions)
-    chat = chat.with_image(url: image_url) if image_url.present?
 
-    # Ask AI
-    @response = chat.ask(user_text)
+    # Ask AI (with image if present)
+    if image_url.present?
+      @response = chat.ask(user_text, with: { image: image_url })
+    else
+      @response = chat.ask(user_text)
+    end
   end
 
   # ------------------------------------------------------

@@ -19,7 +19,7 @@
     <div class="row justify-content-center mb-4">
       <div class="col-lg-10 col-xl-8">
 
-        <div class="upload-section">
+        <div class="upload-section" data-controller="image-upload">
 
           <h4>Upload your hair inspo</h4>
           <p class="text-muted mb-3">Share a picture and let Hopps help you find a stylist</p>
@@ -31,7 +31,9 @@
                 local: true do |f| %>
                 <%= hidden_field_tag :appointment_id, params[:appointment_id] %>
 
-            <div class="upload-area" id="uploadArea">
+            <div class="upload-area" id="uploadArea"
+                 data-image-upload-target="area"
+                 data-action="click->image-upload#openFileDialog">
 
               <div class="upload-icon">
                 <i class="fas fa-image"></i>
@@ -46,14 +48,20 @@
                             multiple: true,
                             accept: 'image/*',
                             class: 'upload-input',
-                            id: 'chatPhotoInput'
+                            id: 'chatPhotoInput',
+                            'data-image-upload-target': 'input',
+                            'data-action': 'change->image-upload#handleFileSelect'
                           },
                           label: false,
                           wrapper: false %>
 
-              <div class="preview-container d-none" id="previewContainer">
-                <img src="" alt="Preview" id="previewImage" class="preview-image">
-                <button type="button" class="btn btn-sm btn-danger remove-preview" id="removePreview">
+              <div class="preview-container d-none" id="previewContainer"
+                   data-image-upload-target="previewContainer">
+                <img src="" alt="Preview" id="previewImage" class="preview-image"
+                     data-image-upload-target="previewImage">
+                <button type="button" class="btn btn-sm btn-danger remove-preview" id="removePreview"
+                        data-image-upload-target="removeButton"
+                        data-action="click->image-upload#removePreview">
                   <i class="fas fa-times"></i>
                 </button>
               </div>
@@ -115,73 +123,3 @@
 
   </div>
 </div>
-
-<script>
-document.addEventListener('turbo:load', function() {
-  const uploadArea = document.getElementById('uploadArea');
-  const fileInput = document.getElementById('chatPhotoInput');
-  const previewContainer = document.getElementById('previewContainer');
-  const previewImage = document.getElementById('previewImage');
-  const removePreview = document.getElementById('removePreview');
-
-  // Click to upload
-  if (uploadArea && fileInput) {
-    uploadArea.addEventListener('click', function(e) {
-      if (e.target !== removePreview && !removePreview.contains(e.target)) {
-        fileInput.click();
-      }
-    });
-
-    // File input change
-    fileInput.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          previewImage.src = e.target.result;
-          previewContainer.classList.remove('d-none');
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Remove preview
-    if (removePreview) {
-      removePreview.addEventListener('click', function(e) {
-        e.stopPropagation();
-        fileInput.value = '';
-        previewContainer.classList.add('d-none');
-        previewImage.src = '';
-      });
-    }
-
-    // Drag and drop
-    uploadArea.addEventListener('dragover', function(e) {
-      e.preventDefault();
-      uploadArea.classList.add('drag-over');
-    });
-
-    uploadArea.addEventListener('dragleave', function(e) {
-      e.preventDefault();
-      uploadArea.classList.remove('drag-over');
-    });
-
-    uploadArea.addEventListener('drop', function(e) {
-      e.preventDefault();
-      uploadArea.classList.remove('drag-over');
-
-      const files = e.dataTransfer.files;
-      if (files.length > 0 && files[0].type.startsWith('image/')) {
-        fileInput.files = files;
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          previewImage.src = e.target.result;
-          previewContainer.classList.remove('d-none');
-        };
-        reader.readAsDataURL(files[0]);
-      }
-    });
-  }
-});
-</script>
