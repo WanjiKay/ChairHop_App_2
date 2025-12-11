@@ -44,16 +44,26 @@
 // Mobile
 
 @media (max-width: 480px) {
+
   .appointment-details-page {
     padding: 1rem !important;
 
+    /* Create a 2-column grid */
+    .appointments-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      padding: 0 0.5rem;
+    }
+
     .appointment-card {
-      margin: 1rem 0;
+      margin: 0;          // grid handles spacing
       padding: 1rem;
       border-radius: 14px;
+      width: 100%;
 
       img {
-        height: 180px; // smaller for phones
+        height: 150px;
         width: 100%;
         object-fit: cover;
         border-radius: 12px;
