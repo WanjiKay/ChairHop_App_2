@@ -209,13 +209,18 @@ end
     # Check if appointment time has passed
     time_has_passed = @appointment.time < Time.current
 
-    if (is_customer || is_stylist) && @appointment.booked? && time_has_passed
+    # Check if appointment is booked
+    if !@appointment.booked?
+      redirect_back fallback_location: root_path, alert: "This appointment is not booked."
+    # Stylists can complete at any time, customers must wait until after appointment time
+    elsif is_stylist
       @appointment.update(status: :completed)
       redirect_back fallback_location: root_path, notice: "Appointment marked as completed!"
-    elsif !time_has_passed
+    elsif is_customer && time_has_passed
+      @appointment.update(status: :completed)
+      redirect_back fallback_location: root_path, notice: "Appointment marked as completed!"
+    elsif is_customer && !time_has_passed
       redirect_back fallback_location: root_path, alert: "This appointment hasn't occurred yet."
-    elsif !@appointment.booked?
-      redirect_back fallback_location: root_path, alert: "This appointment is not booked."
     else
       redirect_back fallback_location: root_path, alert: "You don't have permission to complete this appointment."
     end

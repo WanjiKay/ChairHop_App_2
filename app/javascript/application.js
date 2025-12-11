@@ -38,30 +38,18 @@ function initNavbar() {
     });
   }
 
-  // AVATAR DROPDOWN
-  const avatarToggle = document.querySelector(".avatar-dropdown-toggle");
-  const dropdownMenu = document.querySelector(".dropdown-menu");
-
-  if (avatarToggle && dropdownMenu) {
-    const handleAvatarClick = (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      dropdownMenu.classList.toggle("show");
-    };
-
-    const handleDocumentClick = (event) => {
-      if (
-        !dropdownMenu.contains(event.target) &&
-        !avatarToggle.contains(event.target)
-      ) {
-        dropdownMenu.classList.remove("show");
-      }
-    };
-
-    avatarToggle.addEventListener("click", handleAvatarClick);
-    document.addEventListener("click", handleDocumentClick);
-  }
 }
+
+// Reinitialize Bootstrap dropdowns after Turbo navigation
+document.addEventListener("turbo:load", () => {
+  // Initialize all Bootstrap dropdowns
+  const dropdownElementList = document.querySelectorAll('[data-bs-toggle="dropdown"]');
+  if (typeof bootstrap !== 'undefined') {
+    dropdownElementList.forEach((dropdownToggleEl) => {
+      new bootstrap.Dropdown(dropdownToggleEl);
+    });
+  }
+});
 
 // Use Turbo lifecycle so it works on every page
 document.addEventListener("turbo:load", initNavbar);

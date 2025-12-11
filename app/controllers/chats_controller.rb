@@ -1,5 +1,5 @@
 class ChatsController < ApplicationController
-  SYSTEM_PROMPT = "You are an assistant for a booking application. n/n/ The task is to help answer the questions of the customers."
+  SYSTEM_PROMPT = "You are an assistant for a booking application.\n\nThe task is to help answer the questions of the customers."
   before_action :authenticate_user!
 
   # List all chats for the user
@@ -116,45 +116,18 @@ class ChatsController < ApplicationController
       end
 
       # Only proceed with AI response if message was saved successfully
-      # begin
-        # if @message.photos.attached?
-        #   # process_file(@message.photos.first)
-        #   send_question(image_url: Rails.application.routes.url_helpers.url_for(@message.photos.first, only_path: false))
-        # else
-        #   send_question
-        # end
+      if @message.photos.attached?
+        # Pass the ActiveStorage attachment directly; send_question will open the blob as a Tempfile
+        send_question(image_attachment: @message.photos.first)
+      else
+        send_question
+      end
 
-        if @message.photos.attached?
-          host     = Rails.application.config.action_controller.default_url_options[:host]
-          protocol = Rails.application.config.action_controller.default_url_options[:protocol]
-
-          image_url = Rails.application.routes.url_helpers.rails_blob_url(
-            @message.photos.first,
-            host: host,
-            protocol: protocol
-          )
-
-          send_question(image_url: image_url)
-        else
-          send_question
-        end
-
-        Message.create!(
-          role: "assistant",
-          content: @response.content,
-          chat: @chat
-        )
-      # rescue StandardError => e
-      #   Rails.logger.error("AI response error: #{e.message}")
-      #   flash.now[:alert] = "Failed to get AI response. Please try again."
-      #   @chat = Chat.new(title: chat_title)
-      #   if params[:appointment_id].present?
-      #     @appointment = Appointment.find(params[:appointment_id])
-      #   end
-      #   @already_rendered = true
-      #   render :new, status: :unprocessable_entity
-      #   raise ActiveRecord::Rollback
-      # end
+      Message.create!(
+        role: "assistant",
+        content: @response.content,
+        chat: @chat
+      )
     end
 
     # Only redirect if we successfully created everything and haven't already rendered
@@ -191,15 +164,18 @@ class ChatsController < ApplicationController
 
   def process_file(file)
     if file.image?
-      host = Rails.application.config.action_controller.default_url_options[:host] || "localhost:3000"
-      image_url = Rails.application.routes.url_helpers.url_for(file, host: host)
-      send_question(model: "gpt-4o", image_url: image_url)
+      # Pass the attachment directly so send_question can open it as a Tempfile
+      send_question(model: "gpt-4o", image_attachment: file)
     end
   end
 
-  def send_question(model: nil, image_url: nil)
+  # Sends the question to RubyLLM. Accepts either an ActiveStorage attachment (recommended)
+  # or a public image URL. If using an attachment, we open the blob (streams to a Tempfile)
+  # and pass the local path to RubyLLM so it can upload the file reliably.
+  # If ActiveStorage integrity verification fails, we fall back to a presigned service URL.
+  def send_question(model: nil, image_attachment: nil, image_url: nil)
     # Auto-select correct model if image is attached
-    model ||= image_url.present? ? "gpt-4o" : "gpt-4.1-nano"
+    model ||= image_attachment.present? || image_url.present? ? "gpt-4o" : "gpt-4.1-nano"
 
     @ruby_llm_chat = RubyLLM.chat(model: model)
 
@@ -213,10 +189,35 @@ class ChatsController < ApplicationController
     content = @message.content.presence || "What do you see in this image?"
 
     @ruby_llm_chat = @ruby_llm_chat.with_instructions(instructions)
-    if image_url.present?
-         @response = @ruby_llm_chat.ask(content, with: { image: image_url })
+
+    if image_attachment.present?
+      begin
+        # ActiveStorage::Blob#open streams the blob into a Tempfile and yields it
+        image_attachment.blob.open do |file|
+          # Pass the local Tempfile path to RubyLLM
+          @response = @ruby_llm_chat.ask(content, with: { image: file.path })
+        end
+      rescue ActiveStorage::IntegrityError => e
+        Rails.logger.warn("ActiveStorage integrity error; falling back to presigned URL: #{e.message}")
+
+        blob = image_attachment.blob
+
+        # Generate a presigned URL in a version-compatible way
+        presigned =
+          if blob.respond_to?(:service_url)
+            blob.service_url(expires_in: 30.minutes)
+          else
+            # Use the service's presigned_url method (works with S3/GCS services)
+            blob.service.presigned_url(blob.key, expires_in: 30.minutes)
+          end
+
+        @response = @ruby_llm_chat.ask(content, with: { image: presigned })
+      end
+    elsif image_url.present?
+      # If you have a public URL that is reachable by the Ruby process, use it
+      @response = @ruby_llm_chat.ask(content, with: { image: image_url })
     else
-        @response = @ruby_llm_chat.ask(content)
+      @response = @ruby_llm_chat.ask(content)
     end
   end
 
