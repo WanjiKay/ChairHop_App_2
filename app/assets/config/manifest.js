@@ -3,4 +3,4 @@
 //= link_tree ../../javascript .js
 //= link popper.js
 //= link bootstrap.min.js
-//= link manifest.json
+//= link icons/manifest.json

@@ -24,150 +24,57 @@ class ChatsController < ApplicationController
   # Create a new chat
   def create
     prompt        = params[:prompt]
-    chat_content  = prompt.presence || params.dig(:chat, :content)
-    chat_photos   = params.dig(:chat, :photos)
+    chat_content  = prompt.presence || message_params[:content]
+    chat_photos = Array.wrap(message_params[:photos]).reject(&:blank?)
 
-    # Validate that content is present before creating chat
-    if chat_content.blank? && chat_photos.blank?
-      flash.now[:alert] = "Please enter a message or upload an image."
-      @chat = Chat.new
-      if params[:appointment_id].present?
-        @appointment = Appointment.find(params[:appointment_id])
-      end
-      render :new, status: :unprocessable_entity
-      return
+    chat_title = if chat_content.present?
+      chat_content.truncate(50, separator: ' ', omission: '...')
+    elsif chat_photos.present?
+      "Image upload"
+    else
+      "New Chat"
     end
 
-    # Flag to track if we've already rendered/redirected
-    @already_rendered = false
+    @chat = Chat.new(
+      title: chat_title,
+      model_id: "gpt-4.1-nano",
+      customer: current_user
+    )
 
-    # Use transaction to ensure chat is only saved if message is saved successfully
-    ActiveRecord::Base.transaction do
-      # Use first message content as title (truncated to 50 characters)
-      chat_title = if chat_content.present?
-        chat_content.truncate(50, separator: ' ', omission: '...')
-      elsif chat_photos.present?
-        "Image upload"
-      else
-        "New Chat"
-      end
+    if params[:appointment_id].present?
+      @appointment = Appointment.find(params[:appointment_id])
+      @chat.appointment = @appointment
+    end
 
-      @chat = Chat.new(
-        title: chat_title,
-        model_id: "gpt-4.1-nano",
-        customer: current_user,
-      )
-
-      if params[:appointment_id].present?
-        @appointment = Appointment.find(params[:appointment_id])
-        @chat.appointment = @appointment
-      end
-
-      unless @chat.save
-        flash.now[:alert] = "Failed to create chat."
-        @already_rendered = true
-        render :new, status: :unprocessable_entity
-        raise ActiveRecord::Rollback
-      end
-
+    if @chat.save
       @message = Message.new(
         content: chat_content,
         chat: @chat,
         role: "user"
       )
+      if @message.save!
+        chat_photos.each { |photo| @message.photos.attach(photo) } if chat_photos.present?
 
-      # Attach photos correctly
-      if chat_photos.present?
-        @message.photos.attach(chat_photos)
-      end
-
-      # Embeddings - only for general chats without appointments
-      if @chat.appointment.nil? && @message.content.present?
-        begin
+        if @chat.appointment.nil?
           @embedding = RubyLLM.embed(@message.content)
           @appointments = Appointment.nearest_neighbors(
             :embedding,
             @embedding.vectors,
             distance: "euclidean"
           ).first(2)
-        rescue RubyLLM::RateLimitError => e
-          # Fallback to recent appointments when rate limit is hit
-          Rails.logger.warn("RubyLLM rate limit exceeded: #{e.message}")
-          @appointments = Appointment.where(booked: false)
-                                     .order(created_at: :desc)
-                                     .limit(2)
-          flash[:notice] = "AI search temporarily unavailable (rate limit). Showing recent appointments."
-        rescue StandardError => e
-          # Handle any other embedding errors
-          Rails.logger.error("Embedding error: #{e.message}")
-          @appointments = Appointment.where(booked: false)
-                                     .order(created_at: :desc)
-                                     .limit(2)
         end
-      else
-        @appointments = []
-      end
-
-      unless @message.save
-        flash.now[:alert] = "Could not send your message. #{@message.errors.full_messages.join(', ')}"
-        @already_rendered = true
-        render :new, status: :unprocessable_entity
-        raise ActiveRecord::Rollback
-      end
-
-      # Only proceed with AI response if message was saved successfully
-      # begin
-        # if @message.photos.attached?
-        #   # process_file(@message.photos.first)
-        #   send_question(image_url: Rails.application.routes.url_helpers.url_for(@message.photos.first, only_path: false))
-        # else
-        #   send_question
-        # end
-
         if @message.photos.attached?
-          host     = Rails.application.config.action_controller.default_url_options[:host]
-          protocol = Rails.application.config.action_controller.default_url_options[:protocol]
-
-          image_url = Rails.application.routes.url_helpers.rails_blob_url(
-            @message.photos.first,
-            host: host,
-            protocol: protocol
-          )
-
-          send_question(image_url: image_url)
+          send_question(image_url: @message.photos.first.url)
         else
           send_question
         end
-
-        Message.create!(
-          role: "assistant",
-          content: @response.content,
-          chat: @chat
-        )
-      # rescue StandardError => e
-      #   Rails.logger.error("AI response error: #{e.message}")
-      #   flash.now[:alert] = "Failed to get AI response. Please try again."
-      #   @chat = Chat.new(title: chat_title)
-      #   if params[:appointment_id].present?
-      #     @appointment = Appointment.find(params[:appointment_id])
-      #   end
-      #   @already_rendered = true
-      #   render :new, status: :unprocessable_entity
-      #   raise ActiveRecord::Rollback
-      # end
-    end
-
-    # Only redirect if we successfully created everything and haven't already rendered
-    return if @already_rendered
-
-    if @chat.persisted?
+        Message.create(role: "assistant", content: @response.content, chat: @chat)
+      else
+        flash.now[:alert] = "Could not send your message. #{@message.errors.full_messages.join(', ')}"
+        render :new, status: :unprocessable_entity
+      end
       redirect_to chat_path(@chat)
     else
-      # If transaction was rolled back, re-render the form
-      @chat ||= Chat.new
-      if params[:appointment_id].present?
-        @appointment ||= Appointment.find(params[:appointment_id])
-      end
       render :new, status: :unprocessable_entity
     end
   end
@@ -181,23 +88,24 @@ class ChatsController < ApplicationController
     else
       @appointment = nil
     end
+    @message = Message.new
   end
 
   private
     # Strong parameters (optional, if you want to use them)
-    def chat_params
-      params.require(:chat).permit(:title, :model_id, :appointment_id, :content, photos: [])
+    def message_params
+      params.require(:message).permit(:title, :model_id, :appointment_id, :content, photos: [])
     end
 
-  def process_file(file)
-    if file.image?
-      host = Rails.application.config.action_controller.default_url_options[:host] || "localhost:3000"
-      image_url = Rails.application.routes.url_helpers.url_for(file, host: host)
-      send_question(model: "gpt-4o", image_url: image_url)
-    end
-  end
+  # def process_file(file)
+  #   if file.image?
+  #     host = Rails.application.config.action_controller.default_url_options[:host] || "localhost:3000"
+  #     image_url = Rails.application.routes.url_helpers.url_for(file, host: host)
+  #     send_question(model: "gpt-4o", image_url: image_url)
+  #   end
+  # end
 
-  def send_question(model: nil, image_url: nil)
+  def send_question(image_url: nil)
     # Auto-select correct model if image is attached
     model ||= image_url.present? ? "gpt-4o" : "gpt-4.1-nano"
 
@@ -213,10 +121,11 @@ class ChatsController < ApplicationController
     content = @message.content.presence || "What do you see in this image?"
 
     @ruby_llm_chat = @ruby_llm_chat.with_instructions(instructions)
+
     if image_url.present?
-         @response = @ruby_llm_chat.ask(content, with: { image: image_url })
+      @response = @ruby_llm_chat.ask(content, with: { image: image_url })
     else
-        @response = @ruby_llm_chat.ask(content)
+      @response = @ruby_llm_chat.ask(content)
     end
   end
 

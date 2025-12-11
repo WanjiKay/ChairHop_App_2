@@ -2,7 +2,7 @@ class Message < ApplicationRecord
   belongs_to :chat
   has_many_attached :photos
 
-  validates :content, length: { minimum: 1, maximum: 1000 }, if: -> { role == "user" && photos.blank? }
+  validates :content, length: { maximum: 1000 }
   validate :content_or_photos_present, if: -> { role == "user" }
   validates :role, presence: true
   validates :chat, presence: true
@@ -22,7 +22,7 @@ class Message < ApplicationRecord
 
   def file_size_validation
     photos.each do |photo|
-      if photo.byte_size > MAX_FILE_SIZE_MB.megabytes
+    if photo.byte_size > MAX_FILE_SIZE_MB.megabytes
         errors.add(:photos, "size must be less than #{MAX_FILE_SIZE_MB}MB")
       end
     end
