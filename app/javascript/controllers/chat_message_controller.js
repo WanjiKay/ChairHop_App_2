@@ -4,7 +4,9 @@ export default class extends Controller {
   static targets = ["textarea", "form", "messagesContainer"]
 
   connect() {
-    this.scrollToBottom()
+    requestAnimationFrame(() => {
+      this.scrollToBottom()
+    })
     this.resizeTextarea()
   }
 
