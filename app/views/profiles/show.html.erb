@@ -29,9 +29,16 @@
           <div class="row g-3">
             <!-- My Chats with Hopps -->
             <div class="col-md-6">
-              <%= link_to new_chat_path(appointment_id: @appointment.id), class: "action-card" do %>
-                <span style="font-size: 2rem;" class="mb-2 d-block">🐰</span>
-                <p class="mb-0 fw-bold">Ask HOPPS for Help</p>
+              <%= link_to chats_path, class: "action-card d-block text-decoration-none" do %>
+                <div class="d-flex align-items-center p-3 border rounded hover-shadow">
+                  <div class="me-3">
+                    <span style="font-size: 2rem;" class="mb-2 d-block">🐰</span>
+                  </div>
+                  <div>
+                    <h6 class="mb-0 text-primary fw-bold">My Chats with Hopps</h6>
+                    <small class="text-muted">AI assistant conversations</small>
+                  </div>
+                </div>
               <% end %>
             </div>
 
