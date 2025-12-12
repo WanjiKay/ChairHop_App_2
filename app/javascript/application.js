@@ -1,4 +1,5 @@
 import "@hotwired/turbo-rails"
+import * as bootstrap from "bootstrap"
 
 import { Application } from "@hotwired/stimulus"
 import SearchToggleController from "search_toggle_controller"
