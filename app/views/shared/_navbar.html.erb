@@ -6,53 +6,42 @@
       ChairHop
     <% end %>
 
-    <!-- Mobile Hamburger -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-supported"
-            aria-controls="navbar-supported" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <!-- Right side: Hopps + Avatar (always visible) -->
+    <div class="d-flex align-items-center gap-2">
 
-    <!-- Collapsible Menu -->
-    <div class="collapse navbar-collapse" id="navbar-supported">
+      <% if user_signed_in? %>
 
-      <!-- Push items to the right -->
-      <div class="ms-auto d-flex align-items-center gap-2">
+        <%= link_to "Hopps", new_chat_path, class: "btn btn-info btn-hopps" %>
 
-        <% if user_signed_in? %>
+        <div class="dropdown">
+          <a class="avatar-dropdown-toggle d-flex align-items-center" id="navbarDropdown"
+             href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <% if current_user&.avatar&.attached? %>
+              <%= image_tag url_for(current_user.avatar), class: "avatar-img", alt: "User menu" %>
+            <% else %>
+              <%= image_tag "profile.png", class: "avatar-img", alt: "User menu" %>
+            <% end %>
+          </a>
 
-          <%= link_to "Hopps", new_chat_path, class: "btn btn-info btn-hopps" %>
-
-          <div class="dropdown">
-            <a class="avatar-dropdown-toggle d-flex align-items-center" id="navbarDropdown"
-               href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <% if current_user&.avatar&.attached? %>
-                <%= image_tag url_for(current_user.avatar), class: "avatar-img", alt: "User menu" %>
-              <% else %>
-                <%= image_tag "profile.png", class: "avatar-img", alt: "User menu" %>
-              <% end %>
-            </a>
-
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <%= link_to "Profile", profile_path(edit: 1), class: "dropdown-item" %>
-              <%= link_to "Settings", edit_user_registration_path, class: "dropdown-item" %>
-              <%= link_to "Chats", chats_path, class: "dropdown-item" %>
-              <%= link_to "Conversations", conversations_path, class: "dropdown-item" %>
-              <%= link_to "Log out", destroy_user_session_path,
-                          data: { turbo_method: :delete },
-                          class: "dropdown-item" %>
-            </div>
+          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <%= link_to "Profile", profile_path(edit: 1), class: "dropdown-item" %>
+            <%= link_to "Settings", edit_user_registration_path, class: "dropdown-item" %>
+            <%= link_to "Chats", chats_path, class: "dropdown-item" %>
+            <%= link_to "Conversations", conversations_path, class: "dropdown-item" %>
+            <%= link_to "Log out", destroy_user_session_path,
+                        data: { turbo_method: :delete },
+                        class: "dropdown-item" %>
           </div>
+        </div>
 
-        <% else %>
+      <% else %>
 
-          <%= link_to "Hopps", "#", class: "btn btn-info btn-hopps disabled", aria_disabled: true %>
-          <%= link_to "Book Now", new_user_session_path, class: "btn btn-primary btn-book" %>
+        <%= link_to "Hopps", "#", class: "btn btn-info btn-hopps disabled", aria_disabled: true %>
+        <%= link_to "Book Now", new_user_session_path, class: "btn btn-primary btn-book" %>
 
-        <% end %>
+      <% end %>
 
-      </div> <!-- end right-container -->
-
-    </div> <!-- end collapse -->
+    </div>
 
   </div>
 </nav>
