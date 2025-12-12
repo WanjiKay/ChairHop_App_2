@@ -1,0 +1,11 @@
+// Flatpickr responsive adjustments
+.flatpickr-calendar {
+  z-index: 9999 !important;
+}
+
+@media (max-width: 480px) {
+  .flatpickr-calendar {
+    width: 100% !important;
+    max-width: 300px;
+  }
+}
