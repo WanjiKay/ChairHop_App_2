@@ -138,7 +138,9 @@
             </div>
             <div class="col-md-6">
               <%= link_to new_chat_path(appointment_id: @appointment.id), class: "action-card" do %>
-                <i class="fas fa-robot fa-2x mb-2"></i>
+                <div class="mb-2">
+                  <span style="font-size: 2rem;" class="mb-2 d-block">🐰</span>
+                </div>
                 <p class="mb-0 fw-bold">Ask HOPPS for Help</p>
               <% end %>
             </div>
