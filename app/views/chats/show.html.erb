@@ -114,7 +114,7 @@
 
         <!-- Message Input -->
         <div class="message-input-container mt-3" data-controller="image-upload">
-          <%= simple_form_for [@chat, @message], html: { multipart: true, class: "message-input-form", id: "messageForm", data: { chat_message_target: "form" } } do |f| %>
+          <%= simple_form_for [@chat, @message], html: { multipart: true, class: "message-input-form", id: "messageForm", data: { chat_message_target: "form", action: "turbo:submit-end->chat-message#scrollToBottom" } } do |f| %>
             <div class="input-wrapper d-flex align-items-center gap-2" data-image-upload-target="area">
               <label for="messagePhoto" class="btn btn-link upload-btn" data-action="click->image-upload#openFileDialog">
                 <i class="fas fa-image"></i>
