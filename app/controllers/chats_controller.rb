@@ -63,7 +63,8 @@ class ChatsController < ApplicationController
             distance: "euclidean"
           ).first(2)
         end
-        if @message.photos.attached?
+        if chat_photos.present?
+          @message.reload
           send_question(image_url: @message.photos.first.url)
         else
           send_question
