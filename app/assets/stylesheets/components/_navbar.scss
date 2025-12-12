@@ -240,6 +240,13 @@ body, .main-content, .hero-title-wrapper, .container {
     padding: 0.5rem 1rem;
     color: $color-cream;
   }
+
+  .navbar-lewagon .dropdown-menu {
+    position: absolute;
+    right: 0;
+    left: auto;
+    min-width: 150px;
+  }
 }
 
 @media (min-width: 769px) {
