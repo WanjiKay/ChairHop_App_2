@@ -8,7 +8,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <link rel="manifest" href="<%= asset_path 'manifest.json' %>">
+    <link rel="manifest" href="<%= asset_path 'icons/manifest.json' %>">
     <%= render 'shared/ios_pwa_links' %>
     <%= favicon_link_tag 'favicon.ico' %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
@@ -35,7 +35,7 @@
 
     <!-- Favicon + PWA -->
     <%= favicon_link_tag 'favicon.ico' %>
-  <%= tag.link rel: "manifest", href: asset_path("manifest.json") %>
+  <%= tag.link rel: "manifest", href: asset_path("icons/manifest.json") %>
 
     <!-- Optional: Apple icon -->
     <%= favicon_link_tag 'icons/apple-icon-180x180.png', rel: 'apple-touch-icon', type: 'image/png' %>

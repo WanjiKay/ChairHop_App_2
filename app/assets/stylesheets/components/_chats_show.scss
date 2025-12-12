@@ -328,6 +328,9 @@
   img {
     max-width: 150px;
     max-height: 150px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
     border-radius: $border-radius-lg;
     border: 2px solid $color-muted-olive;
   }

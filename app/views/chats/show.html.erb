@@ -97,12 +97,12 @@
 
         <!-- Message Input -->
         <div class="message-input-container mt-3">
-          <%= simple_form_for [@chat, @message], html: { class: "message-input-form", id: "messageForm" } do |f| %>
+          <%= simple_form_for [@chat, @message], html: { multipart: true, class: "message-input-form", id: "messageForm" } do |f| %>
             <div class="input-wrapper d-flex align-items-center gap-2">
               <label for="messagePhoto" class="btn btn-link upload-btn">
                 <i class="fas fa-image"></i>
               </label>
-              <%= f.input :photos, as: :file, input_html: { accept: "image/*", class: "d-none", id: "messagePhoto" }, label: false, wrapper: false %>
+              <%= f.input :photos, as: :file, input_html: { multiple: true, accept: "image/*", class: "d-none", id: "messagePhoto" }, label: false, wrapper: false %>
               <%= f.input :content, as: :text, input_html: { class: "form-control message-input flex-grow-1", placeholder: "Type your message...", rows: 1, id: "messageTextarea" }, label: false, wrapper: false %>
               <button type="submit" class="btn btn-primary send-btn">
                 <i class="fas fa-paper-plane"></i>
