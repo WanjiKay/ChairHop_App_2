@@ -1,5 +1,5 @@
 class ChatsController < ApplicationController
-  SYSTEM_PROMPT = "You are an assistant for a booking application. n/n/ The task is to help answer the questions of the customers."
+  SYSTEM_PROMPT = "You are an assistant for a booking application.\n\nThe task is to help answer the questions of the customers."
   before_action :authenticate_user!
 
   # List all chats for the user
@@ -107,7 +107,7 @@ class ChatsController < ApplicationController
 
   def send_question(image_url: nil)
     # Auto-select correct model if image is attached
-    model ||= image_url.present? ? "gpt-4o" : "gpt-4.1-nano"
+    model ||= image_attachment.present? || image_url.present? ? "gpt-4o" : "gpt-4.1-nano"
 
     @ruby_llm_chat = RubyLLM.chat(model: model)
 

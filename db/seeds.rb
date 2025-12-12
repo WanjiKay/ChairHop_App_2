@@ -10,39 +10,16 @@
 require "open-uri"
 
 # Clean up seed data but preserve customer bookings and their users
-puts "Cleaning up old seed data while preserving customer appointments..."
+puts "Cleaning up old seed data"
 
-# Find appointments that belong to customers (booked or have a customer assigned)
-customer_appointments = Appointment.where.not(customer_id: nil)
-customer_appointment_ids = customer_appointments.pluck(:id)
-
-# Find users who are customers (have made appointments)
-customer_user_ids = customer_appointments.pluck(:customer_id).uniq
-
-# Find stylists who have customer appointments (preserve them too)
-stylist_user_ids = customer_appointments.pluck(:stylist_id).uniq
-
-# Preserve these users
-preserved_user_ids = (customer_user_ids + stylist_user_ids).uniq
-
-puts "Preserving #{customer_appointments.count} customer appointments and #{preserved_user_ids.count} users..."
-
-# Only destroy conversations/messages for appointments we're deleting
-ConversationMessage.joins(:conversation).where.not(conversations: { appointment_id: customer_appointment_ids }).destroy_all
-Conversation.where.not(appointment_id: customer_appointment_ids).destroy_all
-
-# Only destroy chats and messages that don't belong to preserved customers
-Message.joins(:chat).where.not(chats: { customer_id: customer_user_ids }).destroy_all
-Chat.where.not(customer_id: customer_user_ids).destroy_all
-
-# Only destroy reviews for appointments we're deleting
-Review.where.not(appointment_id: customer_appointment_ids).destroy_all
-
-# Only destroy appointments without customers (unbooked seed appointments)
-Appointment.where(customer_id: nil).destroy_all
-
-# Only destroy users who are not preserved (not customers or stylists with customer appointments)
-User.where.not(id: preserved_user_ids).destroy_all
+# Clean up all existing data
+ConversationMessage.destroy_all
+Conversation.destroy_all
+Message.destroy_all
+Chat.destroy_all
+Review.destroy_all
+Appointment.destroy_all
+User.destroy_all
 # -----------------------------------------
 # SALON-SPECIFIC DESCRIPTIONS (appointment.content)
 # -----------------------------------------
@@ -235,30 +212,25 @@ appointments_created = 0
 salon_names.each do |salon|
   salon_images = salon_specific_images[salon]
 
-  # 1 morning appointment, 2 afternoon appointments
-  time_slots = [
-    { label: "morning",   hour_range: (7..10) },
-    { label: "afternoon", hour_range: (12..22) },
-    { label: "afternoon", hour_range: (12..22) }
+  # Exact schedule:
+  schedule = [
+    { day: Time.zone.today,    label: "today-afternoon",   hour_range: (19..22) },
+    { day: Time.zone.tomorrow, label: "tomorrow-morning",  hour_range: (7..10)  },
+    { day: Time.zone.tomorrow, label: "tomorrow-afternoon",hour_range: (12..22) }
   ]
 
   puts "Creating appointments for #{salon}..."
 
-  time_slots.each_with_index do |slot, idx|
-    # Random hour from range
+  schedule.each_with_index do |slot, idx|
     hour = rand(slot[:hour_range])
 
-    # Generate time for TODAY
     appointment_time = Time.zone.local(
-      Time.zone.today.year,
-      Time.zone.today.month,
-      Time.zone.today.day,
+      slot[:day].year,
+      slot[:day].month,
+      slot[:day].day,
       hour,
       0
     )
-
-    # If time already passed → push to tomorrow
-    appointment_time += 1.day if appointment_time <= Time.current
 
     puts "Creating #{slot[:label]} appointment at #{appointment_time}..."
 
@@ -273,11 +245,11 @@ salon_names.each do |salon|
       stylist: stylist_users.select { |u| stylist_salon_map[u.id] == salon }.sample
     )
 
+    # Attach 1 of the salon’s images
     file = URI.parse(salon_images[idx % salon_images.length]).open
-    appointment.image.attach(io: file, filename: "nes.png", content_type: "image/png")
+    appointment.image.attach(io: file, filename: "appointment.png", content_type: "image/png")
+
     appointment.save!
   end
 end
-
-
 puts "Seed complete: #{appointments_created} appointments created."
