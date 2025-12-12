@@ -42,7 +42,7 @@ export default class extends Controller {
   // Auto-scroll al final
   scrollToBottom() {
     if (this.hasMessagesContainerTarget) {
-      this.messagesContainerTarget.scrollTop = this.messagesContainerTarget.scrollHeight
+      this.messagesTarget.scrollTo(0, this.messagesTarget.scrollHeight)
     }
   }
 }
