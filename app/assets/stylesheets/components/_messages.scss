@@ -3,7 +3,7 @@
   min-height: 100vh;
   padding-bottom: 3rem;
   h1 {
-    font-family: 'Inter', sans-serif;
+    font-family: $headers-font;
     color: $primary;
     font-weight: 800;
     font-size: 2.5rem;
@@ -16,7 +16,7 @@
   }
 }
 .message-list-title {
-  font-family: 'Inter', sans-serif;
+  font-family: $body-font;
   color: $primary;
   font-weight: 700;
   font-size: 1.3rem;
@@ -36,7 +36,7 @@
     margin-bottom: 0.5rem;
   }
   .form-control {
-    border: 1px solid rgba($color-soft-gray, 0.5);
+    border: 1px solid rgba($primary, 0.5);
     padding: 0.75rem 1rem;
     &:focus {
       border-color: $primary;
