@@ -24,7 +24,7 @@ body{
 
   .hero-title {
     position: absolute;
-    font-family: 'Fascinate', system-ui;
+    font-family: $headers-font;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -52,7 +52,7 @@ body{
 
   .input-group {
     .form-control {
-      border: 1px solid rgba($color-soft-gray, 0.5);
+      border: 1px solid rgba($primary, 0.5);
       border-radius: 50px 0 0 50px;
       padding: 0.75rem 1.5rem;
       font-size: 1rem;
@@ -79,7 +79,7 @@ body{
 
 //Welcome
 .text-muted {
-  font-family: 'Inter', sans-serif;
+  font-family: $body-font;
   color: $color-dark-text !important;
   font-size: 1.1rem;
   opacity: 0.85;
@@ -103,7 +103,7 @@ body{
 
 //Page Header
 h1, h3, h4{
-  font-family: 'Inter', sans-serif;
+  font-family: $headers-font;
   color: $primary;
   font-weight: 700;
 }

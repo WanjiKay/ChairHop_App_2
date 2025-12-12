@@ -149,7 +149,7 @@ body, .main-content, .hero-title-wrapper, .container {
 }
 
 #site-title {
-  font-family: 'Fascinate', system-ui;
+  font-family: $headers-font;
   font-size: 1rem;
   font-weight: 700;
   color: $color-cream;
