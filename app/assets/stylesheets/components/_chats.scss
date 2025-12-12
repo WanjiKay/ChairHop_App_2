@@ -101,12 +101,14 @@
   height: 100%;
   opacity: 0;
   cursor: pointer;
+  z-index: 1;
 }
 
 .preview-container {
   position: relative;
   margin-top: 1rem;
   display: inline-block;
+  z-index: 2;
 }
 
 .preview-image {

@@ -107,7 +107,7 @@ class ChatsController < ApplicationController
 
   def send_question(image_url: nil)
     # Auto-select correct model if image is attached
-    model ||= image_attachment.present? || image_url.present? ? "gpt-4o" : "gpt-4.1-nano"
+    model = image_url.present? ? "gpt-4o" : "gpt-4.1-nano"
 
     @ruby_llm_chat = RubyLLM.chat(model: model)
 

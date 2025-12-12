@@ -1,4 +1,4 @@
-<div class="chat-show-page">
+<div class="chat-show-page" data-controller="chat-message">
   <div class="container">
     <!-- Flash Messages -->
     <% if flash[:alert] || flash[:notice] %>
@@ -48,7 +48,7 @@
           <% end %>
         </div>
 
-        <div class="message-messages" id="messagesContainer">
+        <div class="message-messages" id="messagesContainer" data-chat-message-target="messagesContainer">
           <% if @chat.messages.any? %>
             <% @chat.messages.each do |message| %>
               <% if message.role == 'user' %>
@@ -91,27 +91,44 @@
               </div>
               <h3>Start a conversation</h3>
               <p>Send a message or upload an image to begin</p>
+              <div class="quick-suggestions mt-4">
+                <button type="button" class="btn btn-outline-primary me-2 mb-2"
+                        data-action="click->chat-message#insertSuggestion"
+                        data-chat-message-text="Help me find a stylist for curly hair">
+                  <i class="fas fa-magic me-1"></i> Curly hair stylist
+                </button>
+                <button type="button" class="btn btn-outline-primary me-2 mb-2"
+                        data-action="click->chat-message#insertSuggestion"
+                        data-chat-message-text="Book an appointment for a haircut">
+                  <i class="fas fa-cut me-1"></i> Book a haircut
+                </button>
+                <button type="button" class="btn btn-outline-primary me-2 mb-2"
+                        data-action="click->chat-message#insertSuggestion"
+                        data-chat-message-text="Hair colour consultation">
+                  <i class="fas fa-palette me-1"></i> Colour consultation
+                </button>
+              </div>
             </div>
           <% end %>
         </div>
 
         <!-- Message Input -->
-        <div class="message-input-container mt-3">
-          <%= simple_form_for [@chat, @message], html: { multipart: true, class: "message-input-form", id: "messageForm" } do |f| %>
-            <div class="input-wrapper d-flex align-items-center gap-2">
-              <label for="messagePhoto" class="btn btn-link upload-btn">
+        <div class="message-input-container mt-3" data-controller="image-upload">
+          <%= simple_form_for [@chat, @message], html: { multipart: true, class: "message-input-form", id: "messageForm", data: { chat_message_target: "form" } } do |f| %>
+            <div class="input-wrapper d-flex align-items-center gap-2" data-image-upload-target="area">
+              <label for="messagePhoto" class="btn btn-link upload-btn" data-action="click->image-upload#openFileDialog">
                 <i class="fas fa-image"></i>
               </label>
-              <%= f.input :photos, as: :file, input_html: { multiple: true, accept: "image/*", class: "d-none", id: "messagePhoto" }, label: false, wrapper: false %>
-              <%= f.input :content, as: :text, input_html: { class: "form-control message-input flex-grow-1", placeholder: "Type your message...", rows: 1, id: "messageTextarea" }, label: false, wrapper: false %>
+              <%= f.input :photos, as: :file, input_html: { multiple: true, accept: "image/*", class: "d-none", id: "messagePhoto", data: { image_upload_target: "input", action: "change->image-upload#handleFileSelect" } }, label: false, wrapper: false %>
+              <%= f.input :content, as: :text, input_html: { class: "form-control message-input flex-grow-1", placeholder: "Type your message...", rows: 1, id: "messageTextarea", data: { chat_message_target: "textarea", action: "input->chat-message#handleInput keydown->chat-message#handleKeydown" } }, label: false, wrapper: false %>
               <button type="submit" class="btn btn-primary send-btn">
                 <i class="fas fa-paper-plane"></i>
               </button>
             </div>
 
-            <div class="image-preview d-none" id="imagePreview">
-              <img src="" alt="Preview" id="previewImg">
-              <button type="button" class="btn btn-sm btn-danger remove-image" id="removeImage">
+            <div class="image-preview d-none" id="imagePreview" data-image-upload-target="previewContainer">
+              <img src="" alt="Preview" id="previewImg" data-image-upload-target="previewImage">
+              <button type="button" class="btn btn-sm btn-danger remove-image" id="removeImage" data-image-upload-target="removeButton" data-action="click->image-upload#removePreview">
                 <i class="fas fa-times"></i>
               </button>
             </div>
@@ -121,74 +138,3 @@
     </div>
   </div>
 </div>
-
-<script>
-// Auto-scroll to bottom when page loads
-function scrollToBottom() {
-  const messagesContainer = document.getElementById('messagesContainer');
-  if (messagesContainer) {
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  }
-}
-
-// Run on DOMContentLoaded
-document.addEventListener('DOMContentLoaded', scrollToBottom);
-
-// Run on full page load (after images and content render)
-window.addEventListener('load', scrollToBottom);
-
-// Run after Turbo loads content
-document.addEventListener('turbo:load', scrollToBottom);
-
-// Run after a short delay as additional fallback
-setTimeout(scrollToBottom, 100);
-
-function initMessageUI() {
-
-  // Auto-resize textarea
-  const textarea = document.getElementById('messageTextarea');
-  if (textarea) {
-     textarea.style.height = textarea.scrollHeight + "px";
-     textarea.addEventListener('input', function() {
-      this.style.height = 'auto';
-      this.style.height = this.scrollHeight + 'px';
-    });
-
-    textarea.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        document.getElementById('messageForm').requestSubmit();
-      }
-    });
-  }
-
-  // Image preview
-  const photoInput = document.getElementById('messagePhoto');
-  const imagePreview = document.getElementById('imagePreview');
-  const previewImg = document.getElementById('previewImg');
-  const removeImage = document.getElementById('removeImage');
-
-  if (photoInput) {
-    photoInput.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          previewImg.src = e.target.result;
-          imagePreview.classList.remove('d-none');
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-
-  if (removeImage) {
-    removeImage.addEventListener('click', function() {
-      photoInput.value = '';
-      imagePreview.classList.add('d-none');
-    });
-  }
-}
-document.addEventListener('DOMContentLoaded', initMessageUI);
-document.addEventListener('turbo:load', initMessageUI);
-</script>
