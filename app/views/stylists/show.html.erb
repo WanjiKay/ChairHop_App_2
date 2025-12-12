@@ -32,6 +32,37 @@
           <p class="text-muted mb-0"><%= @stylist.about %></p>
         </div>
 
+
+        <!-- Available Appointments Section -->
+        <div class="booking-details-card mb-4">
+          <h4 class="text-primary fw-bold mb-3">
+            <i class="fas fa-calendar-check me-2"></i>Available Appointments
+          </h4>
+
+          <% if @appointments.any? %>
+            <div class="appointments-list">
+              <% @appointments.each do |appt| %>
+                <div class="detail-row mb-3">
+                  <div>
+                    <i class="fas fa-clock me-2 text-primary"></i>
+                    <span class="detail-label"><%= appt.time.strftime("%b %d, %Y at %I:%M %p") if appt.time.present? %></span>
+                    <br>
+                    <small class="text-muted ms-4"><i class="fas fa-map-marker-alt me-2"></i><%= appt.location %></small>
+                  </div>
+                  <div>
+                    <%= link_to "View", appointment_path(appt), class: "btn btn-primary btn-sm" %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-4">
+              <i class="fas fa-calendar-times fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
+              <p class="text-muted mb-0">No available appointments at this time.</p>
+            </div>
+          <% end %>
+        </div>
+
         <!-- Reviews Section -->
         <div class="booking-details-card mb-4">
           <h4 class="text-primary fw-bold mb-3">
@@ -60,36 +91,6 @@
             <div class="text-center py-4">
               <i class="fas fa-comment-slash fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
               <p class="text-muted mb-0">No reviews yet.</p>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Available Appointments Section -->
-        <div class="booking-details-card mb-4">
-          <h4 class="text-primary fw-bold mb-3">
-            <i class="fas fa-calendar-check me-2"></i>Available Appointments
-          </h4>
-
-          <% if @appointments.any? %>
-            <div class="appointments-list">
-              <% @appointments.each do |appt| %>
-                <div class="detail-row mb-3">
-                  <div>
-                    <i class="fas fa-clock me-2 text-primary"></i>
-                    <span class="detail-label"><%= appt.time.strftime("%b %d, %Y at %I:%M %p") if appt.time.present? %></span>
-                    <br>
-                    <small class="text-muted ms-4"><i class="fas fa-map-marker-alt me-2"></i><%= appt.location %></small>
-                  </div>
-                  <div>
-                    <%= link_to "View", appointment_path(appt), class: "btn btn-primary btn-sm" %>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          <% else %>
-            <div class="text-center py-4">
-              <i class="fas fa-calendar-times fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
-              <p class="text-muted mb-0">No available appointments at this time.</p>
             </div>
           <% end %>
         </div>
