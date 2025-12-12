@@ -23,7 +23,7 @@ Rails.application.configure do
     protocol: protocol
   }
 
-  config.asset_host = "#{protocol}://#{ENV.fetch("APP_HOST", "localhost:3000")}"
+  # config.asset_host = "#{protocol}://#{ENV.fetch("APP_HOST", "localhost:3000")}"
 
   # Settings specified here will take precedence over those in config/application.rb.
 
