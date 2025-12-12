@@ -5,8 +5,7 @@ export default class extends Controller {
   static targets = ["filters", "date", "time"];
 
   connect() {
-    // Initialize flatpickr for any visible inputs on load
-    this.initFlatpickr();
+    // Flatpickr se inicializa solo cuando el form se hace visible (en toggle)
   }
 
   toggle() {
