@@ -46,10 +46,16 @@ Rails.application.routes.draw do
   # API routes for mobile apps
   namespace :api do
     namespace :v1 do
-      # Authentication endpoints
-      post 'login', to: 'sessions#create'
-      delete 'logout', to: 'sessions#destroy'
-      post 'signup', to: 'registrations#create'
+      # Wrap authentication routes in devise_scope
+      devise_scope :user do
+        post 'login', to: 'sessions#create'
+        delete 'logout', to: 'sessions#destroy'
+        post 'signup', to: 'registrations#create'
+      end
+
+      # Profile endpoints (requires authentication)
+      get 'profile', to: 'profiles#show'
+      patch 'profile', to: 'profiles#update'
     end
   end
 end
