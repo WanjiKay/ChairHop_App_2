@@ -95,6 +95,20 @@ class Appointment < ApplicationRecord
     base_service_price + total_add_ons_price
   end
 
+  def accept!
+    return false unless pending?
+    self.status = :booked
+    self.booked = true
+    save
+  end
+
+  def cancel!
+    self.status = :cancelled
+    self.booked = false
+    self.customer = nil
+    save
+  end
+
   private
 
   def set_embedding
@@ -104,13 +118,13 @@ class Appointment < ApplicationRecord
     Stylist: #{stylist.name}.
     Services: #{services}.")
     update(embedding: embedding.vectors)
-  rescue RubyLLM::RateLimitError => e
-    # Silently skip embedding if rate limit is hit (can be regenerated later)
+  rescue => e
+    # Silently skip embedding if API is not configured or rate limit is hit
     Rails.logger.warn "Skipping embedding for appointment #{id}: #{e.message}"
   end
 
   def user_cannot_book_multiple
-    if booked && customer && customer.appointments_as_stylist.where(booked: true).where.not(id: id).exists?
+    if booked && customer && customer.appointments_as_customer.where(booked: true).where.not(id: id).exists?
       errors.add(:base, "Honey, you can't sit in two chairs at once!")
     end
   end

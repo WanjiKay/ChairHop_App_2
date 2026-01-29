@@ -43,4 +43,13 @@ Rails.application.routes.draw do
 
   resources :messages, only: [:index, :create]
 
+  # API routes for mobile apps
+  namespace :api do
+    namespace :v1 do
+      # Authentication endpoints
+      post 'login', to: 'sessions#create'
+      delete 'logout', to: 'sessions#destroy'
+      post 'signup', to: 'registrations#create'
+    end
+  end
 end
