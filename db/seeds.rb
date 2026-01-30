@@ -9,6 +9,12 @@
 #   end
 require "open-uri"
 
+# IMPORTANT: This seed file creates development/test data only
+# Password is configurable via SEED_PASSWORD environment variable
+# If not set, a random password will be generated (use 'password' for local development)
+SEED_PASSWORD = ENV['SEED_PASSWORD'] || 'password'
+puts "Using seed password: #{SEED_PASSWORD == 'password' ? 'password (default)' : '[custom/secure password]'}"
+
 # Clean up seed data but preserve customer bookings and their users
 puts "Cleaning up old seed data"
 
@@ -139,16 +145,25 @@ stylist_salon_map = {}
 stylist_users = stylists.map do |s|
     stylist = User.new(
     email: s[:email],
-    password: "password",
+    password: SEED_PASSWORD,
     name: s[:name],
     username: s[:username],
     location: s[:location],
     about: s[:about],
+    role: :stylist,
   )
- file = URI.parse(stylist_avatar[i]).open
-  stylist.avatar.attach(io: file, filename: "nes.png", content_type: "image/png")
+
   stylist.save!
- stylist_salon_map[stylist.id] = s[:salon]
+
+  # Attach avatar only if Cloudinary is configured
+  # Commented out for initial setup - configure Cloudinary to enable
+  # begin
+  #   file = URI.parse(stylist_avatar[i]).open
+  #   stylist.avatar.attach(io: file, filename: "nes.png", content_type: "image/png")
+  # rescue => e
+  #   puts "Skipping avatar for #{s[:name]}: #{e.message}"
+  # end
+  stylist_salon_map[stylist.id] = s[:salon]
 
   i = i + 1
   stylist
@@ -160,12 +175,60 @@ stylist_users = stylists.map do |s|
 customer_users = 10.times.map do |i|
   User.create!(
     email: "customer#{i + 1}@example.com",
-    password: "password",
+    password: SEED_PASSWORD,
     name: "Customer #{i + 1}",
     username: "customer#{i + 1}",
-    location: ["Montreal", "Laval", "Longueuil"].sample
+    location: ["Montreal", "Laval", "Longueuil"].sample,
+    role: :customer
   )
 end
+
+# -----------------------------------------
+# CREATE SERVICES FOR STYLISTS
+# -----------------------------------------
+puts "Creating services for stylists..."
+
+# Create services based on salon and service list
+stylist_users.each do |stylist|
+  salon = stylist_salon_map[stylist.id]
+  services_for_salon = salon_services[salon] || []
+
+  puts "Creating #{services_for_salon.length} services for #{stylist.name} at #{salon}..."
+
+  services_for_salon.each do |service_data|
+    Service.create!(
+      name: service_data[:name],
+      price_cents: (service_data[:price] * 100).to_i,  # Convert dollars to cents
+      stylist: stylist,
+      active: true,
+      description: "#{service_data[:name]} service at #{salon}"
+    )
+  end
+end
+
+# Create add-on services for each stylist based on their salon
+Appointment::SALON_ADD_ONS.each do |salon, add_ons|
+  salon_stylists = stylist_users.select { |u| stylist_salon_map[u.id] == salon }
+
+  salon_stylists.each do |stylist|
+    add_ons.each do |add_on_string|
+      # Parse "Service Name - $Price" format
+      name = add_on_string.split(" - $").first
+      price = add_on_string.split(" - $").last.to_f
+
+      Service.create!(
+        name: name,
+        price_cents: (price * 100).to_i,
+        stylist: stylist,
+        active: true,
+        description: "Add-on service: #{name}"
+      )
+    end
+  end
+end
+
+puts "Services created: #{Service.count}"
+
 # -----------------------------------------
 # SALON ADDRESSES
 # -----------------------------------------
@@ -245,11 +308,16 @@ salon_names.each do |salon|
       stylist: stylist_users.select { |u| stylist_salon_map[u.id] == salon }.sample
     )
 
-    # Attach 1 of the salon’s images
-    file = URI.parse(salon_images[idx % salon_images.length]).open
-    appointment.image.attach(io: file, filename: "appointment.png", content_type: "image/png")
-
     appointment.save!
+
+    # Attach appointment images only if Cloudinary is configured
+    # Commented out for initial setup - configure Cloudinary to enable
+    # begin
+    #   file = URI.parse(salon_images[idx % salon_images.length]).open
+    #   appointment.image.attach(io: file, filename: "appointment.png", content_type: "image/png")
+    # rescue => e
+    #   puts "Skipping appointment image: #{e.message}"
+    # end
   end
 end
 puts "Seed complete: #{appointments_created} appointments created."

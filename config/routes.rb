@@ -43,4 +43,47 @@ Rails.application.routes.draw do
 
   resources :messages, only: [:index, :create]
 
+  # API routes for mobile apps
+  namespace :api do
+    namespace :v1 do
+      # Wrap authentication routes in devise_scope
+      devise_scope :user do
+        post 'login', to: 'sessions#create'
+        delete 'logout', to: 'sessions#destroy'
+        post 'signup', to: 'registrations#create'
+      end
+
+      # Profile endpoints (requires authentication)
+      get 'profile', to: 'profiles#show'
+      patch 'profile', to: 'profiles#update'
+
+      # Appointments endpoints
+      resources :appointments, only: [:index, :show] do
+        member do
+          post :book
+        end
+        collection do
+          get :my_appointments
+        end
+      end
+
+      # Reviews endpoints
+      resources :reviews, only: [:create]
+      get 'appointments/:appointment_id/reviews', to: 'reviews#show'
+
+      # Services endpoints (public browsing)
+      resources :services, only: [:index, :show]
+
+      # Stylist namespace - endpoints for stylists only
+      namespace :stylist do
+        resources :appointments do
+          member do
+            patch :accept
+            patch :complete
+          end
+        end
+        resources :services
+      end
+    end
+  end
 end

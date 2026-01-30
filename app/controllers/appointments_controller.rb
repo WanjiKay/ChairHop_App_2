@@ -3,6 +3,7 @@ class AppointmentsController < ApplicationController
   before_action :set_appointment, only: [:show, :check_in, :confirmation, :book, :booked, :destroy, :complete]
 
   def index
+    authorize Appointment
     @appointments = Appointment.where(status: :pending)
 
     # Handle simple search query with smart synonyms (from search bar)
@@ -84,8 +85,20 @@ class AppointmentsController < ApplicationController
     end
   end
 
+  def show
+    authorize @appointment
+    # Show appointment details
+  end
+
   def my_appointments
-    @my_appointments = current_user.appointments_as_customer.where(status: [:booked, :completed, :cancelled])
+    authorize Appointment, :my_appointments?
+    # Include both appointments as customer AND as stylist
+    @my_appointments = Appointment.where(
+      "(customer_id = ? OR stylist_id = ?) AND status IN (?)",
+      current_user.id,
+      current_user.id,
+      [:booked, :completed, :cancelled]
+    ).order(time: :desc)
   end
 
   # def check_in
@@ -99,6 +112,7 @@ class AppointmentsController < ApplicationController
   # end
 
 def check_in
+  authorize @appointment
   if !@appointment.pending?
     redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
     return
@@ -148,6 +162,7 @@ end
 
 
   def confirmation
+    authorize @appointment
     if !@appointment.pending?
       redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
     else
@@ -157,29 +172,40 @@ end
   end
 
   def book
+    authorize @appointment
     if !@appointment.pending?
       redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
-    elsif @appointment.update(customer: current_user, booked: true, status: :booked, selected_service: params[:selected_service])
-      # Save add-ons if any were selected
-      if params[:selected_add_ons].present?
-        params[:selected_add_ons].each do |add_on_service|
-          @appointment.appointment_add_ons.create(
-            service_name: add_on_service,
-            price: extract_price(add_on_service)
-          )
-        end
-      end
-
-      # Clear session data after successful booking
-      session.delete("appointment_#{@appointment.id}_selections")
-
-      redirect_to booked_appointment_path(@appointment), notice: "Appointment successfully booked!"
     else
-      redirect_to check_in_appointment_path(@appointment, selected_service: params[:selected_service]), alert: "Something went wrong."
+      # Assign customer and selected service
+      @appointment.assign_attributes(
+        customer: current_user,
+        selected_service: params[:selected_service]
+      )
+
+      # Transition to booked status
+      if @appointment.accept!
+        # Save add-ons if any were selected
+        if params[:selected_add_ons].present?
+          params[:selected_add_ons].each do |add_on_service|
+            @appointment.appointment_add_ons.create(
+              service_name: add_on_service,
+              price: extract_price(add_on_service)
+            )
+          end
+        end
+
+        # Clear session data after successful booking
+        session.delete("appointment_#{@appointment.id}_selections")
+
+        redirect_to booked_appointment_path(@appointment), notice: "Appointment successfully booked!"
+      else
+        redirect_to check_in_appointment_path(@appointment, selected_service: params[:selected_service]), alert: "Something went wrong."
+      end
     end
   end
 
   def booked
+    authorize @appointment
     if @appointment.booked? && @appointment.customer == current_user
       @service_price = extract_price(@appointment.selected_service)
       @add_ons_total = @appointment.total_add_ons_price
@@ -189,8 +215,9 @@ end
   end
 
   def destroy
+    authorize @appointment
     if @appointment.customer == current_user
-      @appointment.update(customer: nil, booked: false, status: :cancelled)
+      @appointment.cancel!
 
       # Clear session data when unbooking
       session.delete("appointment_#{@appointment.id}_selections")
@@ -202,6 +229,7 @@ end
   end
 
   def complete
+    authorize @appointment
     # Check if user is either the customer or stylist
     is_customer = @appointment.customer == current_user
     is_stylist = @appointment.stylist == current_user

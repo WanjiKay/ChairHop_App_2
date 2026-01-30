@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_03_001119) do
+ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "vector"
@@ -49,7 +49,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_03_001119) do
     t.decimal "price", precision: 8, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "service_id"
     t.index ["appointment_id"], name: "index_appointment_add_ons_on_appointment_id"
+    t.index ["service_id"], name: "index_appointment_add_ons_on_service_id"
   end
 
   create_table "appointments", force: :cascade do |t|
@@ -101,6 +103,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_03_001119) do
     t.index ["stylist_id"], name: "index_conversations_on_stylist_id"
   end
 
+  create_table "jwt_denylists", force: :cascade do |t|
+    t.string "jti", null: false
+    t.datetime "exp", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["jti"], name: "index_jwt_denylists_on_jti"
+  end
+
   create_table "messages", force: :cascade do |t|
     t.string "role"
     t.text "content"
@@ -125,6 +135,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_03_001119) do
     t.index ["stylist_id"], name: "index_reviews_on_stylist_id"
   end
 
+  create_table "services", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.integer "price_cents", null: false
+    t.bigint "stylist_id", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stylist_id", "name"], name: "index_services_on_stylist_id_and_name"
+    t.index ["stylist_id"], name: "index_services_on_stylist_id"
+  end
+
   create_table "solid_cable_messages", force: :cascade do |t|
     t.text "channel"
     t.text "payload"
@@ -145,6 +167,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_03_001119) do
     t.string "username"
     t.string "location"
     t.text "about"
+    t.integer "role", default: 0, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -152,6 +175,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_03_001119) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "appointment_add_ons", "appointments"
+  add_foreign_key "appointment_add_ons", "services"
   add_foreign_key "appointments", "users", column: "customer_id"
   add_foreign_key "appointments", "users", column: "stylist_id"
   add_foreign_key "chats", "appointments"
@@ -164,4 +188,5 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_03_001119) do
   add_foreign_key "reviews", "appointments"
   add_foreign_key "reviews", "users", column: "customer_id"
   add_foreign_key "reviews", "users", column: "stylist_id"
+  add_foreign_key "services", "users", column: "stylist_id"
 end

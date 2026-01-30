@@ -7,10 +7,12 @@ class Message < ApplicationRecord
   validates :role, presence: true
   validates :chat, presence: true
   validate :file_size_validation
+  validate :file_content_type_validation
   validate :user_message_limit, if: -> { role == "user" }
 
-  MAX_FILE_SIZE_MB = 10
+  MAX_FILE_SIZE_MB = 5
   MAX_USER_MESSAGES = 15
+  ALLOWED_CONTENT_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp']
 
   private
 
@@ -22,12 +24,19 @@ class Message < ApplicationRecord
 
   def file_size_validation
     photos.each do |photo|
-    if photo.byte_size > MAX_FILE_SIZE_MB.megabytes
+      if photo.byte_size > MAX_FILE_SIZE_MB.megabytes
         errors.add(:photos, "size must be less than #{MAX_FILE_SIZE_MB}MB")
       end
     end
   end
 
+  def file_content_type_validation
+    photos.each do |photo|
+      unless ALLOWED_CONTENT_TYPES.include?(photo.content_type)
+        errors.add(:photos, "must be a PNG, JPEG, JPG, or WEBP image")
+      end
+    end
+  end
 
   def user_message_limit
     if chat.messages.where(role: "user").count >= MAX_USER_MESSAGES
