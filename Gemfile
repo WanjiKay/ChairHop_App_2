@@ -61,6 +61,7 @@ gem "sassc-rails"
 gem "image_processing", "~> 1.2"
 gem "solid_cable"
 gem "neighbor"
+gem 'kaminari'
 
 group :development, :test do
   gem "dotenv-rails"
