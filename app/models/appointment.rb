@@ -8,7 +8,7 @@ class Appointment < ApplicationRecord
   has_one_attached :image
   has_neighbors :embedding
   after_create :set_embedding
-  validate :user_cannot_book_multiple, on: :update
+  # validate :user_cannot_book_multiple, on: :update
 
   validates :time, presence: true
   validates :location, presence: true
@@ -123,9 +123,9 @@ class Appointment < ApplicationRecord
     Rails.logger.warn "Skipping embedding for appointment #{id}: #{e.message}"
   end
 
-  def user_cannot_book_multiple
-    if booked && customer && customer.appointments_as_customer.where(booked: true).where.not(id: id).exists?
-      errors.add(:base, "Honey, you can't sit in two chairs at once!")
-    end
-  end
+  # def user_cannot_book_multiple
+  #   if booked && customer && customer.appointments_as_customer.where(booked: true).where.not(id: id).exists?
+  #     errors.add(:base, "Honey, you can't sit in two chairs at once!")
+  #   end
+  # end
 end

@@ -42,18 +42,10 @@ module Api
         # POST /api/v1/stylist/appointments
         # Create new availability slot
         def create
-          @appointment = Appointment.new(
-            stylist_id: current_user.id,
-            time: params[:time],
-            location: params[:location],
-            status: :pending,
-            booked: false
-          )
-
-          # Add services to the services text field if provided
-          if params[:services].present? && params[:services].is_a?(Array)
-            @appointment.services = params[:services].join(', ')
-          end
+          @appointment = Appointment.new(appointment_params)
+          @appointment.stylist_id = current_user.id
+          @appointment.status = :pending
+          @appointment.booked = false
 
           if @appointment.save
             render json: {
@@ -61,6 +53,7 @@ module Api
               message: 'Availability created successfully'
             }, status: :created
           else
+            Rails.logger.error "Appointment validation errors: #{@appointment.errors.full_messages}"
             render json: {
               error: 'Failed to create availability',
               errors: @appointment.errors.full_messages
@@ -171,6 +164,10 @@ module Api
               message: 'Only stylists can access this endpoint'
             }, status: :forbidden
           end
+        end
+
+        def appointment_params
+          params.require(:appointment).permit(:time, :location, :services)
         end
 
         def set_appointment
