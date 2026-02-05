@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_04_223027) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "vector"
@@ -130,7 +130,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
     t.bigint "stylist_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["appointment_id"], name: "index_reviews_on_appointment_id"
+    t.index ["appointment_id"], name: "index_reviews_on_appointment_id", unique: true
     t.index ["customer_id"], name: "index_reviews_on_customer_id"
     t.index ["stylist_id"], name: "index_reviews_on_stylist_id"
   end

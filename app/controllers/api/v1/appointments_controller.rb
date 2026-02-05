@@ -2,7 +2,7 @@ module Api
   module V1
     class AppointmentsController < BaseController
       skip_before_action :authenticate_api_user!, only: [:index, :show]
-      before_action :set_appointment, only: [:show, :book]
+      before_action :set_appointment, only: [:show, :book, :cancel]
 
       # GET /api/v1/appointments
       # List all available appointments with optional filters
@@ -113,6 +113,38 @@ module Api
         render json: {
           appointment: appointment_detail_json(@appointment.reload),
           message: 'Booking request sent to stylist'
+        }, status: :ok
+      end
+
+      # DELETE /api/v1/appointments/:id/cancel
+      # Cancel a booked appointment
+      def cancel
+        # Verify the customer owns this booking
+        unless @appointment.customer_id == current_user.id
+          render json: { error: 'Unauthorized' }, status: :forbidden
+          return
+        end
+
+        # Can only cancel pending or booked appointments
+        unless @appointment.pending? || @appointment.booked?
+          render json: {
+            error: 'Cannot cancel',
+            message: 'Only pending or booked appointments can be cancelled'
+          }, status: :unprocessable_entity
+          return
+        end
+
+        # Clear the customer and reset to available
+        @appointment.update(
+          customer_id: nil,
+          selected_service: nil,
+          status: :pending,
+          booked: false
+        )
+
+        render json: {
+          message: 'Booking cancelled successfully',
+          appointment: appointment_json(@appointment)
         }, status: :ok
       end
 

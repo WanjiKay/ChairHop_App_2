@@ -61,6 +61,7 @@ Rails.application.routes.draw do
       resources :appointments, only: [:index, :show] do
         member do
           post :book
+          delete :cancel
         end
         collection do
           get :my_appointments
@@ -68,7 +69,8 @@ Rails.application.routes.draw do
       end
 
       # Reviews endpoints
-      resources :reviews, only: [:create]
+      resources :reviews, only: [:index]
+      post 'appointments/:appointment_id/review', to: 'reviews#create'
       get 'appointments/:appointment_id/reviews', to: 'reviews#show'
 
       # Services endpoints (public browsing)

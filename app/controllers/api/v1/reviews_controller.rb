@@ -1,10 +1,33 @@
 module Api
   module V1
     class ReviewsController < BaseController
+      skip_before_action :authenticate_api_user!, only: [:index]
       before_action :set_appointment, only: [:create]
       before_action :set_appointment_for_show, only: [:show]
 
-      # POST /api/v1/reviews
+      # GET /api/v1/reviews?stylist_id=X
+      # List reviews for a specific stylist
+      def index
+        unless params[:stylist_id]
+          render json: { error: 'stylist_id required' }, status: :bad_request
+          return
+        end
+
+        stylist = User.find(params[:stylist_id])
+        @reviews = Review.where(stylist_id: stylist.id)
+                         .includes(:customer, :appointment)
+                         .order(created_at: :desc)
+
+        render json: {
+          reviews: @reviews.map { |review| review_index_json(review) },
+          average_rating: @reviews.average(:rating)&.round(1) || 0,
+          total_reviews: @reviews.count
+        }, status: :ok
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: 'Stylist not found' }, status: :not_found
+      end
+
+      # POST /api/v1/appointments/:appointment_id/review
       # Create a review for a completed appointment
       def create
         # Verify appointment is completed
@@ -113,6 +136,24 @@ module Api
 
       def review_params
         params.require(:review).permit(:rating, :content)
+      end
+
+      def review_index_json(review)
+        {
+          id: review.id,
+          rating: review.rating,
+          content: review.content,
+          created_at: review.created_at,
+          customer: {
+            id: review.customer.id,
+            name: review.customer.name
+          },
+          appointment: {
+            id: review.appointment.id,
+            time: review.appointment.time,
+            selected_service: review.appointment.selected_service
+          }
+        }
       end
 
       def review_json(review)
