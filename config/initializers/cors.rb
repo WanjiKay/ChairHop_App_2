@@ -8,9 +8,11 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     # Allow requests from React Native development servers
     origins(
       'http://localhost:8081',      # React Native Metro bundler
+      'http://localhost:8082',      # React Native web
       'http://localhost:19000',     # Expo dev server
       'http://localhost:19006',     # Expo web
       'http://127.0.0.1:8081',      # Alternative localhost format
+      'http://127.0.0.1:8082',
       'http://127.0.0.1:19000',
       'http://127.0.0.1:19006',
       /\Aexp:\/\//                  # Expo Go app scheme

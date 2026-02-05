@@ -68,10 +68,19 @@ Rails.application.routes.draw do
         end
       end
 
+      # Push token registration
+      post 'users/push_token', to: 'users#update_push_token'
+
       # Reviews endpoints
       resources :reviews, only: [:index]
       post 'appointments/:appointment_id/review', to: 'reviews#create'
       get 'appointments/:appointment_id/reviews', to: 'reviews#show'
+
+      # Conversations endpoints (in-app messaging)
+      resources :conversations, only: [:index, :show] do
+        resources :messages, controller: 'conversation_messages', only: [:create]
+      end
+      post 'appointments/:appointment_id/conversations', to: 'conversations#create'
 
       # Services endpoints (public browsing)
       resources :services, only: [:index, :show]

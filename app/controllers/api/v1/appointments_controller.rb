@@ -110,8 +110,19 @@ module Api
           end
         end
 
+        @appointment.reload
+
+        # Send notification to stylist
+        notification_service = PushNotificationService.new
+        notification_service.send_to_user(
+          @appointment.stylist,
+          'New Booking Request',
+          "#{current_user.name} requested an appointment",
+          { type: 'booking_request', appointment_id: @appointment.id }
+        )
+
         render json: {
-          appointment: appointment_detail_json(@appointment.reload),
+          appointment: appointment_detail_json(@appointment),
           message: 'Booking request sent to stylist'
         }, status: :ok
       end
@@ -133,6 +144,16 @@ module Api
           }, status: :unprocessable_entity
           return
         end
+
+        # Send notification to stylist before clearing
+        stylist = @appointment.stylist
+        notification_service = PushNotificationService.new
+        notification_service.send_to_user(
+          stylist,
+          'Booking Cancelled',
+          "#{current_user.name} cancelled their appointment",
+          { type: 'booking_cancelled', appointment_id: @appointment.id }
+        )
 
         # Clear the customer and reset to available
         @appointment.update(

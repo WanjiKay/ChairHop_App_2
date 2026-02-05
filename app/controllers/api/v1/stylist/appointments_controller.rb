@@ -81,6 +81,15 @@ module Api
           end
 
           if @appointment.accept!
+            # Send notification to customer
+            notification_service = PushNotificationService.new
+            notification_service.send_to_user(
+              @appointment.customer,
+              'Booking Accepted!',
+              "#{@appointment.stylist.name} accepted your appointment",
+              { type: 'booking_accepted', appointment_id: @appointment.id }
+            )
+
             render json: {
               appointment: appointment_json(@appointment.reload),
               message: 'Booking accepted successfully'
@@ -113,6 +122,15 @@ module Api
           end
 
           if @appointment.update(status: :completed)
+            # Send notification to customer
+            notification_service = PushNotificationService.new
+            notification_service.send_to_user(
+              @appointment.customer,
+              'Please Review',
+              "How was your appointment with #{@appointment.stylist.name}?",
+              { type: 'review_request', appointment_id: @appointment.id }
+            )
+
             render json: {
               appointment: appointment_json(@appointment),
               message: 'Appointment marked as completed'
