@@ -211,6 +211,7 @@ module Api
             status: appointment.status,
             booked: appointment.booked,
             selected_service: appointment.selected_service,
+            image_url: appointment.image.attached? ? url_for(appointment.image) : nil,
             services_text: appointment.services,
             created_at: appointment.created_at,
             updated_at: appointment.updated_at

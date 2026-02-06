@@ -82,6 +82,16 @@ Rails.application.routes.draw do
       end
       post 'appointments/:appointment_id/conversations', to: 'conversations#create'
 
+      # Photo uploads
+      post 'uploads/avatar', to: 'uploads#upload_avatar'
+      post 'appointments/:appointment_id/upload_image', to: 'uploads#upload_appointment_image'
+      post 'conversations/:conversation_id/upload_photo', to: 'uploads#upload_message_photo'
+
+      # Payment endpoints
+      post 'appointments/:appointment_id/payment', to: 'payments#create_payment'
+      get 'appointments/:appointment_id/payment/status', to: 'payments#payment_status'
+      post 'appointments/:appointment_id/payment/refund', to: 'payments#refund_payment'
+
       # Services endpoints (public browsing)
       resources :services, only: [:index, :show]
 

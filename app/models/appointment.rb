@@ -12,6 +12,7 @@ class Appointment < ApplicationRecord
 
   validates :time, presence: true
   validates :location, presence: true
+  validates :payment_status, inclusion: { in: %w[pending paid refunded failed] }, allow_nil: true
 
   enum status: {
     pending: 0,

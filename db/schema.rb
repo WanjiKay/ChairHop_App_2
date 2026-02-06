@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_02_05_122558) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_05_235434) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "vector"
@@ -68,6 +68,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_05_122558) do
     t.string "selected_service"
     t.vector "embedding", limit: 1536
     t.integer "status", default: 0, null: false
+    t.decimal "payment_amount", precision: 10, scale: 2
+    t.string "payment_status", default: "pending"
+    t.string "payment_id"
+    t.string "payment_method"
     t.index ["customer_id"], name: "index_appointments_on_customer_id"
     t.index ["stylist_id"], name: "index_appointments_on_stylist_id"
   end

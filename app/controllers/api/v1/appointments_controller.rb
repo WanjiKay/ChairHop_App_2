@@ -223,6 +223,7 @@ module Api
           location: appointment.location,
           status: appointment.status,
           selected_service: appointment.selected_service,
+          image_url: appointment.image.attached? ? url_for(appointment.image) : nil,
           stylist: {
             id: appointment.stylist.id,
             name: appointment.stylist.name,

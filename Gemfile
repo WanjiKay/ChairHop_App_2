@@ -63,6 +63,7 @@ gem "solid_cable"
 gem "neighbor"
 gem 'kaminari'
 gem 'exponent-server-sdk'
+gem 'square.rb'
 
 group :development, :test do
   gem "dotenv-rails"
