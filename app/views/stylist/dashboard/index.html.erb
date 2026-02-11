@@ -1,0 +1,165 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold text-primary mb-0">Dashboard</h1>
+    <span class="text-muted">Welcome back, <%= current_user.name %></span>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="dashboard-stat-card">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="stat-label">Pending Requests</p>
+            <h2 class="stat-value"><%= @pending_requests %></h2>
+          </div>
+          <div class="stat-icon stat-icon-pending">
+            <i class="fas fa-clock"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="dashboard-stat-card">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="stat-label">Upcoming Appointments</p>
+            <h2 class="stat-value"><%= @upcoming_appointments %></h2>
+          </div>
+          <div class="stat-icon stat-icon-upcoming">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="dashboard-stat-card">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="stat-label">Total Earnings</p>
+            <h2 class="stat-value">$<%= number_with_precision(@total_earnings, precision: 2) %></h2>
+          </div>
+          <div class="stat-icon stat-icon-earnings">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="dashboard-section mb-4">
+    <h4 class="fw-bold text-primary mb-3">Quick Actions</h4>
+    <div class="d-flex flex-wrap gap-2">
+      <%= link_to new_stylist_appointment_path, class: "btn btn-primary" do %>
+        <i class="fas fa-plus me-1"></i> Create Availability
+      <% end %>
+      <%= link_to stylist_appointments_path, class: "btn btn-outline-primary" do %>
+        <i class="fas fa-calendar-alt me-1"></i> My Appointments
+      <% end %>
+      <%= link_to stylist_services_path, class: "btn btn-outline-primary" do %>
+        <i class="fas fa-concierge-bell me-1"></i> Manage Services
+      <% end %>
+      <%= link_to profile_path(edit: 1), class: "btn btn-outline-primary" do %>
+        <i class="fas fa-user-edit me-1"></i> Edit Profile
+      <% end %>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Recent Appointments -->
+    <div class="col-lg-8">
+      <div class="dashboard-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="fw-bold text-primary mb-0">Recent Appointments</h4>
+          <%= link_to "View All", stylist_appointments_path, class: "text-primary" %>
+        </div>
+
+        <% if @recent_appointments.any? %>
+          <div class="table-responsive">
+            <table class="table dashboard-table">
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Customer</th>
+                  <th>Location</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @recent_appointments.each do |apt| %>
+                  <tr>
+                    <td>
+                      <% if apt.time.present? %>
+                        <strong><%= apt.time.strftime("%b %d, %Y") %></strong>
+                        <br><small class="text-muted"><%= apt.time.strftime("%I:%M %p") %></small>
+                      <% else %>
+                        <span class="text-muted">Not set</span>
+                      <% end %>
+                    </td>
+                    <td>
+                      <% if apt.customer.present? %>
+                        <%= apt.customer.name %>
+                      <% else %>
+                        <span class="text-muted">Open slot</span>
+                      <% end %>
+                    </td>
+                    <td><%= apt.location %></td>
+                    <td>
+                      <% badge_class = case apt.status
+                                        when "pending" then "bg-warning text-dark"
+                                        when "booked" then "bg-success"
+                                        when "completed" then "bg-primary"
+                                        when "cancelled" then "bg-secondary"
+                                        end %>
+                      <span class="badge <%= badge_class %>"><%= apt.status.capitalize %></span>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div class="text-center py-4">
+            <i class="fas fa-calendar fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
+            <p class="text-muted mb-0">No appointments yet. Create your first availability slot to get started.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Recent Reviews -->
+    <div class="col-lg-4">
+      <div class="dashboard-section">
+        <h4 class="fw-bold text-primary mb-3">Recent Reviews</h4>
+
+        <% if @recent_reviews.any? %>
+          <% @recent_reviews.each do |review| %>
+            <div class="dashboard-review-item mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <div class="rating">
+                  <% review.rating.times do %>
+                    <i class="fas fa-star text-warning"></i>
+                  <% end %>
+                  <% (5 - review.rating).times do %>
+                    <i class="far fa-star text-warning"></i>
+                  <% end %>
+                </div>
+                <small class="text-muted"><%= time_ago_in_words(review.created_at) %> ago</small>
+              </div>
+              <p class="mb-1"><%= truncate(review.content, length: 80) %></p>
+              <small class="text-muted">by <%= review.customer.name %></small>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="text-center py-4">
+            <i class="fas fa-star fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
+            <p class="text-muted mb-0">No reviews yet.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -5,6 +5,13 @@
     <%= image_tag "blowdryer.png", alt: "Salon", class: "hero-image" %>
 
     <h1 class="hero-title">Our chairs are always open</h1>
+
+    <% unless user_signed_in? %>
+      <div class="hero-cta mt-3 d-flex gap-2 justify-content-center">
+        <%= link_to "Sign In", new_user_session_path, class: "btn btn-primary btn-lg" %>
+        <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-outline-light btn-lg" %>
+      </div>
+    <% end %>
   </section>
 
   <!-- SEARCH SECTION -->

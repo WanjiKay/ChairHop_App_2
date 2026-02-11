@@ -12,6 +12,20 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
+  # Stylist portal
+  namespace :stylist do
+    get "/", to: "dashboard#index", as: :dashboard
+    resources :services, except: [:show]
+    resources :appointments, only: [:index, :new, :create] do
+      member do
+        patch :accept
+        patch :decline
+        patch :cancel
+        patch :complete
+      end
+    end
+  end
+
   resource :profile, only: [:show, :edit, :update]
 
   resources :appointments do

@@ -1,0 +1,53 @@
+<%= form_with(model: [:stylist, service], class: "dashboard-section p-4") do |f| %>
+  <% if service.errors.any? %>
+    <div class="alert alert-danger">
+      <h6 class="fw-bold mb-2"><%= pluralize(service.errors.count, "error") %> prohibited this service from being saved:</h6>
+      <ul class="mb-0">
+        <% service.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :name, "Service Name", class: "form-label fw-semibold" %>
+    <%= f.text_field :name, class: "form-control", placeholder: "e.g., Haircut, Hair Coloring, Beard Trim" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :description, class: "form-label fw-semibold" %>
+    <%= f.text_area :description, class: "form-control", rows: 3,
+        placeholder: "Describe what this service includes..." %>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <%= f.label :price, "Price ($)", class: "form-label fw-semibold" %>
+      <%= f.number_field :price, class: "form-control",
+          value: (service.persisted? ? number_with_precision(service.price, precision: 2) : nil),
+          step: 0.01, min: 0, placeholder: "25.00" %>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <%= f.label :duration_minutes, "Duration (minutes)", class: "form-label fw-semibold" %>
+      <%= f.number_field :duration_minutes, class: "form-control",
+          min: 5, step: 5, placeholder: "60" %>
+    </div>
+
+    <% if service.persisted? %>
+      <div class="col-md-4 mb-3">
+        <%= f.label :active, "Status", class: "form-label fw-semibold" %>
+        <div class="form-check form-switch mt-1">
+          <%= f.check_box :active, class: "form-check-input", role: "switch" %>
+          <%= f.label :active, "Active — visible to customers", class: "form-check-label" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="d-flex gap-2 mt-2">
+    <%= f.submit (service.persisted? ? "Update Service" : "Create Service"), class: "btn btn-primary" %>
+    <%= link_to "Cancel", stylist_services_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

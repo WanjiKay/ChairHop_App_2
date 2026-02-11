@@ -2,13 +2,22 @@
   <div class="row justify-content-center">
     <div class="col-lg-8">
       <div class="booked-confirmation-page">
-        <!-- Success Header -->
+        <!-- Header -->
         <div class="text-center mb-5">
           <div class="success-icon-wrapper mb-4">
-            <i class="fas fa-check-circle success-icon-large"></i>
+            <% if @appointment.booked? %>
+              <i class="fas fa-check-circle success-icon-large"></i>
+            <% else %>
+              <i class="fas fa-hourglass-half success-icon-large" style="color: #FD7E14;"></i>
+            <% end %>
           </div>
-          <h1 class="success-title fw-bold mb-3">You May Now Take Your Seat!</h1>
-          <p class="success-subtitle">Your appointment has been successfully booked</p>
+          <% if @appointment.booked? %>
+            <h1 class="success-title fw-bold mb-3">You May Now Take Your Seat!</h1>
+            <p class="success-subtitle">Your appointment has been confirmed by the stylist</p>
+          <% else %>
+            <h1 class="success-title fw-bold mb-3">Request Sent!</h1>
+            <p class="success-subtitle">Your stylist will review and confirm your booking shortly</p>
+          <% end %>
         </div>
 
         <!-- Profile Pictures Section -->
@@ -112,11 +121,17 @@
             </div>
           <% end %>
 
-          <!-- Success Badge -->
+          <!-- Status Badge -->
           <div class="text-center mt-4">
-            <span class="badge bg-success booking-status-badge">
-              <i class="fas fa-check me-2"></i>Confirmed
-            </span>
+            <% if @appointment.booked? %>
+              <span class="badge bg-success booking-status-badge">
+                <i class="fas fa-check me-2"></i>Confirmed
+              </span>
+            <% else %>
+              <span class="badge bg-warning text-dark booking-status-badge">
+                <i class="fas fa-hourglass-half me-2"></i>Awaiting Stylist Confirmation
+              </span>
+            <% end %>
           </div>
         </div>
 

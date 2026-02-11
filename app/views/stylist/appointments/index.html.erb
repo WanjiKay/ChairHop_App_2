@@ -1,0 +1,162 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-primary mb-1">My Appointments</h1>
+      <p class="text-muted mb-0"><%= @appointments.count %> appointments</p>
+    </div>
+    <%= link_to new_stylist_appointment_path, class: "btn btn-primary" do %>
+      <i class="fas fa-plus me-1"></i> Create Availability
+    <% end %>
+  </div>
+
+  <!-- Filter Tabs -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <%= link_to "All", stylist_appointments_path,
+          class: "nav-link #{'active' if @filter == 'all'}" %>
+    </li>
+    <li class="nav-item">
+      <%= link_to "Requests", stylist_appointments_path(filter: "requests"),
+          class: "nav-link #{'active' if @filter == 'requests'}" %>
+    </li>
+    <li class="nav-item">
+      <%= link_to "Available", stylist_appointments_path(filter: "available"),
+          class: "nav-link #{'active' if @filter == 'available'}" %>
+    </li>
+    <li class="nav-item">
+      <%= link_to "Confirmed", stylist_appointments_path(filter: "confirmed"),
+          class: "nav-link #{'active' if @filter == 'confirmed'}" %>
+    </li>
+    <li class="nav-item">
+      <%= link_to "Past", stylist_appointments_path(filter: "past"),
+          class: "nav-link #{'active' if @filter == 'past'}" %>
+    </li>
+  </ul>
+
+  <% if @appointments.any? %>
+    <div class="dashboard-section">
+      <div class="table-responsive">
+        <table class="table dashboard-table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Customer</th>
+              <th>Service</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @appointments.each do |appointment| %>
+              <tr>
+                <td>
+                  <% if appointment.time.present? %>
+                    <strong><%= appointment.time.strftime("%b %d, %Y") %></strong>
+                    <br><small class="text-muted"><%= appointment.time.strftime("%I:%M %p") %></small>
+                  <% else %>
+                    <span class="text-muted">Not set</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if appointment.customer.present? %>
+                    <%= appointment.customer.name %>
+                  <% else %>
+                    <span class="text-muted">Open slot</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if appointment.selected_service.present? %>
+                    <%= appointment.selected_service %>
+                  <% elsif appointment.services.present? %>
+                    <small class="text-muted"><%= truncate(appointment.services, length: 40) %></small>
+                  <% else %>
+                    <span class="text-muted">—</span>
+                  <% end %>
+                </td>
+                <td><%= appointment.location %></td>
+                <td>
+                  <% if appointment.pending? && appointment.customer_id.present? %>
+                    <span class="badge bg-warning text-dark">New Request</span>
+                  <% elsif appointment.pending? %>
+                    <span class="badge bg-secondary">Available</span>
+                  <% elsif appointment.booked? %>
+                    <span class="badge bg-success">Confirmed</span>
+                  <% elsif appointment.completed? %>
+                    <span class="badge bg-primary">Completed</span>
+                  <% elsif appointment.cancelled? %>
+                    <span class="badge bg-danger">Cancelled</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="d-flex gap-1 flex-wrap">
+                    <% if appointment.pending? && appointment.customer_id.present? %>
+                      <%= button_to accept_stylist_appointment_path(appointment), method: :patch,
+                          class: "btn btn-sm btn-success" do %>
+                        <i class="fas fa-check me-1"></i> Accept
+                      <% end %>
+                      <%= button_to decline_stylist_appointment_path(appointment), method: :patch,
+                          data: { turbo_confirm: "Decline this booking request?" },
+                          class: "btn btn-sm btn-outline-danger" do %>
+                        <i class="fas fa-times me-1"></i> Decline
+                      <% end %>
+                    <% elsif appointment.booked? %>
+                      <%= button_to complete_stylist_appointment_path(appointment), method: :patch,
+                          class: "btn btn-sm btn-outline-primary" do %>
+                        <i class="fas fa-check-double me-1"></i> Complete
+                      <% end %>
+                      <%= button_to cancel_stylist_appointment_path(appointment), method: :patch,
+                          data: { turbo_confirm: "Cancel this appointment? The customer will be notified." },
+                          class: "btn btn-sm btn-outline-danger" do %>
+                        <i class="fas fa-ban me-1"></i> Cancel
+                      <% end %>
+                    <% elsif appointment.pending? && appointment.customer_id.blank? %>
+                      <%= button_to cancel_stylist_appointment_path(appointment), method: :patch,
+                          data: { turbo_confirm: "Remove this availability slot?" },
+                          class: "btn btn-sm btn-outline-secondary" do %>
+                        <i class="fas fa-trash me-1"></i> Remove
+                      <% end %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% else %>
+    <div class="dashboard-section text-center py-5">
+      <i class="fas fa-calendar fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
+      <% case @filter %>
+      <% when "requests" %>
+        <h5 class="text-muted">No booking requests</h5>
+        <p class="text-muted mb-0">When customers request your available slots, they'll appear here.</p>
+      <% when "available" %>
+        <h5 class="text-muted">No available slots</h5>
+        <p class="text-muted mb-3">Create availability so customers can find you.</p>
+        <%= link_to new_stylist_appointment_path, class: "btn btn-primary" do %>
+          <i class="fas fa-plus me-1"></i> Create Availability
+        <% end %>
+      <% when "confirmed" %>
+        <h5 class="text-muted">No confirmed appointments</h5>
+        <p class="text-muted mb-0">Accepted bookings will appear here.</p>
+      <% when "past" %>
+        <h5 class="text-muted">No past appointments</h5>
+        <p class="text-muted mb-0">Completed and cancelled appointments will appear here.</p>
+      <% else %>
+        <h5 class="text-muted">No appointments yet</h5>
+        <p class="text-muted mb-3">Create your first availability slot to get started.</p>
+        <%= link_to new_stylist_appointment_path, class: "btn btn-primary" do %>
+          <i class="fas fa-plus me-1"></i> Create Availability
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="mt-3">
+    <%= link_to stylist_dashboard_path, class: "btn btn-outline-primary" do %>
+      <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+    <% end %>
+  </div>
+</div>

@@ -54,33 +54,40 @@
 
         <% services = @appointment.services.split("\n") %>
 
-        <!-- Booked Status or Service Selection -->
-        <% if @appointment.booked? || @appointment.completed? %>
-          <div class="alert <%= @appointment.completed? ? 'alert-success' : 'alert-warning' %> text-center mb-4">
+        <!-- Booked/Pending/Completed Status or Service Selection -->
+        <% if @appointment.booked? || @appointment.completed? || @appointment.customer_id.present? %>
+          <div class="alert <%= @appointment.completed? ? 'alert-success' : (@appointment.booked? ? 'alert-warning' : 'alert-info') %> text-center mb-4">
             <% if @appointment.completed? %>
               <i class="fas fa-check-circle fa-2x mb-3"></i>
               <h5 class="fw-bold">This appointment is completed</h5>
               <p class="mb-3">This appointment has been marked as completed.</p>
-            <% else %>
+            <% elsif @appointment.booked? %>
               <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
               <h5 class="fw-bold">This chair is already filled</h5>
               <p class="mb-3">This appointment has been booked by another customer.</p>
+            <% elsif @appointment.customer == current_user %>
+              <i class="fas fa-hourglass-half fa-2x mb-3"></i>
+              <h5 class="fw-bold">Booking request sent</h5>
+              <p class="mb-3">Waiting for the stylist to confirm your booking.</p>
+            <% else %>
+              <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+              <h5 class="fw-bold">This chair has a pending request</h5>
+              <p class="mb-3">Another customer has requested this appointment.</p>
             <% end %>
 
-            <% if @appointment.customer == current_user && @appointment.booked? %>
-              <%= button_to "Unbook Appointment",
+            <% if @appointment.customer == current_user && (@appointment.pending? || @appointment.booked?) %>
+              <%= button_to "Cancel Request",
                     appointment_path(@appointment),
                     method: :delete,
-                    data: { confirm: "Are you sure you want to unbook this appointment?" },
+                    data: { turbo_confirm: "Are you sure you want to cancel this booking?" },
                     class: "btn btn-danger" %>
             <% end %>
 
-            <%# Stylists can complete anytime, customers only after appointment time %>
             <% if @appointment.booked? && (@appointment.stylist == current_user || (@appointment.customer == current_user && @appointment.time < Time.current)) %>
               <%= button_to "Mark as Completed",
                     complete_appointment_path(@appointment),
                     method: :patch,
-                    data: { confirm: "Mark this appointment as completed?" },
+                    data: { turbo_confirm: "Mark this appointment as completed?" },
                     class: "btn btn-success" %>
             <% end %>
           </div>
