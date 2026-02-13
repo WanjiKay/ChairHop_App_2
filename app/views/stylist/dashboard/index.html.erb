@@ -62,6 +62,9 @@
       <%= link_to stylist_services_path, class: "btn btn-outline-primary" do %>
         <i class="fas fa-concierge-bell me-1"></i> Manage Services
       <% end %>
+      <%= link_to stylist_locations_path, class: "btn btn-outline-primary" do %>
+        <i class="fas fa-map-marker-alt me-1"></i> Manage Locations
+      <% end %>
       <%= link_to profile_path(edit: 1), class: "btn btn-outline-primary" do %>
         <i class="fas fa-user-edit me-1"></i> Edit Profile
       <% end %>
@@ -106,7 +109,7 @@
                         <span class="text-muted">Open slot</span>
                       <% end %>
                     </td>
-                    <td><%= apt.location %></td>
+                    <td><%= apt.location_display %></td>
                     <td>
                       <% badge_class = case apt.status
                                         when "pending" then "bg-warning text-dark"

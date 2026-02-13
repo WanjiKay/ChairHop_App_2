@@ -100,7 +100,7 @@ class Stylist::AppointmentsController < ApplicationController
   end
 
   def availability_params
-    params.require(:appointment).permit(:time, :location, :salon, :services, :content)
+    params.require(:appointment).permit(:time, :location, :location_id, :salon, :services, :content)
   end
 
   def ensure_stylist!

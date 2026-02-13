@@ -6,15 +6,9 @@ class ProfilesController < ApplicationController
     @user = current_user
   end
 
-  def edit
-    @user = current_user
-  end
-
   # GET /profile/edit
   def edit
-    # Reuse the show template, but force editing mode
-    @editing = true
-    render :show
+    @user = current_user
   end
 
   # PATCH /profile
@@ -30,6 +24,7 @@ class ProfilesController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:name, :email, :avatar)
+    params.require(:user).permit(:name, :email, :avatar, :about, :location,
+                                  :street_address, :city, :state, :zip_code)
   end
 end

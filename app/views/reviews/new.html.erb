@@ -7,7 +7,7 @@
     about your appointment on
     <%= @appointment.time.strftime("%b %e, %Y") %>
     at
-    <%= @appointment.location %>.
+    <%= @appointment.location_display %>.
   </p>
 
   <%= form_with model: @review,

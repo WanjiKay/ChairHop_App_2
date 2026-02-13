@@ -40,6 +40,81 @@
               <% end %>
             </div>
 
+            <div class="mb-3">
+              <%= f.input :about,
+                          as: :text,
+                          label: "About Me",
+                          input_html: { class: "form-control", rows: 3, placeholder: "Tell us about yourself..." },
+                          wrapper_html: { class: "mb-3" } %>
+            </div>
+
+            <% if @user.stylist? %>
+              <h4 class="text-primary fw-bold mt-4 mb-3">
+                <i class="fas fa-map-marker-alt me-2"></i>Business Address
+              </h4>
+              <p class="text-muted small mb-3">
+                <i class="fas fa-info-circle me-1"></i>Enter your complete business address to help customers find you.
+              </p>
+
+              <div class="mb-3">
+                <%= f.label :street_address, "Street Address", class: "form-label" %>
+                <%= f.text_field :street_address,
+                    class: "form-control",
+                    placeholder: "123 Rue Sainte-Catherine",
+                    required: true %>
+                <small class="text-muted">Include apartment or suite number if applicable</small>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <%= f.label :city, class: "form-label" %>
+                  <%= f.text_field :city,
+                      class: "form-control",
+                      placeholder: "Montreal",
+                      required: true %>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                  <%= f.label :state, "Province", class: "form-label" %>
+                  <%= f.text_field :state,
+                      class: "form-control text-uppercase",
+                      placeholder: "QC",
+                      maxlength: 2,
+                      pattern: "[A-Za-z]{2}",
+                      required: true %>
+                  <small class="text-muted">2-letter code</small>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                  <%= f.label :zip_code, "Postal Code", class: "form-label" %>
+                  <%= f.text_field :zip_code,
+                      class: "form-control text-uppercase",
+                      placeholder: "H1A 2K6",
+                      pattern: "[A-Za-z][0-9][A-Za-z] ?[0-9][A-Za-z][0-9]",
+                      required: true %>
+                </div>
+              </div>
+            <% end %>
+
+            <script>
+              document.addEventListener('DOMContentLoaded', function() {
+                var provinceField = document.getElementById('user_state');
+                var postalField = document.getElementById('user_zip_code');
+
+                if (provinceField) {
+                  provinceField.addEventListener('input', function() {
+                    this.value = this.value.toUpperCase();
+                  });
+                }
+
+                if (postalField) {
+                  postalField.addEventListener('input', function() {
+                    this.value = this.value.toUpperCase();
+                  });
+                }
+              });
+            </script>
+
             <div class="d-flex gap-2 mt-4">
               <%= f.button :submit, "Save Changes", class: "btn btn-primary flex-grow-1" %>
               <%= link_to "Cancel", profile_path, class: "btn btn-outline-secondary" %>

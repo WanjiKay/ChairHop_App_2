@@ -1,0 +1,112 @@
+<div class="container py-5 mt-5">
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold text-primary">Find Your Stylist</h1>
+    <p class="lead text-muted">Browse talented stylists in your area</p>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="row justify-content-center mb-4">
+    <div class="col-md-8">
+      <%= form_with url: stylists_path, method: :get, local: true, class: "d-flex gap-2" do |f| %>
+        <%= f.text_field :search,
+            class: "form-control form-control-lg",
+            placeholder: "Search by name or location...",
+            value: params[:search] %>
+        <%= f.submit "Search", class: "btn btn-primary btn-lg" %>
+        <% if params[:search].present? || params[:service].present? %>
+          <%= link_to "Clear", stylists_path, class: "btn btn-outline-secondary btn-lg" %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Service Filter Buttons -->
+  <% service_names = Service.active.distinct.pluck(:name) %>
+  <% if service_names.any? %>
+    <div class="text-center mb-4">
+      <div class="d-flex flex-wrap justify-content-center gap-2">
+        <%= link_to "All Services", stylists_path(search: params[:search]),
+            class: "btn #{params[:service].blank? ? 'btn-primary' : 'btn-outline-primary'}" %>
+        <% service_names.each do |service_name| %>
+          <%= link_to service_name, stylists_path(service: service_name, search: params[:search]),
+              class: "btn #{params[:service] == service_name ? 'btn-primary' : 'btn-outline-primary'}" %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Stylists Grid -->
+  <% if @stylists.any? %>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <% @stylists.each do |stylist| %>
+        <div class="col">
+          <div class="card h-100 shadow-sm stylist-card">
+            <div class="card-body text-center">
+              <!-- Avatar -->
+              <div class="mb-3">
+                <% if stylist.avatar.attached? %>
+                  <%= cl_image_tag stylist.avatar.key, class: "rounded-circle", style: "width: 100px; height: 100px; object-fit: cover; border: 3px solid #4A5D4F;" %>
+                <% else %>
+                  <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center"
+                       style="width: 100px; height: 100px; color: white; font-size: 2rem;">
+                    <%= stylist.name&.first&.upcase || "S" %>
+                  </div>
+                <% end %>
+              </div>
+
+              <!-- Name -->
+              <h5 class="card-title fw-bold"><%= stylist.name || "Stylist" %></h5>
+
+              <!-- Location -->
+              <p class="text-muted mb-2">
+                <i class="fas fa-map-marker-alt me-1"></i> <%= short_address(stylist) %>
+              </p>
+
+              <!-- About (truncated) -->
+              <% if stylist.about.present? %>
+                <p class="card-text small text-muted">
+                  <%= truncate(stylist.about, length: 100) %>
+                </p>
+              <% end %>
+
+              <!-- Services -->
+              <% if stylist.services.active.any? %>
+                <div class="mb-3">
+                  <% stylist.services.active.limit(3).each do |service| %>
+                    <span class="badge bg-light text-dark me-1 mb-1"><%= service.name %></span>
+                  <% end %>
+                  <% if stylist.services.active.count > 3 %>
+                    <span class="badge bg-light text-dark">+<%= stylist.services.active.count - 3 %> more</span>
+                  <% end %>
+                </div>
+              <% end %>
+
+              <!-- View Profile Button -->
+              <%= link_to "View Profile", stylist_path(stylist), class: "btn btn-primary" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info text-center">
+      <p class="mb-0">
+        <% if params[:search].present? || params[:service].present? %>
+          No stylists found matching your search. Try different keywords.
+        <% else %>
+          No stylists available yet.
+        <% end %>
+      </p>
+    </div>
+  <% end %>
+</div>
+
+<style>
+  .stylist-card {
+    transition: transform 0.2s;
+    border-radius: 12px;
+  }
+  .stylist-card:hover {
+    transform: translateY(-5px);
+  }
+</style>

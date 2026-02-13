@@ -1,6 +1,7 @@
 class Appointment < ApplicationRecord
   belongs_to :customer,class_name: "User", optional: true
   belongs_to :stylist, class_name: "User"
+  belongs_to :location, optional: true
   has_many :chats, dependent: :nullify
   has_one :conversation, dependent: :nullify
   has_one :review, dependent: :destroy
@@ -110,12 +111,22 @@ class Appointment < ApplicationRecord
     save
   end
 
+  def location_display
+    if location.present?
+      location.full_address
+    elsif self[:location].present?
+      self[:location]
+    else
+      "Location not specified"
+    end
+  end
+
   private
 
   def set_embedding
     embedding = RubyLLM.embed("Time: #{time}.
     Booked: #{booked}.
-    Location #{location}.
+    Location #{location_display}.
     Stylist: #{stylist.name}.
     Services: #{services}.")
     update(embedding: embedding.vectors)

@@ -1,0 +1,36 @@
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Business Locations</h2>
+    <%= link_to "Add New Location", new_stylist_location_path, class: "btn btn-primary" %>
+  </div>
+
+  <% if @locations.any? %>
+    <div class="row row-cols-1 row-cols-md-2 g-3">
+      <% @locations.each do |location| %>
+        <div class="col">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title"><%= location.name %></h5>
+              <p class="card-text">
+                <%= location.street_address %><br>
+                <%= location.city %>, <%= location.state %> <%= location.zip_code %>
+              </p>
+              <div class="d-flex gap-2">
+                <%= link_to "Edit", edit_stylist_location_path(location), class: "btn btn-sm btn-outline-primary" %>
+                <%= button_to "Delete", stylist_location_path(location),
+                    method: :delete,
+                    data: { turbo_confirm: "Are you sure? This cannot be undone." },
+                    class: "btn btn-sm btn-outline-danger" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <p class="mb-2"><strong>No locations yet!</strong></p>
+      <p class="mb-0">Add your business locations to help customers find you.</p>
+    </div>
+  <% end %>
+</div>

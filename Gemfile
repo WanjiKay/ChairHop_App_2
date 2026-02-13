@@ -15,7 +15,7 @@ gem "pg", "~> 1.1"
 gem "puma", ">= 5.0"
 
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem "importmap-rails"
+gem "importmap-rails", "~> 1.2.3"
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem "turbo-rails"
@@ -64,6 +64,7 @@ gem "neighbor"
 gem 'kaminari'
 gem 'exponent-server-sdk'
 gem 'square.rb'
+gem 'geocoder'
 
 group :development, :test do
   gem "dotenv-rails"

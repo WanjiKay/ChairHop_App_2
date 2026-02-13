@@ -125,6 +125,16 @@
             <span class="detail-value"><%= current_user.created_at.strftime("%B %d, %Y") %></span>
           </div>
 
+          <% if current_user.stylist? && current_user.street_address.present? %>
+            <div class="detail-row mb-3">
+              <span class="detail-label"><i class="fas fa-map-marker-alt me-2"></i>Business Address:</span>
+              <span class="detail-value">
+                <%= current_user.street_address %><br>
+                <%= [current_user.city, current_user.state].compact_blank.join(', ') %> <%= current_user.zip_code %>
+              </span>
+            </div>
+          <% end %>
+
           <div class="mt-4">
             <%= link_to edit_profile_path, class: "btn btn-outline-primary" do %>
               <i class="fas fa-edit me-2"></i>Edit Profile

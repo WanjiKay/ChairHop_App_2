@@ -9,6 +9,8 @@
     <!-- Right side: Hopps + Avatar (always visible) -->
     <div class="d-flex align-items-center gap-2">
 
+      <%= link_to "Find Stylists", stylists_path, class: "btn btn-outline-primary btn-sm" %>
+
       <% if user_signed_in? %>
 
         <% if current_user.stylist? %>

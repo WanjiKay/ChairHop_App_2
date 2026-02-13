@@ -74,7 +74,7 @@
                     <span class="text-muted">—</span>
                   <% end %>
                 </td>
-                <td><%= appointment.location %></td>
+                <td><%= appointment.location_display %></td>
                 <td>
                   <% if appointment.pending? && appointment.customer_id.present? %>
                     <span class="badge bg-warning text-dark">New Request</span>

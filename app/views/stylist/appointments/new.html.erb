@@ -1,6 +1,14 @@
 <div class="container py-4">
   <h1 class="fw-bold text-primary mb-4">Create Availability</h1>
 
+  <% if current_user.locations.none? %>
+    <div class="alert alert-info mb-4">
+      <h5>First, add a business location</h5>
+      <p class="mb-2">You need to add at least one business location before creating availability.</p>
+      <%= link_to "Add Location Now", new_stylist_location_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+
   <%= form_with(model: [:stylist, @appointment], class: "dashboard-section p-4") do |f| %>
     <% if @appointment.errors.any? %>
       <div class="alert alert-danger">
@@ -22,10 +30,26 @@
       </div>
 
       <div class="col-md-6 mb-3">
-        <%= f.label :location, class: "form-label fw-semibold" %>
-        <%= f.text_field :location, class: "form-control",
-            placeholder: "e.g., Downtown Studio, 123 Main St",
-            value: @appointment.location.presence || current_user.location %>
+        <%= f.label :location_id, "Location", class: "form-label fw-semibold" %>
+        <% if current_user.locations.any? %>
+          <%= f.collection_select :location_id,
+              current_user.locations.order(:name),
+              :id,
+              :name,
+              { prompt: "Select a location" },
+              { class: "form-select", required: true } %>
+          <small class="text-muted">
+            <%= link_to "Manage locations", stylist_locations_path, class: "text-decoration-none" %>
+          </small>
+        <% else %>
+          <div class="alert alert-warning mb-0">
+            <p class="mb-2"><strong>No locations saved</strong></p>
+            <p class="mb-0">
+              <%= link_to "Add a location", new_stylist_location_path, class: "btn btn-sm btn-primary" %>
+              to create availability slots.
+            </p>
+          </div>
+        <% end %>
       </div>
     </div>
 

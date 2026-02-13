@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   namespace :stylist do
     get "/", to: "dashboard#index", as: :dashboard
     resources :services, except: [:show]
+    resources :locations
     resources :appointments, only: [:index, :new, :create] do
       member do
         patch :accept
@@ -45,7 +46,7 @@ Rails.application.routes.draw do
 
   get "my_appointments", to: "appointments#my_appointments", as: :my_appointments
 
-  resources :stylists, only: [:show]
+  resources :stylists, only: [:index, :show]
 
   resources :chats, only: [:index, :new, :create, :show] do
     resources :messages, only: [:create]
