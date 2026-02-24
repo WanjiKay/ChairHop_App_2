@@ -1,8 +1,19 @@
-// Define variables for your color scheme
+//  Important!!!!  Every colour in the project
+//  lives here and nowhere else.
+// ================================================
 
-$color-dark-green: #6B705C;
-$color-muted-olive: #A5A58D;
-$color-soft-gray: #B7B7A4;
-$color-beige: #D8A7A7;
-$color-cream: #F4EDE4;
-$color-dark-text: #333;
+// ─── Primary ──────────────────────────────────────
+$color-cream:      #f0ebe3;   // page bg, navbar bg
+$color-white:      #ffffff;   // button text, overlays
+
+// ─── Browns ───────────────────────────────────────
+$color-brown-deep: #4a2c1a;   // logo, headlines
+$color-brown-btn:  #3d2314;   // CTA button bg, nav links
+
+// ─── Neutrals ─────────────────────────────────────
+$color-dark:       #2b2b2b;   // body text, overlay base
+
+// ─── Overlay opacity ──────────────────────────────
+// Used by the hero overlay so the value stays in sync
+// with the colour token above.
+$overlay-opacity:  0.38;

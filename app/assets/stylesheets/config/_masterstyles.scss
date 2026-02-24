@@ -1,0 +1,27 @@
+// ================================================
+//  styles.scss  –  ChairHop master stylesheet
+//
+//  This is the ONLY file you feed to the Sass
+//  compiler (sass styles.scss styles.css).
+//
+//  Import order matters:
+//    1. Tokens          – colours, fonts, layout vars
+//    2. Reset           – box-sizing, body defaults
+//    3. Components      – navbar, hero, …
+//
+//  Adding a new component is two steps:
+//    a) create scss/partials/_mycomponent.scss
+//    b) add  @import 'partials/mycomponent';  below
+// ================================================
+
+// ─── 1. Tokens (no CSS output – variables only) ──
+@import 'partials/colors';
+@import 'partials/fonts';
+@import 'partials/layout';
+
+// ─── 2. Reset ─────────────────────────────────────
+@import 'partials/reset';
+
+// ─── 3. Components ───────────────────────────────
+@import 'partials/navbar';
+@import 'partials/hero';

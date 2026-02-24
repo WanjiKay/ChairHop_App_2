@@ -1,16 +1,26 @@
-// Import Google fonts
-@import url('https://fonts.googleapis.com/css2?family=Genos:ital,wght@0,100..900;1,100..900&family=Special+Elite&display=swap');
+// Here is where all font styling will live!
 
-// Define fonts for body and headers
-$body-font: "Genos", "sans-serif";
-$headers-font: "Special Elite", "system-ui";
+// ─── Font stacks ──────────────────────────────────
+$font-display:  'Playfair Display', serif;   // logo + hero headline
+$font-body:     'DM Sans', sans-serif;       // nav links, body copy
 
-// To use a font file (.woff) uncomment following lines
-// @font-face {
-//   font-family: "Font Name";
-//   src: font-url('FontFile.eot');
-//   src: font-url('FontFile.eot?#iefix') format('embedded-opentype'),
-//        font-url('FontFile.woff') format('woff'),
-//        font-url('FontFile.ttf') format('truetype')
-// }
-// $my-font: "Font Name";
+// ─── Sizes ────────────────────────────────────────
+$font-size-brand:      1.6rem;               // navbar logo
+$font-size-brand-sm:   1.25rem;              // navbar logo – tablet
+$font-size-nav:        0.88rem;              // nav links
+$font-size-nav-sm:     0.78rem;              // nav links – tablet
+$font-size-cta:        0.82rem;              // Book Now button
+$font-size-cta-sm:     0.76rem;              // Book Now button – tablet
+$font-size-headline:   clamp(2.4rem, 6vw, 4.6rem);  // hero – fluid
+$font-size-headline-sm: 1.9rem;             // hero – mobile
+
+// ─── Weights ──────────────────────────────────────
+$weight-black:   900;
+$weight-semi:    600;
+$weight-medium:  500;
+
+// ─── Tracking (letter-spacing) ────────────────────
+$tracking-brand:    -0.02em;
+$tracking-nav:       0.06em;
+$tracking-cta:       0.10em;
+$tracking-headline: -0.01em;

@@ -1,0 +1,77 @@
+//Used on home page and appointments search page
+
+.chaarhop-hero {
+  // ── Block ───────────────────────────────────────
+  position:        relative;
+  min-height:      $hero-min-height;
+  overflow:        hidden;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+
+  // ── __bg ────────────────────────────────────────
+  // Absolute layer that holds both __img and __overlay
+  &__bg {
+    position: absolute;
+    inset:    0;
+    z-index:  0;
+  }
+
+  // ── __img ───────────────────────────────────────
+  // The salon photograph – covers & crops from centre
+  &__img {
+    width:           100%;
+    height:          100%;
+    object-fit:      cover;
+    object-position: center;
+    display:         block;
+  }
+
+  // ── __overlay ───────────────────────────────────
+  // Dark wash so the headline stays legible on any photo
+  &__overlay {
+    position:         absolute;
+    inset:            0;
+    background-color: rgba($color-dark, $overlay-opacity);
+  }
+
+  // ── __content ───────────────────────────────────
+  // z-index layer that floats the headline above the bg
+  &__content {
+    position:        relative;
+    z-index:         1;
+    width:           100%;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    padding:         40px 24px;
+  }
+
+  // ── __headline ──────────────────────────────────
+  // "Our chairs are always open"
+  &__headline {
+    font-family:    $font-display;
+    font-weight:    $weight-black;
+    font-size:      $font-size-headline;
+    color:          $color-brown-deep;
+    text-align:     center;
+    line-height:    1.1;
+    letter-spacing: $tracking-headline;
+    // soft cream glow keeps it readable against dark areas
+    text-shadow:    0 2px 18px rgba($color-cream, 0.45);
+  }
+
+  // ── Responsive: tablet ──────────────────────────
+  @include respond-tablet {
+    min-height: $hero-min-height-tab;
+  }
+
+  // ── Responsive: mobile ──────────────────────────
+  @include respond-mobile {
+    min-height: $hero-min-height-mob;
+
+    &__headline {
+      font-size: $font-size-headline-sm;
+    }
+  }
+}

@@ -1,0 +1,29 @@
+// Here is where all layouts will be kept!!
+
+//  Heights, max-widths, gutters, breakpoints.
+// ================================================
+
+// ─── Dimensions ───────────────────────────────────
+$navbar-height:       70px;
+$hero-min-height:     580px;
+$hero-min-height-tab: 380px;    // tablet
+$hero-min-height-mob: 300px;    // mobile
+$max-width:           1400px;   // inner content cap
+
+// ─── Gutters ──────────────────────────────────────
+$gutter-desktop:  40px;
+$gutter-tablet:   18px;
+$gutter-mobile:   14px;
+
+// ─── Breakpoints ──────────────────────────────────
+$bp-tablet: 768px;
+$bp-mobile: 480px;
+
+// ─── Utility mixins ───────────────────────────────
+@mixin respond-tablet {
+  @media (max-width: $bp-tablet) { @content; }
+}
+
+@mixin respond-mobile {
+  @media (max-width: $bp-mobile) { @content; }
+}

@@ -1,94 +1,157 @@
-.appointment-details-page {
-  .appointment-card {
-    img {
-      height: 250px;
-    }
+// ================================================
+//  BLOCK: chaarhop-appointments-section
+//  Container for the appointments grid and title
+// ================================================
 
-    &:last-of-type {
-      background: linear-gradient(145deg, lighten($color-muted-olive, 15%), lighten($color-muted-olive, 8%)) !important;
-    }
+.chairhop-appointments-section {
+  margin-bottom: 3rem;
+
+  // ── __title ─────────────────────────────────────
+  &__title {
+    font-family:    $font-display;
+    font-weight:    $weight-black;
+    font-size:      2rem;
+    color:          $color-brown-deep;
+    text-align:     center;
+    margin-bottom:  2rem;
+    letter-spacing: -0.01em;
   }
 
-  h1 {
-    font-family: $headers-font;
-    font-weight: 800;
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    letter-spacing: -0.03em;
-    text-shadow: 0 3px 8px rgba($primary, 0.15);
+  // ── __grid ──────────────────────────────────────
+  &__grid {
+    // Bootstrap .row already handles layout
+    // This is just a semantic hook if you need it
   }
 
-  .badge {
+  // ── __empty ─────────────────────────────────────
+  // No appointments message
+  &__empty {
+    font-family: $font-body;
+    font-size:   1rem;
+    color:       darken($color-cream, 40%);
+    text-align:  center;
+    margin-top:  2.5rem;
+  }
+}
+
+
+// ================================================
+//  BLOCK: chaarhop-appointment-card
+//  Individual appointment card
+// ================================================
+
+.chairhop-appointment-card-link {
+  text-decoration: none;
+  display:         block;
+  transition:      transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+.chairhop-appointment-card {
+  border:        1px solid darken($color-cream, 10%);
+  border-radius: 10px;
+  overflow:      hidden;
+  background:    $color-white;
+  box-shadow:    0 2px 8px rgba($color-dark, 0.08);
+  transition:    box-shadow 0.25s ease;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba($color-dark, 0.15);
+  }
+
+  // ── __image ─────────────────────────────────────
+  &__image {
+    width:           100%;
+    height:          220px;
+    object-fit:      cover;
+    object-position: center;
+    display:         block;
+  }
+
+  // ── __body ──────────────────────────────────────
+  &__body {
+    padding: 1.25rem;
+  }
+
+  // ── __title ─────────────────────────────────────
+  &__title {
+    font-family:    $font-display;
+    font-weight:    $weight-black;
+    font-size:      1.35rem;
+    color:          $color-brown-deep;
+    margin-bottom:  0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  // ── __details ───────────────────────────────────
+  &__details {
+    font-family: $font-body;
+    font-size:   0.95rem;
+    color:       $color-dark;
+    line-height: 1.5;
+    margin:      0;
+  }
+
+  // ── __time ──────────────────────────────────────
+  &__time {
     font-size: 0.85rem;
-    padding: 0.5rem 1rem;
-    font-weight: 600;
+    color:     darken($color-cream, 35%);
   }
 }
 
-// Service selection styling for appointment show page
-.service-option,
-.addon-option {
-  .form-check-label {
-    color: #333333 !important;
-    font-weight: 600 !important;
-    font-size: 1rem !important;
+
+// ================================================
+//  RESPONSIVE – Tablet
+// ================================================
+
+@include respond-tablet {
+  .chairhop-search {
+    padding: 1.25rem;
+  }
+
+  .chairhop-appointments-section__title {
+    font-size: 1.75rem;
+  }
+
+  .chairhop-appointment-card__image {
+    height: 200px;
   }
 }
 
-.service-option {
-  .form-check-label {
-    font-weight: 700 !important;
-  }
-}
 
-// Mobile
+// ================================================
+//  RESPONSIVE – Mobile
+// ================================================
 
-@media (max-width: 480px) {
-
-  .appointment-details-page {
-    padding: 1rem !important;
-
-    /* Create a 2-column grid */
-    .appointments-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
-      padding: 0 0.5rem;
-    }
-
-    .appointment-card {
-      margin: 0;          // grid handles spacing
-      padding: 1rem;
-      border-radius: 14px;
-      width: 100%;
-
-      img {
-        height: 150px;
-        width: 100%;
-        object-fit: cover;
-        border-radius: 12px;
-      }
-    }
-
-    h1 {
-      font-size: 1.9rem;
-      margin-top: 0.5rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
-
-    .badge {
-      padding: 0.4rem 0.75rem;
-      font-size: 0.75rem;
-    }
+@include respond-mobile {
+  .chairhop-search {
+    padding:       1rem;
+    margin-top:    1rem;
+    margin-bottom: 1.5rem;
   }
 
-  .service-option,
-  .addon-option {
-    margin: 0.75rem 0;
+  .chairhop-search__button,
+  .chairhop-user-actions__button {
+    width:    100%;
+    padding:  0.75rem;
+  }
 
-    .form-check-label {
-      font-size: 0.95rem !important;
-    }
+  .chairhop-appointments-section__title {
+    font-size: 1.5rem;
+  }
+
+  .chairhop-appointment-card__image {
+    height: 180px;
+  }
+
+  .chairhop-appointment-card__body {
+    padding: 1rem;
+  }
+
+  .chairhop-appointment-card__title {
+    font-size: 1.2rem;
   }
 }

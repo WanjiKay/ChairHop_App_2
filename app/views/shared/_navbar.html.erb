@@ -1,34 +1,58 @@
-<nav id="mobile-navbar" class="navbar navbar-expand-sm navbar-light navbar-lewagon sticky-top">
-  <div class="container-fluid">
+<nav class="navbar chairhop-navbar sticky-top">
+  <div class="container-fluid chairhop-navbar__inner">
 
     <!-- Brand -->
-    <%= link_to root_path, id: "site-title", class: "navbar-brand" do %>
+    <%= link_to root_path, class: "navbar-brand chairhop-navbar__brand" do %>
       ChairHop
     <% end %>
 
-    <!-- Right side: Hopps + Avatar (always visible) -->
-    <div class="d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center chairhop-navbar__links">
+
+      <!-- Desktop nav links -->
+      <ul class="navbar-nav chairhop-navbar__nav-list d-none d-md-flex">
+        <li class="nav-item">
+          <%= link_to "Services", "#", class: "nav-link chairhop-navbar__nav-link" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "About", "#", class: "nav-link chairhop-navbar__nav-link" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "Contact", "#", class: "nav-link chairhop-navbar__nav-link" %>
+        </li>
+      </ul>
 
       <% if user_signed_in? %>
 
-        <%= link_to "Hopps", new_chat_path, class: "btn btn-info btn-hopps" %>
+        <!-- Desktop CTA -->
+        <%= link_to "Hopps",
+                    new_chat_path,
+                    class: "btn chairhop-navbar__cta d-none d-md-inline-flex" %>
 
-        <div class="dropdown">
-          <a class="avatar-dropdown-toggle d-flex align-items-center" id="navbarDropdown"
-             href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <% if current_user&.avatar&.attached? %>
-              <%= image_tag url_for(current_user.avatar), class: "avatar-img", alt: "User menu" %>
+        <!-- Mobile avatar dropdown -->
+        <div class="dropdown d-md-none">
+          <a
+            href="#"
+            class="avatar-dropdown-toggle"
+            id="navbarDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <% if current_user.avatar.attached? %>
+              <%= image_tag current_user.avatar, class: "avatar-img", alt: "User menu" %>
             <% else %>
               <%= image_tag "profile.png", class: "avatar-img", alt: "User menu" %>
             <% end %>
           </a>
 
           <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <%= link_to "Profile", profile_path(edit: 1), class: "dropdown-item" %>
-            <%= link_to "Settings", edit_user_registration_path, class: "dropdown-item" %>
+            <%= link_to "Hopps", new_chat_path, class: "dropdown-item" %>
             <%= link_to "Chats", chats_path, class: "dropdown-item" %>
             <%= link_to "Conversations", conversations_path, class: "dropdown-item" %>
-            <%= link_to "Log out", destroy_user_session_path,
+            <%= link_to "Profile", profile_path(edit: 1), class: "dropdown-item" %>
+            <%= link_to "Settings", edit_user_registration_path, class: "dropdown-item" %>
+            <%= link_to "Log out",
+                        destroy_user_session_path,
                         data: { turbo_method: :delete },
                         class: "dropdown-item" %>
           </div>
@@ -36,12 +60,13 @@
 
       <% else %>
 
-        <%= link_to "Hopps", "#", class: "btn btn-info btn-hopps disabled", aria_disabled: true %>
-        <%= link_to "Book Now", new_user_session_path, class: "btn btn-primary btn-book" %>
+        <!-- Logged out CTA -->
+        <%= link_to "Book Now",
+                    new_user_session_path,
+                    class: "btn chairhop-navbar__cta" %>
 
       <% end %>
 
     </div>
-
   </div>
 </nav>
