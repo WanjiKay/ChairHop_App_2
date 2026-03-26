@@ -79,6 +79,9 @@ Rails.application.configure do
     /http:\/\/192\.168\..*/   # Local network
   ]
 
+  # Allow ngrok hosts for QuickBooks OAuth testing
+  config.hosts << /[a-z0-9-]+\.ngrok-free\.dev/
+
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
 end

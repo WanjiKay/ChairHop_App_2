@@ -9,6 +9,7 @@ class Appointment < ApplicationRecord
   has_one_attached :image
   has_neighbors :embedding
   after_create :set_embedding
+  after_update :sync_to_quickbooks, if: :completed_and_paid?
   # validate :user_cannot_book_multiple, on: :update
 
   validates :time, presence: true
@@ -133,6 +134,19 @@ class Appointment < ApplicationRecord
   rescue => e
     # Silently skip embedding if API is not configured or rate limit is hit
     Rails.logger.warn "Skipping embedding for appointment #{id}: #{e.message}"
+  end
+
+  def completed_and_paid?
+    saved_change_to_status? &&
+    status == 'completed' &&
+    customer.present? &&
+    stylist.quickbooks_connected?
+  end
+
+  def sync_to_quickbooks
+    QuickbooksJob.perform_later(id)
+  rescue => e
+    Rails.logger.error "Failed to queue QuickBooks sync: #{e.message}"
   end
 
   # def user_cannot_book_multiple

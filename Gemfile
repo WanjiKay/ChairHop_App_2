@@ -65,6 +65,8 @@ gem 'kaminari'
 gem 'exponent-server-sdk'
 gem 'square.rb'
 gem 'geocoder'
+gem 'oauth2'
+gem 'httparty'
 
 group :development, :test do
   gem "dotenv-rails"

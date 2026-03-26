@@ -22,6 +22,7 @@ class User < ApplicationRecord
 
   has_many :services, foreign_key: :stylist_id, dependent: :destroy
   has_many :locations, dependent: :destroy
+  has_one :quick_books_token, dependent: :destroy
 
   has_one_attached :avatar
 
@@ -40,6 +41,10 @@ class User < ApplicationRecord
   # Check if any address field changed
   def address_changed?
     street_address_changed? || city_changed? || state_changed? || zip_code_changed?
+  end
+
+  def quickbooks_connected?
+    quick_books_token.present?
   end
 
   private

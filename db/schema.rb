@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_02_13_183141) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_19_214906) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "vector"
@@ -73,8 +73,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_13_183141) do
     t.string "payment_id"
     t.string "payment_method"
     t.bigint "location_id"
+    t.string "quickbooks_invoice_id"
+    t.string "quickbooks_payment_id"
     t.index ["customer_id"], name: "index_appointments_on_customer_id"
     t.index ["location_id"], name: "index_appointments_on_location_id"
+    t.index ["quickbooks_invoice_id"], name: "index_appointments_on_quickbooks_invoice_id"
     t.index ["stylist_id"], name: "index_appointments_on_stylist_id"
   end
 
@@ -141,6 +144,17 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_13_183141) do
     t.index ["chat_id"], name: "index_messages_on_chat_id"
   end
 
+  create_table "quick_books_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "access_token", null: false
+    t.text "refresh_token", null: false
+    t.string "realm_id", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_quick_books_tokens_on_user_id", unique: true
+  end
+
   create_table "reviews", force: :cascade do |t|
     t.integer "rating"
     t.text "content"
@@ -195,7 +209,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_13_183141) do
     t.string "zip_code"
     t.decimal "latitude", precision: 10, scale: 6
     t.decimal "longitude", precision: 10, scale: 6
+    t.string "quickbooks_customer_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["quickbooks_customer_id"], name: "index_users_on_quickbooks_customer_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -214,6 +230,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_02_13_183141) do
   add_foreign_key "conversations", "users", column: "stylist_id"
   add_foreign_key "locations", "users"
   add_foreign_key "messages", "chats"
+  add_foreign_key "quick_books_tokens", "users"
   add_foreign_key "reviews", "appointments"
   add_foreign_key "reviews", "users", column: "customer_id"
   add_foreign_key "reviews", "users", column: "stylist_id"

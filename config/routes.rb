@@ -27,6 +27,14 @@ Rails.application.routes.draw do
     end
   end
 
+  # QuickBooks integration
+  get '/quickbooks/connect', to: 'quickbooks#connect', as: :connect_quickbooks
+  get '/quickbooks/callback', to: 'quickbooks#callback'
+  delete '/quickbooks/disconnect', to: 'quickbooks#disconnect', as: :disconnect_quickbooks
+  namespace :quickbooks do
+    resource :manual_setup, only: [:new, :create], controller: 'manual_setup'
+  end
+
   resource :profile, only: [:show, :edit, :update]
 
   resources :appointments do
