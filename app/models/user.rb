@@ -21,11 +21,31 @@ class User < ApplicationRecord
   has_many :reviews_by_customer, class_name: "Review", foreign_key: :customer_id, dependent: :nullify
 
   has_many :services, foreign_key: :stylist_id, dependent: :destroy
+  has_many :locations, dependent: :destroy
+  has_one :quick_books_token, dependent: :destroy
 
   has_one_attached :avatar
 
+  # Geocoding (disabled until SSL certificate issue is resolved)
+  # geocoded_by :full_address
+  # after_validation :geocode, if: :address_changed?
+
   # Validate avatar file upload
   validate :avatar_validation
+
+  # Build full address for geocoding
+  def full_address
+    [street_address, city, state, zip_code].compact_blank.join(', ')
+  end
+
+  # Check if any address field changed
+  def address_changed?
+    street_address_changed? || city_changed? || state_changed? || zip_code_changed?
+  end
+
+  def quickbooks_connected?
+    quick_books_token.present?
+  end
 
   private
 

@@ -27,7 +27,7 @@
 
                 <p class="card-text">
                   <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
-                  <strong>Location:</strong> <%= appointment.location %><br>
+                  <strong>Location:</strong> <%= appointment.location_display %><br>
                   <strong>Time:</strong> <%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %><br>
                   <% if appointment.selected_service.present? %>
                     <strong>Service:</strong> <%= appointment.selected_service %>
@@ -84,7 +84,7 @@
 
                 <p class="card-text">
                   <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
-                  <strong>Location:</strong> <%= appointment.location %><br>
+                  <strong>Location:</strong> <%= appointment.location_display %><br>
                   <strong>Time:</strong> <%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %><br>
                   <% if appointment.selected_service.present? %>
                     <strong>Service:</strong> <%= appointment.selected_service %>
@@ -147,7 +147,7 @@
 
                 <p class="card-text text-muted">
                   <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
-                  <strong>Location:</strong> <%= appointment.location %><br>
+                  <strong>Location:</strong> <%= appointment.location_display %><br>
                   <strong>Time:</strong> <%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %><br>
                   <% if appointment.selected_service.present? %>
                     <strong>Service:</strong> <%= appointment.selected_service %>

@@ -1,0 +1,74 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold text-primary mb-1">My Services</h1>
+      <p class="text-muted mb-0"><%= @services.where(active: true).count %> active services</p>
+    </div>
+    <%= link_to new_stylist_service_path, class: "btn btn-primary" do %>
+      <i class="fas fa-plus me-1"></i> New Service
+    <% end %>
+  </div>
+
+  <% if @services.any? %>
+    <div class="dashboard-section">
+      <div class="table-responsive">
+        <table class="table dashboard-table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Service Name</th>
+              <th>Description</th>
+              <th>Price</th>
+              <th>Duration</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @services.each do |service| %>
+              <tr class="<%= 'opacity-50' unless service.active? %>">
+                <td><strong><%= service.name %></strong></td>
+                <td><%= truncate(service.description, length: 60) %></td>
+                <td>$<%= number_with_precision(service.price, precision: 2) %></td>
+                <td><%= service.duration_minutes ? "#{service.duration_minutes} min" : "—" %></td>
+                <td>
+                  <% if service.active? %>
+                    <span class="badge bg-success">Active</span>
+                  <% else %>
+                    <span class="badge bg-secondary">Inactive</span>
+                  <% end %>
+                </td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <%= link_to edit_stylist_service_path(service), class: "btn btn-sm btn-outline-primary" do %>
+                      <i class="fas fa-edit"></i>
+                    <% end %>
+                    <%= button_to stylist_service_path(service), method: :delete,
+                        data: { turbo_confirm: "Are you sure you want to delete '#{service.name}'?" },
+                        class: "btn btn-sm btn-outline-danger" do %>
+                      <i class="fas fa-trash"></i>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% else %>
+    <div class="dashboard-section text-center py-5">
+      <i class="fas fa-concierge-bell fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
+      <h5 class="text-muted">No services yet</h5>
+      <p class="text-muted mb-3">Add your first service so customers know what you offer.</p>
+      <%= link_to new_stylist_service_path, class: "btn btn-primary" do %>
+        <i class="fas fa-plus me-1"></i> Create Your First Service
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="mt-3">
+    <%= link_to stylist_dashboard_path, class: "btn btn-outline-primary" do %>
+      <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+    <% end %>
+  </div>
+</div>

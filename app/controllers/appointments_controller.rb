@@ -173,17 +173,11 @@ end
 
   def book
     authorize @appointment
-    if !@appointment.pending?
+    if !@appointment.pending? || @appointment.customer_id.present?
       redirect_to appointment_path(@appointment), alert: "Sorry this chair has already been filled."
     else
-      # Assign customer and selected service
-      @appointment.assign_attributes(
-        customer: current_user,
-        selected_service: params[:selected_service]
-      )
-
-      # Transition to booked status
-      if @appointment.accept!
+      # Assign customer and selected service — stays pending until stylist accepts
+      if @appointment.update(customer: current_user, selected_service: params[:selected_service])
         # Save add-ons if any were selected
         if params[:selected_add_ons].present?
           params[:selected_add_ons].each do |add_on_service|
@@ -197,7 +191,7 @@ end
         # Clear session data after successful booking
         session.delete("appointment_#{@appointment.id}_selections")
 
-        redirect_to booked_appointment_path(@appointment), notice: "Appointment successfully booked!"
+        redirect_to booked_appointment_path(@appointment), notice: "Booking request sent! The stylist will confirm shortly."
       else
         redirect_to check_in_appointment_path(@appointment, selected_service: params[:selected_service]), alert: "Something went wrong."
       end
@@ -206,23 +200,30 @@ end
 
   def booked
     authorize @appointment
-    if @appointment.booked? && @appointment.customer == current_user
+    if @appointment.customer == current_user && (@appointment.pending? || @appointment.booked?)
       @service_price = extract_price(@appointment.selected_service)
       @add_ons_total = @appointment.total_add_ons_price
     else
-      redirect_to appointments_path, alert: "Appointment not found or not booked."
+      redirect_to appointments_path, alert: "Appointment not found."
     end
   end
 
   def destroy
     authorize @appointment
     if @appointment.customer == current_user
-      @appointment.cancel!
-
-      # Clear session data when unbooking
+      # Clear session data
       session.delete("appointment_#{@appointment.id}_selections")
 
-      redirect_back fallback_location: my_appointments_path, notice: "Your appointment has been cancelled, let us know when you want to take another seat!"
+      if @appointment.pending?
+        # Pending request — just withdraw, reopen the slot
+        @appointment.update(customer_id: nil, selected_service: nil)
+        @appointment.appointment_add_ons.destroy_all
+        redirect_back fallback_location: my_appointments_path, notice: "Your booking request has been withdrawn."
+      else
+        # Booked appointment — full cancellation
+        @appointment.cancel!
+        redirect_back fallback_location: my_appointments_path, notice: "Your appointment has been cancelled, let us know when you want to take another seat!"
+      end
     else
       redirect_back fallback_location: appointment_path(@appointment), alert: "Sorry, you didn't book this seat."
     end

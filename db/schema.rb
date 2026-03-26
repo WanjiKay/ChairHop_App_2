@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_19_214906) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "vector"
@@ -68,7 +68,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
     t.string "selected_service"
     t.vector "embedding", limit: 1536
     t.integer "status", default: 0, null: false
+    t.decimal "payment_amount", precision: 10, scale: 2
+    t.string "payment_status", default: "pending"
+    t.string "payment_id"
+    t.string "payment_method"
+    t.bigint "location_id"
+    t.string "quickbooks_invoice_id"
+    t.string "quickbooks_payment_id"
     t.index ["customer_id"], name: "index_appointments_on_customer_id"
+    t.index ["location_id"], name: "index_appointments_on_location_id"
+    t.index ["quickbooks_invoice_id"], name: "index_appointments_on_quickbooks_invoice_id"
     t.index ["stylist_id"], name: "index_appointments_on_stylist_id"
   end
 
@@ -89,6 +98,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
     t.bigint "conversation_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "read_at"
     t.index ["conversation_id"], name: "index_conversation_messages_on_conversation_id"
   end
 
@@ -111,6 +121,18 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
     t.index ["jti"], name: "index_jwt_denylists_on_jti"
   end
 
+  create_table "locations", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.string "street_address", null: false
+    t.string "city", null: false
+    t.string "state", null: false
+    t.string "zip_code", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_locations_on_user_id"
+  end
+
   create_table "messages", force: :cascade do |t|
     t.string "role"
     t.text "content"
@@ -122,6 +144,17 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
     t.index ["chat_id"], name: "index_messages_on_chat_id"
   end
 
+  create_table "quick_books_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "access_token", null: false
+    t.text "refresh_token", null: false
+    t.string "realm_id", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_quick_books_tokens_on_user_id", unique: true
+  end
+
   create_table "reviews", force: :cascade do |t|
     t.integer "rating"
     t.text "content"
@@ -130,7 +163,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
     t.bigint "stylist_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["appointment_id"], name: "index_reviews_on_appointment_id"
+    t.index ["appointment_id"], name: "index_reviews_on_appointment_id", unique: true
     t.index ["customer_id"], name: "index_reviews_on_customer_id"
     t.index ["stylist_id"], name: "index_reviews_on_stylist_id"
   end
@@ -143,6 +176,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "duration_minutes"
     t.index ["stylist_id", "name"], name: "index_services_on_stylist_id_and_name"
     t.index ["stylist_id"], name: "index_services_on_stylist_id"
   end
@@ -168,7 +202,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
     t.string "location"
     t.text "about"
     t.integer "role", default: 0, null: false
+    t.string "push_token"
+    t.string "street_address"
+    t.string "city"
+    t.string "state"
+    t.string "zip_code"
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
+    t.string "quickbooks_customer_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["quickbooks_customer_id"], name: "index_users_on_quickbooks_customer_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -176,6 +219,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "appointment_add_ons", "appointments"
   add_foreign_key "appointment_add_ons", "services"
+  add_foreign_key "appointments", "locations"
   add_foreign_key "appointments", "users", column: "customer_id"
   add_foreign_key "appointments", "users", column: "stylist_id"
   add_foreign_key "chats", "appointments"
@@ -184,7 +228,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_01_29_013004) do
   add_foreign_key "conversations", "appointments"
   add_foreign_key "conversations", "users", column: "customer_id"
   add_foreign_key "conversations", "users", column: "stylist_id"
+  add_foreign_key "locations", "users"
   add_foreign_key "messages", "chats"
+  add_foreign_key "quick_books_tokens", "users"
   add_foreign_key "reviews", "appointments"
   add_foreign_key "reviews", "users", column: "customer_id"
   add_foreign_key "reviews", "users", column: "stylist_id"

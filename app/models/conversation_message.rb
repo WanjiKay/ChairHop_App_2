@@ -8,10 +8,22 @@ class ConversationMessage < ApplicationRecord
   validate :file_size_validation
   validate :file_content_type_validation
 
+  scope :unread, -> { where(read_at: nil) }
+  scope :read, -> { where.not(read_at: nil) }
+
   MAX_FILE_SIZE_MB = 5
   ALLOWED_CONTENT_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp']
 
   after_create_commit :broadcast_conversation
+  after_create_commit :broadcast_to_conversation_channel
+
+  def mark_as_read!
+    update(read_at: Time.current) unless read?
+  end
+
+  def read?
+    read_at.present?
+  end
 
   private
 
@@ -42,5 +54,21 @@ class ConversationMessage < ApplicationRecord
                         partial: "conversation_messages/conversation_message",
                         target: "conversation_messages",
                         locals: { conversation_message: self }
+  end
+
+  def broadcast_to_conversation_channel
+    ConversationChannel.broadcast_to(
+      conversation,
+      {
+        type: 'new_message',
+        message: {
+          id: id,
+          content: content,
+          role: role,
+          created_at: created_at,
+          read: read?
+        }
+      }
+    )
   end
 end

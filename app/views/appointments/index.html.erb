@@ -41,7 +41,7 @@
                 <h5 class="card-title"><%= appointment.salon %></h5>
                 <p class="card-text">
                   <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
-                  <strong>Location:</strong> <%= appointment.location %>
+                  <strong>Location:</strong> <%= appointment.location_display %>
                   <% if appointment.time.present? %>
                     <br><small><%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %></small>
                   <% end %>

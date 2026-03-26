@@ -1,0 +1,48 @@
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <h2 class="mb-4">Manual QuickBooks Setup</h2>
+
+      <div class="alert alert-info">
+        <h5><i class="bi bi-info-circle"></i> Get Your Tokens from OAuth Playground</h5>
+        <ol class="mb-0">
+          <li>Open: <a href="https://developer.intuit.com/app/developer/playground" target="_blank" class="alert-link">QuickBooks OAuth 2.0 Playground</a></li>
+          <li>Select <strong>"Chair Hop"</strong> from the app dropdown</li>
+          <li>Under "Select Scopes", check: <strong>Accounting</strong></li>
+          <li>Click <strong>"Get authorization code"</strong></li>
+          <li>Sign in and authorize the app</li>
+          <li>Click <strong>"Get OAuth 2.0 tokens"</strong></li>
+          <li>Copy the tokens below and paste them here</li>
+        </ol>
+      </div>
+
+      <%= form_with url: quickbooks_manual_setup_path, method: :post, local: true do |f| %>
+        <div class="mb-3">
+          <%= f.label :access_token, "Access Token", class: "form-label" %>
+          <%= f.text_area :access_token, class: "form-control font-monospace", rows: 4, required: true,
+              placeholder: "Paste access token here..." %>
+          <small class="text-muted">This is a long string starting with "eyJ..."</small>
+        </div>
+
+        <div class="mb-3">
+          <%= f.label :refresh_token, "Refresh Token", class: "form-label" %>
+          <%= f.text_area :refresh_token, class: "form-control font-monospace", rows: 4, required: true,
+              placeholder: "Paste refresh token here..." %>
+          <small class="text-muted">This is also a long string</small>
+        </div>
+
+        <div class="mb-3">
+          <%= f.label :realm_id, "Realm ID (Company ID)", class: "form-label" %>
+          <%= f.text_field :realm_id, class: "form-control", required: true,
+              placeholder: "e.g., 123456789" %>
+          <small class="text-muted">This is shown in the playground after authorization</small>
+        </div>
+
+        <div class="d-flex gap-2">
+          <%= f.submit "Connect QuickBooks", class: "btn btn-primary" %>
+          <%= link_to "Cancel", stylist_dashboard_path, class: "btn btn-outline-secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

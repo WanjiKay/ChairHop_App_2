@@ -1,6 +1,7 @@
 class Appointment < ApplicationRecord
   belongs_to :customer,class_name: "User", optional: true
   belongs_to :stylist, class_name: "User"
+  belongs_to :location, optional: true
   has_many :chats, dependent: :nullify
   has_one :conversation, dependent: :nullify
   has_one :review, dependent: :destroy
@@ -8,10 +9,12 @@ class Appointment < ApplicationRecord
   has_one_attached :image
   has_neighbors :embedding
   after_create :set_embedding
+  after_update :sync_to_quickbooks, if: :completed_and_paid?
   # validate :user_cannot_book_multiple, on: :update
 
   validates :time, presence: true
   validates :location, presence: true
+  validates :payment_status, inclusion: { in: %w[pending paid refunded failed] }, allow_nil: true
 
   enum status: {
     pending: 0,
@@ -109,18 +112,41 @@ class Appointment < ApplicationRecord
     save
   end
 
+  def location_display
+    if location.present?
+      location.full_address
+    elsif self[:location].present?
+      self[:location]
+    else
+      "Location not specified"
+    end
+  end
+
   private
 
   def set_embedding
     embedding = RubyLLM.embed("Time: #{time}.
     Booked: #{booked}.
-    Location #{location}.
+    Location #{location_display}.
     Stylist: #{stylist.name}.
     Services: #{services}.")
     update(embedding: embedding.vectors)
   rescue => e
     # Silently skip embedding if API is not configured or rate limit is hit
     Rails.logger.warn "Skipping embedding for appointment #{id}: #{e.message}"
+  end
+
+  def completed_and_paid?
+    saved_change_to_status? &&
+    status == 'completed' &&
+    customer.present? &&
+    stylist.quickbooks_connected?
+  end
+
+  def sync_to_quickbooks
+    QuickbooksJob.perform_later(id)
+  rescue => e
+    Rails.logger.error "Failed to queue QuickBooks sync: #{e.message}"
   end
 
   # def user_cannot_book_multiple

@@ -2,7 +2,7 @@ module Api
   module V1
     class AppointmentsController < BaseController
       skip_before_action :authenticate_api_user!, only: [:index, :show]
-      before_action :set_appointment, only: [:show, :book]
+      before_action :set_appointment, only: [:show, :book, :cancel]
 
       # GET /api/v1/appointments
       # List all available appointments with optional filters
@@ -110,9 +110,62 @@ module Api
           end
         end
 
+        @appointment.reload
+
+        # Send notification to stylist
+        notification_service = PushNotificationService.new
+        notification_service.send_to_user(
+          @appointment.stylist,
+          'New Booking Request',
+          "#{current_user.name} requested an appointment",
+          { type: 'booking_request', appointment_id: @appointment.id }
+        )
+
         render json: {
-          appointment: appointment_detail_json(@appointment.reload),
+          appointment: appointment_detail_json(@appointment),
           message: 'Booking request sent to stylist'
+        }, status: :ok
+      end
+
+      # DELETE /api/v1/appointments/:id/cancel
+      # Cancel a booked appointment
+      def cancel
+        # Verify the customer owns this booking
+        unless @appointment.customer_id == current_user.id
+          render json: { error: 'Unauthorized' }, status: :forbidden
+          return
+        end
+
+        # Can only cancel pending or booked appointments
+        unless @appointment.pending? || @appointment.booked?
+          render json: {
+            error: 'Cannot cancel',
+            message: 'Only pending or booked appointments can be cancelled'
+          }, status: :unprocessable_entity
+          return
+        end
+
+        # Send notification to stylist before clearing
+        stylist = @appointment.stylist
+        notification_service = PushNotificationService.new
+        notification_service.send_to_user(
+          stylist,
+          'Booking Cancelled',
+          "#{current_user.name} cancelled their appointment",
+          { type: 'booking_cancelled', appointment_id: @appointment.id }
+        )
+
+        # Clear the customer and reset to available
+        @appointment.update(
+          customer_id: nil,
+          selected_service: nil,
+          status: :pending,
+          booked: false
+        )
+
+        render json: {
+          message: 'Booking cancelled successfully',
+          appointment: appointment_json(@appointment)
         }, status: :ok
       end
 
@@ -170,6 +223,7 @@ module Api
           location: appointment.location,
           status: appointment.status,
           selected_service: appointment.selected_service,
+          image_url: appointment.image.attached? ? url_for(appointment.image) : nil,
           stylist: {
             id: appointment.stylist.id,
             name: appointment.stylist.name,

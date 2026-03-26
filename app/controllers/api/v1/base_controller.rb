@@ -71,6 +71,18 @@ module Api
       def render_success(data, status = :ok)
         render json: data, status: status
       end
+
+      def user_json(user)
+        {
+          id: user.id,
+          name: user.name,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+          location: user.location,
+          avatar_url: user.avatar.attached? ? url_for(user.avatar) : nil
+        }
+      end
     end
   end
 end
