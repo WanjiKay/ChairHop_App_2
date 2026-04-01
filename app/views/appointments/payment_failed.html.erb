@@ -1,0 +1,54 @@
+<div class="container py-5 mt-5" style="max-width: 560px;">
+  <div class="text-center mb-4">
+    <div class="text-danger mb-3" style="font-size: 4rem;">
+      <i class="bi bi-x-circle-fill"></i>
+    </div>
+    <h3 class="fw-bold">Payment Could Not Be Completed</h3>
+    <p class="text-muted">Your booking was not confirmed. No charge has been made to your card.</p>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h6 class="fw-semibold mb-3">What happened?</h6>
+      <ul class="text-muted mb-0 ps-3">
+        <li class="mb-1">Your card may have been declined</li>
+        <li class="mb-1">There may have been a temporary issue with the payment processor</li>
+        <li>The session may have timed out</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h6 class="fw-semibold mb-2">What can you do?</h6>
+      <p class="text-muted mb-3">The appointment slot may still be available. Try booking again, or contact us for help.</p>
+      <% if @appointment.present? %>
+        <div class="mb-2">
+          <small class="text-muted d-block">Appointment Reference</small>
+          <code>#<%= @appointment.id.to_s.rjust(6, '0') %></code>
+        </div>
+      <% end %>
+      <% if flash[:alert].present? %>
+        <div class="mb-0">
+          <small class="text-muted d-block">Error Reference</small>
+          <code class="small text-danger"><%= flash[:alert] %></code>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <% if @appointment.present? %>
+      <%= link_to appointment_path(@appointment), class: "btn btn-primary" do %>
+        <i class="bi bi-arrow-left me-1"></i> Try Again
+      <% end %>
+    <% else %>
+      <%= link_to root_path, class: "btn btn-primary" do %>
+        <i class="bi bi-search me-1"></i> Find Another Stylist
+      <% end %>
+    <% end %>
+    <%= link_to my_appointments_path, class: "btn btn-outline-secondary" do %>
+      <i class="bi bi-calendar me-1"></i> My Appointments
+    <% end %>
+  </div>
+</div>

@@ -2,20 +2,39 @@ class ChatsController < ApplicationController
   SYSTEM_PROMPT = "You are an assistant for a booking application.\n\nThe task is to help answer the questions of the customers."
   before_action :authenticate_user!
 
+  rescue_from RubyLLM::ConfigurationError, with: :handle_llm_error
+
+  private def handle_llm_error(exception)
+    Rails.logger.error "LLM Error: #{exception.class}: #{exception.message}"
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: "HOPPS is currently unavailable. Please try again later." }
+      format.turbo_stream {
+        render turbo_stream: turbo_stream.append(
+          "messages",
+          "<div class='alert alert-warning m-3'>HOPPS is currently unavailable. Please try again later.</div>"
+        )
+      }
+    end
+  end
+  public
+
   # List all chats for the user
   def index
+    skip_authorization
     @general_chats = current_user.chats.with_messages.where(appointment_id: nil).order(updated_at: :desc)
     @appointment_chats = current_user.chats.with_messages.where.not(appointment_id: nil).includes(:appointment).order(updated_at: :desc)
   end
 
   # Show a single chat
   def show
-    @chat = Chat.includes(:messages).find(params[:id])
+    @chat = current_user.chats.includes(:messages).find(params[:id])
+    authorize @chat
 
     if Rails.env.development?
       @input_tokens = @chat.messages.pluck(:input_tokens).compact.sum
       @output_tokens = @chat.messages.pluck(:output_tokens).compact.sum
-      @context_window = RubyLLM.models.find(@chat.model_id).context_window
+      model_info = RubyLLM.models.find(@chat.model_id)
+      @context_window = model_info&.context_window
     end
 
     @message = Message.new
@@ -40,6 +59,7 @@ class ChatsController < ApplicationController
       model_id: "gpt-4.1-nano",
       customer: current_user
     )
+    authorize @chat
 
     if params[:appointment_id].present?
       @appointment = Appointment.find(params[:appointment_id])
@@ -55,21 +75,26 @@ class ChatsController < ApplicationController
       if @message.save!
         chat_photos.each { |photo| @message.photos.attach(photo) } if chat_photos.present?
 
-        if @chat.appointment.nil?
-          @embedding = RubyLLM.embed(@message.content)
-          @appointments = Appointment.nearest_neighbors(
-            :embedding,
-            @embedding.vectors,
-            distance: "euclidean"
-          ).first(2)
+        begin
+          if @chat.appointment.nil?
+            @embedding = RubyLLM.embed(@message.content)
+            @appointments = Appointment.nearest_neighbors(
+              :embedding,
+              @embedding.vectors,
+              distance: "euclidean"
+            ).first(2)
+          end
+          if chat_photos.present?
+            @message.reload
+            send_question(image_url: @message.photos.first.url)
+          else
+            send_question
+          end
+          Message.create(role: "assistant", content: @response.content, chat: @chat)
+        rescue RubyLLM::ConfigurationError
+          redirect_to root_path, alert: "HOPPS is currently unavailable. Please try again later."
+          return
         end
-        if chat_photos.present?
-          @message.reload
-          send_question(image_url: @message.photos.first.url)
-        else
-          send_question
-        end
-        Message.create(role: "assistant", content: @response.content, chat: @chat)
       else
         flash.now[:alert] = "Could not send your message. #{@message.errors.full_messages.join(', ')}"
         render :new, status: :unprocessable_entity
@@ -83,6 +108,7 @@ class ChatsController < ApplicationController
 
   # Display form for new chat
   def new
+    skip_authorization
     @chat = Chat.new
     if params[:appointment_id].present?
       @appointment = Appointment.find(params[:appointment_id])
@@ -177,11 +203,11 @@ class ChatsController < ApplicationController
   def appointment_prompt(appointment)
     "APPOINTMENT id: #{appointment.id},
     time: #{appointment.time},
-    location: #{appointment.location},
+    location: #{appointment.location_display},
     stylist: #{appointment.stylist.name},
     salon: #{appointment.salon},
-    services: #{appointment.services},
-    url: #{check_in_appointment_url(appointment)}"
+    service: #{appointment.selected_service},
+    url: #{review_appointment_url(appointment)}"
   end
 
   def instruction_with_appointment
@@ -192,7 +218,7 @@ class ChatsController < ApplicationController
   def appointment_context
     return if @chat.appointment.nil?
     appointment = @chat.appointment
-    "Here is the context of the appointment: #{appointment.content}, #{appointment.time}, the location is: #{appointment.location}, the stylist's name is: #{appointment.stylist.name}."
+    "Here is the context of the appointment: #{appointment.content}, #{appointment.time}, the location is: #{appointment.location_display}, the stylist's name is: #{appointment.stylist.name}."
   end
 
 end

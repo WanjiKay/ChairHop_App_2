@@ -1,323 +1,512 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
-require "open-uri"
+puts "Seeding ChairHop database..."
 
-# IMPORTANT: This seed file creates development/test data only
-# Password is configurable via SEED_PASSWORD environment variable
-# If not set, a random password will be generated (use 'password' for local development)
-SEED_PASSWORD = ENV['SEED_PASSWORD'] || 'password'
-puts "Using seed password: #{SEED_PASSWORD == 'password' ? 'password (default)' : '[custom/secure password]'}"
+ActiveRecord::Base.transaction do
+  # ============================================
+  # CLEAR EXISTING DATA (FK-safe order)
+  # ============================================
+  puts "Clearing existing data..."
+  ConversationMessage.destroy_all
+  Conversation.destroy_all
+  Message.destroy_all
+  Chat.destroy_all
+  Review.destroy_all
+  AppointmentAddOn.destroy_all
+  Appointment.destroy_all
+  AvailabilityBlock.destroy_all
+  Service.destroy_all
+  Location.destroy_all
+  User.destroy_all
+  puts "   Done."
 
-# Clean up seed data but preserve customer bookings and their users
-puts "Cleaning up old seed data"
+  # ============================================
+  # STYLISTS
+  # ============================================
+  puts "Creating stylists..."
 
-# Clean up all existing data
-ConversationMessage.destroy_all
-Conversation.destroy_all
-Message.destroy_all
-Chat.destroy_all
-Review.destroy_all
-Appointment.destroy_all
-User.destroy_all
-# -----------------------------------------
-# SALON-SPECIFIC DESCRIPTIONS (appointment.content)
-# -----------------------------------------
-salon_descriptions = {
-  "Brows and Locks Salon" => <<~TEXT,
-    Brows and Locks Salon specializes in precision cuts, glossy blowouts,
-    hair coloring, and brow shaping. We combine modern techniques with
-    luxury hair treatments to give clients a polished, camera-ready look.
-    Choose from the available services listed below.
-  TEXT
-  "Chic Studio" => <<~TEXT,
-    Chic Studio is known for high-end coloring, balayage, and modern
-    layered cuts. Our stylists are trained in runway-inspired styling
-    and soft glam finishing. Select a service from our menu below.
-  TEXT
-  "Glow Lounge" => <<~TEXT,
-    Glow Lounge focuses on protective styles, natural hair treatments,
-    silk presses, and scalp health. Our team specializes in textured hair
-    and long-lasting styles. Pick your desired service from our offerings.
-  TEXT
-  "Downtown Cuts" => <<~TEXT,
-    Downtown Cuts offers sharp fades, beard detailing, clipper precision,
-    and classic barbering with a modern twist. Choose from the services
-    listed below to complete your appointment.
-  TEXT
-}
-# -----------------------------------------
-# SERVICE LIST (stored in appointments.services)
-# -----------------------------------------
-service_list = {
-  braids:                { name: "Protective Braids", price: 80 },
-  silk_press:            { name: "Silk Press", price: 60 },
-  wash_and_go:            { name: "Wash & Go", price: 80 },
-  loc_maintenance:       { name: "Loc Maintenance", price: 75 },
-  womens_cut:            { name: "Women's Cut", price: 45 },
-  mens_fade:             { name: "Men's Cut / Fade", price: 30 },
-  wash_blow:             { name: "Wash & Blowout", price: 35 },
-  kids_cut:              { name: "Kids Cut", price: 20 },
-  color:                 { name: "Color Treatment", price: 90 },
-  highlights:            { name: "Highlights", price: 120 }
-}
-salon_services = {
-  "Glow Lounge" => [
-    service_list[:braids],
-    service_list[:wash_and_go],
-    service_list[:silk_press],
-    service_list[:loc_maintenance],
-    service_list[:womens_cut]
-  ],
-
-  "Brows and Locks Salon" => [
-    service_list[:wash_blow],
-    service_list[:color],
-    service_list[:highlights],
-    service_list[:womens_cut]
-  ],
-
-  "Chic Studio" => [
-    service_list[:color],
-    service_list[:highlights],
-    service_list[:womens_cut],
-    service_list[:wash_blow]
-  ],
-
-  "Downtown Cuts" => [
-    service_list[:mens_fade],
-    service_list[:kids_cut],
-    service_list[:wash_blow]
-  ]
-}
-
-def service_text(list)
-  list.map { |s| "#{s[:name]} - $#{s[:price]}" }.join("\n")
-end
-# -----------------------------------------
-# STYLIST USERS WITH SPECIALIZED PROFILES
-# -----------------------------------------
-stylists = [
-  {
-    name: "Tilly",
-    username: "tilly_browslocks",
-    location: "Montreal",
-    about: "Cut, color, brows, and glossy blowout specialist.",
-    email: "tilly@example.com",
-    salon: "Brows and Locks Salon"
-  },
-  {
-    name: "Chico",
-    username: "chico_styles",
-    location: "Montreal",
-    about: "Luxury coloring + precision cutting expert.",
-    email: "chico@example.com",
-    salon: "Chic Studio"
-  },
-  {
-    name: "Lana",
-    username: "lana_braids",
-    location: "Laval",
-    about: "Specialist in protective styles with 10+ years focusing on knotless braids, twist variations, natural hair care, and gentle tension techniques.",
-    email: "lana@example.com",
-     salon: "Glow Lounge"
-  },
-  {
-    name: "Marco",
-    username: "marco_fades",
-    location: "Montreal",
-    about: "Professional barber with 12 years of experience in fades, barber designs, beard sculpting, and precision clipper work.",
-    email: "marco@example.com",
-    salon: "Downtown Cuts"
-  }
-]
-
-stylist_avatar = ["https://images.unsplash.com/photo-1676340619040-8688de9fd331?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D","https://images.unsplash.com/photo-1639747280804-dd2d6b3d88ac?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D","https://images.unsplash.com/photo-1701887714761-bd7dcc157763?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D","https://images.unsplash.com/photo-1654110455429-cf322b40a906?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"]
-puts "Creating stylist users with specialized profiles..."
-i=0
-stylist_salon_map = {}
-stylist_users = stylists.map do |s|
-    stylist = User.new(
-    email: s[:email],
-    password: SEED_PASSWORD,
-    name: s[:name],
-    username: s[:username],
-    location: s[:location],
-    about: s[:about],
-    role: :stylist,
+  maya = User.create!(
+    email:                   "maya@example.com",
+    password:                "password123",
+    name:                    "Maya Johnson",
+    username:                "maya_glow",
+    about:                   "Natural hair specialist with 9 years of experience in silk presses, protective styles, and scalp health. I celebrate the beauty and versatility of textured hair and help every client leave feeling their best.",
+    role:                    :stylist,
+    onboarding_completed_at: Time.current
   )
 
-  stylist.save!
-
-  # Attach avatar only if Cloudinary is configured
-  # Commented out for initial setup - configure Cloudinary to enable
-  # begin
-  #   file = URI.parse(stylist_avatar[i]).open
-  #   stylist.avatar.attach(io: file, filename: "nes.png", content_type: "image/png")
-  # rescue => e
-  #   puts "Skipping avatar for #{s[:name]}: #{e.message}"
-  # end
-  stylist_salon_map[stylist.id] = s[:salon]
-
-  i = i + 1
-  stylist
-  end
-  puts "creating customer users..."
-# -----------------------------------------
-# CUSTOMERS (NO ABOUT FIELD)
-# -----------------------------------------
-customer_users = 10.times.map do |i|
-  User.create!(
-    email: "customer#{i + 1}@example.com",
-    password: SEED_PASSWORD,
-    name: "Customer #{i + 1}",
-    username: "customer#{i + 1}",
-    location: ["Montreal", "Laval", "Longueuil"].sample,
-    role: :customer
+  derek = User.create!(
+    email:                   "derek@example.com",
+    password:                "password123",
+    name:                    "Derek Kim",
+    username:                "derek_cuts",
+    about:                   "Precision barber with 11 years of experience in fades, tapers, beard sculpting, and classic barbering. Known for clean lines, consistent results, and a relaxed chair-side manner every visit.",
+    role:                    :stylist,
+    onboarding_completed_at: Time.current
   )
+
+  sofia = User.create!(
+    email:                   "sofia@example.com",
+    password:                "password123",
+    name:                    "Sofia Rivera",
+    username:                "sofia_color",
+    about:                   "Color specialist with 7 years of experience in balayage, highlights, and full-color transformations. I use only premium, low-damage products for stunning, long-lasting results that clients love.",
+    role:                    :stylist,
+    onboarding_completed_at: Time.current
+  )
+
+  puts "   Created #{User.stylist.count} stylists."
+
+  # ============================================
+  # CUSTOMERS
+  # ============================================
+  puts "Creating customers..."
+
+  emma   = User.create!(email: "emma@example.com",   password: "password123", name: "Emma Wilson",  username: "emma_w",    role: :customer)
+  james  = User.create!(email: "james@example.com",  password: "password123", name: "James Carter", username: "james_c",   role: :customer)
+  priya  = User.create!(email: "priya@example.com",  password: "password123", name: "Priya Patel",  username: "priya_p",   role: :customer)
+  marcus = User.create!(email: "marcus@example.com", password: "password123", name: "Marcus Lee",   username: "marcus_l",  role: :customer)
+  olivia = User.create!(email: "olivia@example.com", password: "password123", name: "Olivia Chen",  username: "olivia_c",  role: :customer)
+  tyler  = User.create!(email: "tyler@example.com",  password: "password123", name: "Tyler Brooks", username: "tyler_b",   role: :customer)
+  zoe    = User.create!(email: "zoe@example.com",    password: "password123", name: "Zoe Williams", username: "zoe_w",     role: :customer)
+
+  puts "   Created #{User.customer.count} customers."
+
+  # ============================================
+  # LOCATIONS
+  # ============================================
+  puts "Creating locations..."
+
+  maya_loc1 = Location.create!(
+    user: maya, name: "Glow Studio",
+    street_address: "1842 Fillmore St", city: "San Francisco", state: "CA", zip_code: "94115"
+  )
+
+  maya_loc2 = Location.create!(
+    user: maya, name: "Glow Studio Mission",
+    street_address: "3390 18th St", city: "San Francisco", state: "CA", zip_code: "94110"
+  )
+
+  derek_loc = Location.create!(
+    user: derek, name: "Sharp Cuts Brooklyn",
+    street_address: "456 Bedford Ave", city: "Brooklyn", state: "NY", zip_code: "11211"
+  )
+
+  sofia_loc = Location.create!(
+    user: sofia, name: "Chic Color Bar",
+    street_address: "2104 S Lamar Blvd", city: "Austin", state: "TX", zip_code: "78704"
+  )
+
+  puts "   Created #{Location.count} locations."
+
+  # ============================================
+  # SERVICES
+  # ============================================
+  puts "Creating services..."
+
+  # Maya — Glow Studio (natural/textured hair)
+  maya_silk_press   = Service.create!(stylist: maya, name: "Silk Press",                  price_cents: 6500,  duration_minutes: 75,  active: true, is_add_on: false, description: "Silky straight finish for natural hair using low-heat pressing technique")
+  maya_braids       = Service.create!(stylist: maya, name: "Protective Braids",           price_cents: 8500,  duration_minutes: 120, active: true, is_add_on: false, description: "Knotless box braids or twist variations, all lengths")
+  maya_wash_go      = Service.create!(stylist: maya, name: "Wash & Go",                   price_cents: 7000,  duration_minutes: 90,  active: true, is_add_on: false, description: "Clarifying wash, deep condition, and curl definition for natural hair")
+  maya_consultation = Service.create!(stylist: maya, name: "Hair Health Consultation",    price_cents: 4000,  duration_minutes: 45,  active: true, is_add_on: false, description: "One-on-one session for hair routine, scalp health, and product guidance")
+  Service.create!(stylist: maya, name: "Deep Conditioning Treatment", price_cents: 2000,  duration_minutes: 20, active: true, is_add_on: true, description: "Intensive moisture treatment added to any service")
+  Service.create!(stylist: maya, name: "Scalp Massage",               price_cents: 1500,  duration_minutes: 15, active: true, is_add_on: true, description: "Relaxing scalp massage with essential oils")
+  Service.create!(stylist: maya, name: "Hair Mask",                   price_cents: 2200,  duration_minutes: 15, active: true, is_add_on: true, description: "Protein or moisture-based restorative hair mask")
+
+  # Derek — Sharp Cuts Brooklyn (barbershop)
+  derek_fade    = Service.create!(stylist: derek, name: "Men's Fade",      price_cents: 3500,  duration_minutes: 40, active: true, is_add_on: false, description: "Precision skin or low fade with sharp line-up")
+  derek_cut     = Service.create!(stylist: derek, name: "Classic Cut",     price_cents: 2800,  duration_minutes: 35, active: true, is_add_on: false, description: "Scissors and clipper cut for any length")
+  derek_kids    = Service.create!(stylist: derek, name: "Kids Cut",        price_cents: 2000,  duration_minutes: 30, active: true, is_add_on: false, description: "Cuts for children 12 and under, patient and thorough")
+  derek_beard   = Service.create!(stylist: derek, name: "Beard Shape-Up",  price_cents: 2500,  duration_minutes: 25, active: true, is_add_on: false, description: "Full beard sculpt, oil, and precision line detailing")
+  derek_shampoo = Service.create!(stylist: derek, name: "Shampoo & Style", price_cents: 4000,  duration_minutes: 45, active: true, is_add_on: false, description: "Shampoo, condition, and finished style")
+  Service.create!(stylist: derek, name: "Hot Towel Treatment", price_cents: 800,   duration_minutes: 10, active: true, is_add_on: true, description: "Classic hot towel treatment for face and neck")
+  Service.create!(stylist: derek, name: "Beard Conditioning",  price_cents: 1200,  duration_minutes: 10, active: true, is_add_on: true, description: "Softening conditioning and oil treatment for beard")
+  Service.create!(stylist: derek, name: "Razor Line-Up",       price_cents: 1000,  duration_minutes: 10, active: true, is_add_on: true, description: "Straight-razor edge-up on hairline and sideburns")
+
+  # Sofia — Chic Color Bar (color specialist)
+  sofia_balayage    = Service.create!(stylist: sofia, name: "Balayage",            price_cents: 18000, duration_minutes: 180, active: true, is_add_on: false, description: "Hand-painted highlights for natural-looking dimension and depth")
+  sofia_full_color  = Service.create!(stylist: sofia, name: "Full Color",          price_cents: 11000, duration_minutes: 120, active: true, is_add_on: false, description: "Root-to-tip single process color, all shades")
+  sofia_cut         = Service.create!(stylist: sofia, name: "Women's Cut & Style", price_cents: 6500,  duration_minutes: 60,  active: true, is_add_on: false, description: "Precision cut and blowout finish")
+  sofia_highlights  = Service.create!(stylist: sofia, name: "Highlights",          price_cents: 13000, duration_minutes: 150, active: true, is_add_on: false, description: "Foil highlights, partial or full coverage")
+  Service.create!(stylist: sofia, name: "Keratin Treatment", price_cents: 20000, duration_minutes: 180, active: true, is_add_on: false, description: "Professional smoothing keratin treatment for frizz control")
+  Service.create!(stylist: sofia, name: "Olaplex Treatment", price_cents: 3500,  duration_minutes: 20,  active: true, is_add_on: true,  description: "Bond-repairing Olaplex add-on for color services")
+  Service.create!(stylist: sofia, name: "Toning Gloss",      price_cents: 2500,  duration_minutes: 20,  active: true, is_add_on: true,  description: "Gloss toner for shine and color refresh between appointments")
+  Service.create!(stylist: sofia, name: "Deep Conditioning",  price_cents: 2000,  duration_minutes: 20,  active: true, is_add_on: true,  description: "Intensive deep conditioning treatment add-on")
+
+  puts "   Created #{Service.where(is_add_on: false).count} main services, #{Service.where(is_add_on: true).count} add-ons."
+
+  # ============================================
+  # AVAILABILITY BLOCKS
+  # ============================================
+  puts "Creating availability blocks..."
+
+  today = Date.today
+
+  # Maya — 5 blocks across 2 locations over 2-3 weeks
+  AvailabilityBlock.create!(
+    stylist: maya, location: maya_loc1,
+    start_time: (today + 2.days).beginning_of_day + 9.hours,
+    end_time:   (today + 2.days).beginning_of_day + 17.hours,
+    available_for_all_services: true
+  )
+  AvailabilityBlock.create!(
+    stylist: maya, location: maya_loc2,
+    start_time: (today + 5.days).beginning_of_day + 10.hours,
+    end_time:   (today + 5.days).beginning_of_day + 16.hours,
+    available_for_all_services: false,
+    service_ids: [maya_silk_press.id.to_s, maya_braids.id.to_s]
+  )
+  AvailabilityBlock.create!(
+    stylist: maya, location: maya_loc1,
+    start_time: (today + 9.days).beginning_of_day + 9.hours,
+    end_time:   (today + 9.days).beginning_of_day + 14.hours,
+    available_for_all_services: true
+  )
+  AvailabilityBlock.create!(
+    stylist: maya, location: maya_loc2,
+    start_time: (today + 14.days).beginning_of_day + 11.hours,
+    end_time:   (today + 14.days).beginning_of_day + 17.hours,
+    available_for_all_services: false,
+    service_ids: [maya_wash_go.id.to_s, maya_consultation.id.to_s]
+  )
+  AvailabilityBlock.create!(
+    stylist: maya, location: maya_loc1,
+    start_time: (today + 18.days).beginning_of_day + 9.hours,
+    end_time:   (today + 18.days).beginning_of_day + 16.hours,
+    available_for_all_services: true
+  )
+
+  # Derek — 4 blocks
+  AvailabilityBlock.create!(
+    stylist: derek, location: derek_loc,
+    start_time: (today + 1.day).beginning_of_day + 8.hours,
+    end_time:   (today + 1.day).beginning_of_day + 14.hours,
+    available_for_all_services: true
+  )
+  AvailabilityBlock.create!(
+    stylist: derek, location: derek_loc,
+    start_time: (today + 3.days).beginning_of_day + 9.hours,
+    end_time:   (today + 3.days).beginning_of_day + 17.hours,
+    available_for_all_services: false,
+    service_ids: [derek_fade.id.to_s, derek_beard.id.to_s, derek_shampoo.id.to_s]
+  )
+  AvailabilityBlock.create!(
+    stylist: derek, location: derek_loc,
+    start_time: (today + 8.days).beginning_of_day + 10.hours,
+    end_time:   (today + 8.days).beginning_of_day + 18.hours,
+    available_for_all_services: true
+  )
+  AvailabilityBlock.create!(
+    stylist: derek, location: derek_loc,
+    start_time: (today + 13.days).beginning_of_day + 9.hours,
+    end_time:   (today + 13.days).beginning_of_day + 15.hours,
+    available_for_all_services: true
+  )
+
+  # Sofia — 3 blocks (longer sessions for color work)
+  AvailabilityBlock.create!(
+    stylist: sofia, location: sofia_loc,
+    start_time: (today + 2.days).beginning_of_day + 10.hours,
+    end_time:   (today + 2.days).beginning_of_day + 18.hours,
+    available_for_all_services: true
+  )
+  AvailabilityBlock.create!(
+    stylist: sofia, location: sofia_loc,
+    start_time: (today + 7.days).beginning_of_day + 9.hours,
+    end_time:   (today + 7.days).beginning_of_day + 17.hours,
+    available_for_all_services: false,
+    service_ids: [sofia_balayage.id.to_s, sofia_highlights.id.to_s, sofia_full_color.id.to_s]
+  )
+  AvailabilityBlock.create!(
+    stylist: sofia, location: sofia_loc,
+    start_time: (today + 15.days).beginning_of_day + 10.hours,
+    end_time:   (today + 15.days).beginning_of_day + 18.hours,
+    available_for_all_services: true
+  )
+
+  puts "   Created #{AvailabilityBlock.count} availability blocks."
+
+  # ============================================
+  # APPOINTMENTS
+  # ============================================
+  puts "Creating appointments..."
+
+  # --- PENDING: 3 open slots (no customer) ---
+
+  Appointment.create!(
+    stylist:        maya,
+    location_id:    maya_loc1.id,
+    time:           (today + 4.days).beginning_of_day + 11.hours,
+    salon:          "Glow Studio",
+    status:         :pending,
+    payment_status: "pending",
+    content:        "Open slot for natural hair services. Silk Press, Wash & Go, and Protective Braids available."
+  )
+
+  Appointment.create!(
+    stylist:        derek,
+    location_id:    derek_loc.id,
+    time:           (today + 3.days).beginning_of_day + 14.hours,
+    salon:          "Sharp Cuts Brooklyn",
+    status:         :pending,
+    payment_status: "pending",
+    content:        "Available for fades, cuts, and beard work. Booking preferred but walk-ins welcome if available."
+  )
+
+  Appointment.create!(
+    stylist:        sofia,
+    location_id:    sofia_loc.id,
+    time:           (today + 6.days).beginning_of_day + 13.hours,
+    salon:          "Chic Color Bar",
+    status:         :pending,
+    payment_status: "pending",
+    content:        "Color session slot open. Balayage, highlights, and full color appointments available."
+  )
+
+  # --- BOOKED: 4 upcoming accepted appointments ---
+
+  Appointment.create!(
+    stylist:          maya,
+    customer:         emma,
+    location_id:      maya_loc1.id,
+    time:             (today + 5.days).beginning_of_day + 10.hours,
+    salon:            "Glow Studio",
+    status:           :booked,
+    selected_service: "Silk Press - $65.00",
+    content:          "Emma wants a silky straight look for an upcoming wedding. She prefers medium heat and a light oil finish.",
+    payment_amount:   32.50,
+    payment_status:   "deposit_paid",
+    payment_id:       "sq_test_bk001",
+    payment_method:   "square"
+  )
+
+  Appointment.create!(
+    stylist:          derek,
+    customer:         james,
+    location_id:      derek_loc.id,
+    time:             (today + 4.days).beginning_of_day + 11.hours,
+    salon:            "Sharp Cuts Brooklyn",
+    status:           :booked,
+    selected_service: "Men's Fade - $35.00",
+    content:          "James wants a low fade with a sharp skin line-up. He keeps the top long with a textured finish.",
+    payment_amount:   17.50,
+    payment_status:   "deposit_paid",
+    payment_id:       "sq_test_bk002",
+    payment_method:   "square"
+  )
+
+  Appointment.create!(
+    stylist:          sofia,
+    customer:         priya,
+    location_id:      sofia_loc.id,
+    time:             (today + 7.days).beginning_of_day + 10.hours,
+    salon:            "Chic Color Bar",
+    status:           :booked,
+    selected_service: "Balayage - $180.00",
+    content:          "Priya wants warm honey-brown balayage on dark brown base. First time coloring — wants a subtle, natural look.",
+    payment_amount:   90.00,
+    payment_status:   "deposit_paid",
+    payment_id:       "sq_test_bk003",
+    payment_method:   "square"
+  )
+
+  Appointment.create!(
+    stylist:          maya,
+    customer:         olivia,
+    location_id:      maya_loc2.id,
+    time:             (today + 9.days).beginning_of_day + 14.hours,
+    salon:            "Glow Studio Mission",
+    status:           :booked,
+    selected_service: "Protective Braids - $85.00",
+    content:          "Olivia would like medium-length knotless box braids. Hair is pre-washed and stretched.",
+    payment_amount:   42.50,
+    payment_status:   "deposit_paid",
+    payment_id:       "sq_test_bk004",
+    payment_method:   "square"
+  )
+
+  # --- COMPLETED: 4 past appointments ---
+
+  comp1 = Appointment.create!(
+    stylist:            maya,
+    customer:           marcus,
+    location_id:        maya_loc1.id,
+    time:               8.days.ago + 10.hours,
+    salon:              "Glow Studio",
+    status:             :completed,
+    selected_service:   "Silk Press - $65.00",
+    content:            "Marcus came in for a silk press ahead of a family gathering. He wanted a sleek, natural finish.",
+    payment_amount:     65.00,
+    payment_status:     "paid",
+    payment_id:         "sq_test_cp001",
+    balance_payment_id: "sq_test_bal001",
+    payment_method:     "square"
+  )
+
+  comp2 = Appointment.create!(
+    stylist:            derek,
+    customer:           tyler,
+    location_id:        derek_loc.id,
+    time:               12.days.ago + 11.hours,
+    salon:              "Sharp Cuts Brooklyn",
+    status:             :completed,
+    selected_service:   "Men's Fade - $35.00",
+    content:            "Tyler wanted a fresh skin fade before a job interview. Requested a crisp line-up and temple taper.",
+    payment_amount:     35.00,
+    payment_status:     "paid",
+    payment_id:         "sq_test_cp002",
+    balance_payment_id: "sq_test_bal002",
+    payment_method:     "square"
+  )
+
+  comp3 = Appointment.create!(
+    stylist:            sofia,
+    customer:           zoe,
+    location_id:        sofia_loc.id,
+    time:               15.days.ago + 14.hours,
+    salon:              "Chic Color Bar",
+    status:             :completed,
+    selected_service:   "Full Color - $110.00",
+    content:            "Zoe wanted a rich auburn full color. Her base was medium brown and she wanted a bold change.",
+    payment_amount:     110.00,
+    payment_status:     "paid",
+    payment_id:         "sq_test_cp003",
+    balance_payment_id: "sq_test_bal003",
+    payment_method:     "square"
+  )
+
+  comp4 = Appointment.create!(
+    stylist:            derek,
+    customer:           emma,
+    location_id:        derek_loc.id,
+    time:               21.days.ago + 9.hours,
+    salon:              "Sharp Cuts Brooklyn",
+    status:             :completed,
+    selected_service:   "Classic Cut - $28.00",
+    content:            "Emma stopped in for a trim and clean-up. Requested layers taken off the ends.",
+    payment_amount:     28.00,
+    payment_status:     "paid",
+    payment_id:         "sq_test_cp004",
+    balance_payment_id: "sq_test_bal004",
+    payment_method:     "square"
+  )
+
+  completed_appointments = [comp1, comp2, comp3, comp4]
+
+  # --- CANCELLED: 2 past appointments ---
+
+  Appointment.create!(
+    stylist:             sofia,
+    customer:            marcus,
+    location_id:         sofia_loc.id,
+    time:                10.days.ago + 13.hours,
+    salon:               "Chic Color Bar",
+    status:              :cancelled,
+    selected_service:    "Highlights - $130.00",
+    content:             "Marcus booked highlights but cancelled due to a scheduling conflict.",
+    payment_amount:      65.00,
+    payment_status:      "refunded",
+    payment_id:          "sq_test_cn001",
+    payment_method:      "square",
+    cancelled_by:        "customer",
+    cancelled_at:        11.days.ago + 9.hours,
+    cancelled_by_id:     marcus.id,
+    cancellation_reason: "Unexpected work conflict — can't make the appointment."
+  )
+
+  Appointment.create!(
+    stylist:             maya,
+    customer:            james,
+    location_id:         maya_loc1.id,
+    time:                5.days.ago + 11.hours,
+    salon:               "Glow Studio",
+    status:              :cancelled,
+    selected_service:    "Wash & Go - $70.00",
+    content:             "James booked a wash and go but cancelled within the 24-hour window.",
+    payment_amount:      35.00,
+    payment_status:      "deposit_kept",
+    payment_id:          "sq_test_cn002",
+    payment_method:      "square",
+    cancelled_by:        "customer",
+    cancelled_at:        5.days.ago + 3.hours,
+    cancelled_by_id:     james.id,
+    cancellation_reason: "Plans changed at the last minute."
+  )
+
+  puts "   Pending:   #{Appointment.pending.count}"
+  puts "   Booked:    #{Appointment.booked.count}"
+  puts "   Completed: #{Appointment.completed.count}"
+  puts "   Cancelled: #{Appointment.cancelled.count}"
+
+  # ============================================
+  # REVIEWS (completed appointments only)
+  # ============================================
+  puts "Creating reviews..."
+
+  Review.create!(
+    appointment: comp1,
+    customer:    marcus,
+    stylist:     maya,
+    rating:      5,
+    content:     "Maya is incredibly talented and my hair came out absolutely flawless. The silk press lasted all week without a hint of frizz. I've already booked my next appointment — she's the only stylist I trust with my hair."
+  )
+
+  Review.create!(
+    appointment: comp2,
+    customer:    tyler,
+    stylist:     derek,
+    rating:      5,
+    content:     "Derek delivered exactly the clean fade I was looking for. The line-up was laser-sharp and the whole experience was quick and professional. Walked out feeling 100% ready for my interview and got the job!"
+  )
+
+  Review.create!(
+    appointment: comp3,
+    customer:    zoe,
+    stylist:     sofia,
+    rating:      4,
+    content:     "Sofia did a gorgeous job on my auburn color — the depth and shine are exactly what I wanted. The session ran a bit longer than expected but she kept me comfortable throughout. Absolutely worth it."
+  )
+
+  Review.create!(
+    appointment: comp4,
+    customer:    emma,
+    stylist:     derek,
+    rating:      3,
+    content:     "The cut was clean and Derek was friendly and easy to talk to. It felt a bit rushed near the end and I had to ask for a small adjustment, but overall I'm satisfied with how it looks."
+  )
+
+  puts "   Created #{Review.count} reviews."
+
+  # ============================================
+  # SUMMARY
+  # ============================================
+  puts ""
+  puts "=" * 60
+  puts " ChairHop Seed Complete"
+  puts "=" * 60
+  puts " Users:          #{User.count}"
+  puts "   Stylists:     #{User.stylist.count}"
+  puts "   Customers:    #{User.customer.count}"
+  puts " Locations:      #{Location.count}"
+  puts " Services:       #{Service.count} (#{Service.where(is_add_on: false).count} main, #{Service.where(is_add_on: true).count} add-ons)"
+  puts " Avail. Blocks:  #{AvailabilityBlock.count}"
+  puts " Appointments:   #{Appointment.count}"
+  puts "   Pending:      #{Appointment.pending.count}"
+  puts "   Booked:       #{Appointment.booked.count}"
+  puts "   Completed:    #{Appointment.completed.count}"
+  puts "   Cancelled:    #{Appointment.cancelled.count}"
+  puts " Reviews:        #{Review.count}"
+  puts "=" * 60
+  puts ""
+  puts " Test accounts  (password: password123)"
+  puts ""
+  puts " Stylists — Square NOT connected (connect via dashboard to book):"
+  puts "   maya@example.com   — Glow Studio, San Francisco CA"
+  puts "   derek@example.com  — Sharp Cuts, Brooklyn NY"
+  puts "   sofia@example.com  — Chic Color Bar, Austin TX"
+  puts ""
+  puts " Customers:"
+  puts "   emma@example.com    james@example.com   priya@example.com"
+  puts "   marcus@example.com  olivia@example.com  tyler@example.com"
+  puts "   zoe@example.com"
+  puts "=" * 60
+
 end
-
-# -----------------------------------------
-# CREATE SERVICES FOR STYLISTS
-# -----------------------------------------
-puts "Creating services for stylists..."
-
-# Create services based on salon and service list
-stylist_users.each do |stylist|
-  salon = stylist_salon_map[stylist.id]
-  services_for_salon = salon_services[salon] || []
-
-  puts "Creating #{services_for_salon.length} services for #{stylist.name} at #{salon}..."
-
-  services_for_salon.each do |service_data|
-    Service.create!(
-      name: service_data[:name],
-      price_cents: (service_data[:price] * 100).to_i,  # Convert dollars to cents
-      stylist: stylist,
-      active: true,
-      description: "#{service_data[:name]} service at #{salon}"
-    )
-  end
-end
-
-# Create add-on services for each stylist based on their salon
-Appointment::SALON_ADD_ONS.each do |salon, add_ons|
-  salon_stylists = stylist_users.select { |u| stylist_salon_map[u.id] == salon }
-
-  salon_stylists.each do |stylist|
-    add_ons.each do |add_on_string|
-      # Parse "Service Name - $Price" format
-      name = add_on_string.split(" - $").first
-      price = add_on_string.split(" - $").last.to_f
-
-      Service.create!(
-        name: name,
-        price_cents: (price * 100).to_i,
-        stylist: stylist,
-        active: true,
-        description: "Add-on service: #{name}"
-      )
-    end
-  end
-end
-
-puts "Services created: #{Service.count}"
-
-# -----------------------------------------
-# SALON ADDRESSES
-# -----------------------------------------
-salon_locations = {
-  "Brows and Locks Salon" => "1450 St-Catherine St W, Montreal",
-  "Chic Studio"           => "210 Boulevard des Laurentides, Laval",
-  "Glow Lounge"           => "980 Sherbrooke St W, Montreal",
-  "Downtown Cuts"         => "75 Rue Saint-Paul O, Montreal"
-}
-# -----------------------------------------
-# 12 APPOINTMENTS — USING salon + location
-# -----------------------------------------
-
-# -----------------------------------------
-# SALON-SPECIFIC IMAGE MAPPING
-# -----------------------------------------
-salon_specific_images = {
-  "Brows and Locks Salon" => [
-    "https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",  # Hair washing service
-    "https://images.unsplash.com/photo-1560869713-7d0a29430803?q=80&w=926&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",   # Curling iron styling
-    "https://plus.unsplash.com/premium_photo-1669675935927-0ed8935e6600?q=80&w=988&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"  # Precision cutting
-  ],
-  "Chic Studio" => [
-    "https://images.unsplash.com/photo-1633681926035-ec1ac984418a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",  # Luxury modern salon
-    "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",  # Chic salon interior
-    "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=1736&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"   # High-end dark salon
-  ],
-  "Glow Lounge" => [
-    "https://images.unsplash.com/photo-1595475884562-073c30d45670?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",  # Styling tools array
-    "https://images.unsplash.com/photo-1637777269327-c4d5c7944d7b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",   # Salon wash stations
-    "https://plus.unsplash.com/premium_photo-1664544673201-9f1809938ddd?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"   # Wooden combs
-  ],
-  "Downtown Cuts" => [
-    "https://images.unsplash.com/photo-1626379501846-0df4067b8bb9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",  # Modern salon interior
-    "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=988&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",   # Barber fade cut
-    "https://images.unsplash.com/photo-1614438865362-9137f7e3036e?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"   # Minimalist barbershop
-  ]
-}
-
-salon_names = salon_descriptions.keys
-
-appointments_created = 0
-
-salon_names.each do |salon|
-  salon_images = salon_specific_images[salon]
-
-  # Exact schedule:
-  schedule = [
-    { day: Time.zone.today,    label: "today-afternoon",   hour_range: (19..22) },
-    { day: Time.zone.tomorrow, label: "tomorrow-morning",  hour_range: (7..10)  },
-    { day: Time.zone.tomorrow, label: "tomorrow-afternoon",hour_range: (12..22) }
-  ]
-
-  puts "Creating appointments for #{salon}..."
-
-  schedule.each_with_index do |slot, idx|
-    hour = rand(slot[:hour_range])
-
-    appointment_time = Time.zone.local(
-      slot[:day].year,
-      slot[:day].month,
-      slot[:day].day,
-      hour,
-      0
-    )
-
-    puts "Creating #{slot[:label]} appointment at #{appointment_time}..."
-
-    appointment = Appointment.new(
-      time: appointment_time,
-      salon: salon,
-      location: salon_locations[salon],
-      booked: false,
-      content: salon_descriptions[salon],
-      services: service_text(salon_services[salon]),
-      customer: nil,
-      stylist: stylist_users.select { |u| stylist_salon_map[u.id] == salon }.sample
-    )
-
-    appointment.save!
-
-    # Attach appointment images only if Cloudinary is configured
-    # Commented out for initial setup - configure Cloudinary to enable
-    # begin
-    #   file = URI.parse(salon_images[idx % salon_images.length]).open
-    #   appointment.image.attach(io: file, filename: "appointment.png", content_type: "image/png")
-    # rescue => e
-    #   puts "Skipping appointment image: #{e.message}"
-    # end
-  end
-end
-puts "Seed complete: #{appointments_created} appointments created."

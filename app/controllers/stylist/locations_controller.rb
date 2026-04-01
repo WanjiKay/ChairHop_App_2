@@ -4,15 +4,18 @@ class Stylist::LocationsController < ApplicationController
   before_action :set_location, only: [:edit, :update, :destroy]
 
   def index
+    skip_authorization
     @locations = current_user.locations.order(:name)
   end
 
   def new
     @location = current_user.locations.build
+    authorize @location
   end
 
   def create
     @location = current_user.locations.build(location_params)
+    authorize @location
 
     if @location.save
       redirect_to stylist_locations_path, notice: "Location added successfully."
@@ -22,9 +25,11 @@ class Stylist::LocationsController < ApplicationController
   end
 
   def edit
+    authorize @location
   end
 
   def update
+    authorize @location
     if @location.update(location_params)
       redirect_to stylist_locations_path, notice: "Location updated successfully."
     else
@@ -33,6 +38,7 @@ class Stylist::LocationsController < ApplicationController
   end
 
   def destroy
+    authorize @location
     @location.destroy
     redirect_to stylist_locations_path, notice: "Location deleted."
   end

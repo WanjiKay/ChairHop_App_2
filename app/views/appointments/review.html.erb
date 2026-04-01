@@ -1,0 +1,206 @@
+<% content_for :head do %>
+  <script type="text/javascript" src="https://web.squarecdn.com/v1/square.js"></script>
+<% end %>
+
+<div class="container py-5 mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="check-in-page">
+        <!-- Header -->
+        <div class="text-center mb-4">
+          <h1 class="text-primary fw-bold">Review Appointment</h1>
+          <p class="text-muted">Please review your booking details before confirming</p>
+        </div>
+
+        <!-- Profile Pictures Section -->
+        <div class="profiles-section mb-4">
+          <div class="row text-center">
+            <!-- Customer Profile -->
+            <div class="col-6">
+              <div class="profile-card">
+                <% if current_user.avatar.attached? %>
+                  <%= image_tag url_for(current_user.avatar), class: "profile-picture rounded-circle mb-3" %>
+                <% else %>
+                  <%= image_tag "profile.png", class: "profile-picture rounded-circle mb-3", alt: "User profile" %>
+                <% end %>
+                <h5 class="text-primary fw-bold">You</h5>
+                <p class="text-muted mb-0"><%= current_user.name %></p>
+              </div>
+            </div>
+
+            <!-- Stylist Profile -->
+            <div class="col-6">
+              <%= link_to stylist_path(@appointment.stylist), class: "text-decoration-none" do %>
+                <div class="profile-card" style="cursor: pointer;">
+                  <% if @appointment.stylist.avatar.attached? %>
+                    <%= image_tag url_for(@appointment.stylist.avatar), class: "profile-picture rounded-circle mb-3" %>
+                  <% else %>
+                    <%= image_tag "profile.png", class: "profile-picture rounded-circle mb-3", alt: "Stylist profile" %>
+                  <% end %>
+                  <h5 class="text-primary fw-bold">Your Stylist</h5>
+                  <p class="text-muted mb-0"><%= @appointment.stylist.name %></p>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Details Section -->
+        <div class="booking-details-card mb-4">
+          <h4 class="text-primary fw-bold mb-3">Booking Details</h4>
+
+          <div class="detail-row">
+            <span class="detail-label">Salon:</span>
+            <span class="detail-value"><%= @appointment.salon %></span>
+          </div>
+
+          <div class="detail-row">
+            <span class="detail-label">Location:</span>
+            <span class="detail-value"><%= @appointment.location_display %></span>
+          </div>
+
+          <% if @selected_time.present? %>
+            <div class="detail-row">
+              <span class="detail-label">Requested Time:</span>
+              <span class="detail-value fw-semibold text-success">
+                <%= Time.parse(@selected_time).strftime("%A, %B %-d at %l:%M %p UTC") rescue @selected_time %>
+              </span>
+            </div>
+          <% else %>
+            <div class="detail-row">
+              <span class="detail-label">Time:</span>
+              <span class="detail-value"><%= @appointment.time.strftime("%b %d, %Y at %I:%M %p") if @appointment.time.present? %></span>
+            </div>
+          <% end %>
+
+          <hr class="my-3">
+
+          <!-- Service and Price -->
+          <div class="service-price-section">
+            <div class="d-flex align-items-center gap-3">
+              <% if @selected_service_object&.photo&.attached? %>
+                <%= image_tag url_for(@selected_service_object.photo),
+                      style: "width: 64px; height: 64px; object-fit: cover; border-radius: 8px; flex-shrink: 0;",
+                      alt: @selected_service_object.name %>
+              <% end %>
+              <div>
+                <h5 class="mb-1 text-primary fw-bold">Selected Service</h5>
+                <p class="mb-0 service-name"><%= @selected_service.split(" - $").first %></p>
+                <p class="mb-0 mt-2 fs-5 fw-bold text-primary">$<%= number_to_currency(@service_price, precision: 2, unit: '') %></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add-Ons Section -->
+          <% if @selected_add_on_services.any? %>
+            <hr class="my-3">
+            <div class="add-ons-section">
+              <h5 class="mb-3 text-primary fw-bold">Add-On Services</h5>
+              <% @selected_add_on_services.each do |add_on| %>
+                <div class="detail-row">
+                  <span class="detail-label">
+                    <%= add_on.name %>
+                    <% if add_on.duration_minutes.present? %>
+                      <span class="text-muted small">(+<%= add_on.duration_minutes %> min)</span>
+                    <% end %>
+                  </span>
+                  <span class="detail-value text-primary fw-bold">$<%= number_to_currency(add_on.price, precision: 2, unit: '') %></span>
+                </div>
+              <% end %>
+              <div class="detail-row mt-2 pt-2" style="border-top: 1px solid #dee2e6;">
+                <span class="detail-label fw-bold">Add-ons Subtotal:</span>
+                <span class="detail-value text-primary fw-bold">$<%= number_to_currency(@add_ons_total, precision: 2, unit: '') %></span>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Total Duration -->
+          <% total_mins = @appointment.total_duration_minutes %>
+          <% if total_mins > 0 %>
+            <hr class="my-3">
+            <div class="detail-row">
+              <span class="detail-label fw-bold"><i class="fas fa-clock me-1"></i>Total Duration:</span>
+              <span class="detail-value fw-bold"><%= @appointment.formatted_duration %></span>
+            </div>
+          <% end %>
+
+          <!-- Total Price -->
+          <hr class="my-3">
+          <div class="total-price-section">
+            <div class="d-flex justify-content-between align-items-center">
+              <h4 class="mb-0 text-primary fw-bold">Total Price:</h4>
+              <h3 class="mb-0 text-primary fw-bold">$<%= number_to_currency(@service_price + @add_ons_total, precision: 2, unit: '') %></h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Form -->
+        <%= form_with url: book_appointment_path(@appointment), method: :post,
+              id: "payment-form",
+              data: {
+                turbo: false,
+                controller: "square-payment",
+                action: "submit->square-payment#submit",
+                square_payment_application_id_value: ENV['SQUARE_APPLICATION_ID'],
+                square_payment_location_id_value: @appointment.stylist.square_location_id,
+                square_payment_deposit_label_value: "Request Appointment & Pay Deposit ($#{number_with_precision(@deposit, precision: 2)})",
+                square_payment_bypass_mode_value: Rails.env.development? && ENV['BYPASS_SQUARE_PAYMENTS'] == 'true'
+              } do |f| %>
+          <div class="card mb-4 shadow-sm">
+            <div class="card-body p-4">
+              <h5 class="card-title fw-bold mb-3">
+                <i class="fas fa-credit-card me-2"></i>Payment Information
+              </h5>
+
+              <!-- Payment Summary -->
+              <div class="alert alert-info mb-4">
+                <h6 class="fw-bold mb-3">Payment Summary</h6>
+                <div class="row mb-2">
+                  <div class="col-7"><strong>50% Deposit (due now):</strong></div>
+                  <div class="col-5 text-end fw-bold text-primary">$<%= number_with_precision(@deposit, precision: 2) %></div>
+                </div>
+                <div class="row mb-2">
+                  <div class="col-7">Balance (due at completion):</div>
+                  <div class="col-5 text-end">$<%= number_with_precision(@total - @deposit, precision: 2) %></div>
+                </div>
+                <hr class="my-2">
+                <div class="row">
+                  <div class="col-7"><strong>Total Service Cost:</strong></div>
+                  <div class="col-5 text-end fw-bold">$<%= number_with_precision(@total, precision: 2) %></div>
+                </div>
+                <p class="mb-0 mt-3 small text-muted">
+                  <i class="bi bi-shield-check me-1"></i>
+                  Deposit is refundable if cancelled 24+ hours before your appointment.
+                </p>
+              </div>
+
+              <div id="payment-status-message" class="alert alert-danger" style="display: none;"
+                   data-square-payment-target="statusMessage"></div>
+
+              <div id="card-container" class="mb-4"
+                   data-square-payment-target="cardContainer"></div>
+
+              <%= hidden_field_tag :payment_nonce, '', id: 'payment-nonce-field',
+                    data: { square_payment_target: 'nonceField' } %>
+              <%= hidden_field_tag :selected_service,  @selected_service %>
+              <%= hidden_field_tag :selected_time,     @selected_time %>
+              <%= hidden_field_tag :deposit_amount,    (@deposit * 100).to_i %>
+              <% @selected_add_on_services.each do |svc| %>
+                <%= hidden_field_tag "add_on_ids[]", svc.id %>
+              <% end %>
+
+              <button type="submit" id="card-button" class="btn btn-primary btn-lg w-100"
+                      data-square-payment-target="cardButton">
+                Request Appointment &amp; Pay Deposit ($<%= number_with_precision(@deposit, precision: 2) %>)
+              </button>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="mt-3 text-center">
+          <%= link_to "Back to Appointment", appointment_path(@appointment), class: "btn btn-outline-secondary w-100" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

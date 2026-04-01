@@ -35,4 +35,4 @@ local:
 
 cloudinary:
   service: Cloudinary
-  folder: <%= Rails.env %>
+  folder: chairhop/<%= Rails.env %>

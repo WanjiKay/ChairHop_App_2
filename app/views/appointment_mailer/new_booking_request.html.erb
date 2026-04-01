@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 0; }
+    .header { background: #212529; color: white; padding: 24px; text-align: center; }
+    .header h2 { margin: 0; font-size: 22px; }
+    .body { padding: 24px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    .detail-row:last-child { border-bottom: none; }
+    .card { border: 1px solid #dee2e6; border-radius: 6px; padding: 16px; margin: 16px 0; }
+    .btn { display: inline-block; background: #212529; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 16px; }
+    .footer { background: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d; margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>New Booking Request</h2>
+    <p style="margin:8px 0 0; opacity:0.8;">Someone wants to book with you!</p>
+  </div>
+  <div class="body">
+    <p>Hi <%= @stylist.name %>,</p>
+    <p><strong><%= @customer.name %></strong> has requested an appointment with you.</p>
+
+    <div class="card">
+      <div class="detail-row"><span>Customer</span><strong><%= @customer.name %></strong></div>
+      <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
+      <div class="detail-row"><span>Date &amp; Time</span><strong><%= format_datetime(@appointment.time) %></strong></div>
+      <% if @appointment.location.present? %>
+        <div class="detail-row"><span>Location</span><strong><%= @appointment.location.name %></strong></div>
+      <% end %>
+      <% if @appointment.appointment_add_ons.any? %>
+        <div class="detail-row"><span>Add-ons</span><strong><%= @appointment.appointment_add_ons.map(&:service_name).join(", ") %></strong></div>
+      <% end %>
+      <div class="detail-row"><span>Booking #</span><strong>#<%= @appointment.id.to_s.rjust(6, "0") %></strong></div>
+    </div>
+
+    <p>Log in to your ChairHop account to accept or decline this request.</p>
+    <a href="<%= stylist_appointments_url %>" class="btn">View Booking Request</a>
+  </div>
+  <div class="footer">&copy; ChairHop &middot; You're receiving this because you have a stylist account.</div>
+</body>
+</html>

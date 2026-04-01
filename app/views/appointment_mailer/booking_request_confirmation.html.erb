@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; }
+    .header { background: #0d6efd; color: white; padding: 24px; text-align: center; }
+    .header h2 { margin: 0; }
+    .body { padding: 24px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    .detail-row:last-child { border-bottom: none; }
+    .card { border: 1px solid #dee2e6; border-radius: 6px; padding: 16px; margin: 16px 0; }
+    .alert { background: #cfe2ff; border: 1px solid #b6d4fe; border-radius: 6px; padding: 12px 16px; margin: 16px 0; font-size: 14px; }
+    .btn { display: inline-block; background: #0d6efd; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 16px; }
+    .footer { background: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d; margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Booking Request Sent!</h2>
+    <p style="margin:8px 0 0; opacity:0.8;">Your request is awaiting confirmation</p>
+  </div>
+  <div class="body">
+    <p>Hi <%= @customer.name %>,</p>
+    <p>Your booking request has been sent to <strong><%= @stylist.name %></strong>. You'll receive an email once they accept or decline.</p>
+
+    <div class="alert">
+      Pending Confirmation &mdash; <%= @stylist.name %> will respond to your request shortly.
+    </div>
+
+    <div class="card">
+      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.name %></strong></div>
+      <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
+      <div class="detail-row"><span>Date &amp; Time</span><strong><%= format_datetime(@appointment.time) %></strong></div>
+      <% if @appointment.location.present? %>
+        <div class="detail-row"><span>Location</span><strong><%= @appointment.location.name %></strong></div>
+      <% end %>
+      <% if @appointment.appointment_add_ons.any? %>
+        <div class="detail-row"><span>Add-ons</span><strong><%= @appointment.appointment_add_ons.map(&:service_name).join(", ") %></strong></div>
+      <% end %>
+      <% if @appointment.payment_amount.present? %>
+        <div class="detail-row"><span>Deposit Paid</span><strong><%= number_to_currency(@appointment.payment_amount.to_f * 0.5) %></strong></div>
+      <% end %>
+      <div class="detail-row"><span>Booking #</span><strong>#<%= @appointment.id.to_s.rjust(6, "0") %></strong></div>
+    </div>
+
+    <a href="<%= appointment_url(@appointment) %>" class="btn">View My Booking</a>
+  </div>
+  <div class="footer">&copy; ChairHop &middot; You're receiving this because you have an account with us.</div>
+</body>
+</html>

@@ -7,7 +7,7 @@
             <i class="fas fa-user-edit me-2"></i>Edit Profile
           </h2>
 
-          <%= simple_form_for @user, url: profile_path, method: :patch do |f| %>
+          <%= simple_form_for @user, url: profile_path, method: :patch, html: { multipart: true } do |f| %>
             <%= f.error_notification %>
 
             <div class="mb-3">
@@ -24,20 +24,25 @@
                           wrapper_html: { class: "mb-3" } %>
             </div>
 
-            <div class="mb-3">
-              <%= f.input :avatar,
-                          as: :file,
-                          label: "Profile Picture",
-                          hint: "Recommended size: 150x150px",
-                          input_html: { accept: "image/*", class: "form-control" },
-                          wrapper_html: { class: "mb-3" } %>
-
+            <div class="mb-3" data-controller="photo-preview">
+              <%= f.label :avatar, "Profile Picture", class: "form-label" %>
               <% if @user.avatar.attached? %>
-                <div class="mt-2">
+                <div class="mt-1 mb-2" data-photo-preview-target="preview">
                   <%= image_tag @user.avatar, class: "rounded-circle", style: "width: 80px; height: 80px; object-fit: cover;" %>
                   <small class="d-block text-muted mt-1">Current profile picture</small>
                 </div>
+              <% else %>
+                <div data-photo-preview-target="preview" class="mb-2"></div>
               <% end %>
+              <%= f.file_field :avatar,
+                    accept: "image/*",
+                    class: "form-control",
+                    data: {
+                      photo_preview_target: "input",
+                      action: "change->photo-preview#preview"
+                    } %>
+              <div data-photo-preview-target="error" class="text-danger small mt-1"></div>
+              <small class="text-muted">Recommended size: 150×150px · Max 10MB</small>
             </div>
 
             <div class="mb-3">
@@ -48,30 +53,121 @@
                           wrapper_html: { class: "mb-3" } %>
             </div>
 
-            <% if @user.stylist? %>
-              <h4 class="text-primary fw-bold mt-4 mb-3">
-                <i class="fas fa-map-marker-alt me-2"></i>Business Address
-              </h4>
-              <p class="text-muted small mb-3">
-                <i class="fas fa-info-circle me-1"></i>Enter your complete business address to help customers find you.
-              </p>
+            <% if current_user.stylist? %>
+              <div class="mb-4">
+                <label class="form-label fw-semibold">Portfolio Photos</label>
+                <p class="text-muted small mb-3">
+                  <%= current_user.portfolio_photos.count %> / 12 photos ·
+                  Upload photos of your work to showcase on your profile.
+                </p>
 
+                <!-- Existing photos grid -->
+                <div id="existing-portfolio-photos" class="d-flex flex-wrap gap-2 mb-3">
+                  <% current_user.portfolio_photos.each do |photo| %>
+                    <div class="position-relative" style="width:80px;">
+                      <%= image_tag url_for(photo),
+                            style: "width:80px;height:80px;object-fit:cover;border-radius:6px;",
+                            alt: "Portfolio photo" %>
+                      <%= link_to destroy_portfolio_photo_path(photo_id: photo.id),
+                            data: { turbo_method: :delete,
+                                    turbo_confirm: "Remove this photo?" },
+                            class: "position-absolute top-0 end-0 btn btn-danger btn-sm p-0 d-flex align-items-center justify-content-center",
+                            style: "width:20px;height:20px;border-radius:50%;font-size:10px;" do %>
+                        &times;
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+
+                <!-- Upload new photos -->
+                <% if current_user.portfolio_photos.count < 12 %>
+                  <div data-controller="photo-preview"
+                       data-photo-preview-max-files-value="<%= 12 - current_user.portfolio_photos.count %>"
+                       data-photo-preview-upload-url-value="<%= upload_portfolio_photos_path %>"
+                       data-photo-preview-csrf-value="<%= form_authenticity_token %>">
+
+                    <label class="btn btn-outline-secondary btn-sm mb-2">
+                      <i class="fas fa-plus me-1"></i> Choose Photos
+                      <%= file_field_tag 'user[portfolio_photos][]',
+                            multiple: true,
+                            accept: 'image/jpeg,image/jpg',
+                            class: 'd-none',
+                            data: {
+                              photo_preview_target: 'input',
+                              action: 'change->photo-preview#preview'
+                            } %>
+                    </label>
+
+                    <div data-photo-preview-target="error"
+                         class="text-danger small mb-1"></div>
+                    <div data-photo-preview-target="count"
+                         class="text-muted small mb-2"></div>
+                    <div data-photo-preview-target="preview"
+                         class="d-flex flex-wrap gap-2 mb-2"></div>
+
+                    <button type="button"
+                            class="btn btn-success btn-sm"
+                            style="display:none;"
+                            data-photo-preview-target="uploadBtn"
+                            data-action="click->photo-preview#uploadPhotos">
+                      <i class="fas fa-upload me-1"></i> Upload Photos
+                    </button>
+
+                    <small class="text-muted d-block mt-2">
+                      JPG only · Max 10MB per photo ·
+                      <%= 12 - current_user.portfolio_photos.count %> slots remaining
+                    </small>
+                  </div>
+                <% else %>
+                  <p class="text-muted small">
+                    You've reached the 12 photo limit.
+                    Remove existing photos to upload new ones.
+                  </p>
+                <% end %>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Your Locations</label>
+                <% if @user.locations.any? %>
+                  <ul class="list-group mb-2">
+                    <% @user.locations.each do |location| %>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                          <div class="fw-semibold"><%= location.name %></div>
+                          <small class="text-muted">
+                            <%= [location.street_address, location.city,
+                                 location.state, location.zip_code].compact.join(", ") %>
+                          </small>
+                        </div>
+                        <%= link_to "Edit",
+                              edit_stylist_location_path(location),
+                              class: "btn btn-sm btn-outline-secondary" %>
+                      </li>
+                    <% end %>
+                  </ul>
+                <% else %>
+                  <p class="text-muted small">
+                    No locations added yet.
+                    <%= link_to "Add a location", new_stylist_location_path, class: "text-primary" %>
+                  </p>
+                <% end %>
+                <small class="text-muted">
+                  Manage your locations from the
+                  <%= link_to "locations page", stylist_locations_path %>.
+                </small>
+              </div>
+            <% elsif @user.customer? %>
               <div class="mb-3">
                 <%= f.label :street_address, "Street Address", class: "form-label" %>
                 <%= f.text_field :street_address,
                     class: "form-control",
-                    placeholder: "123 Rue Sainte-Catherine",
-                    required: true %>
-                <small class="text-muted">Include apartment or suite number if applicable</small>
+                    placeholder: "123 Main St" %>
               </div>
 
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <%= f.label :city, class: "form-label" %>
-                  <%= f.text_field :city,
-                      class: "form-control",
-                      placeholder: "Montreal",
-                      required: true %>
+                  <%= f.text_field :city, class: "form-control", placeholder: "Montreal" %>
                 </div>
 
                 <div class="col-md-3 mb-3">
@@ -80,8 +176,7 @@
                       class: "form-control text-uppercase",
                       placeholder: "QC",
                       maxlength: 2,
-                      pattern: "[A-Za-z]{2}",
-                      required: true %>
+                      pattern: "[A-Za-z]{2}" %>
                   <small class="text-muted">2-letter code</small>
                 </div>
 
@@ -90,8 +185,7 @@
                   <%= f.text_field :zip_code,
                       class: "form-control text-uppercase",
                       placeholder: "H1A 2K6",
-                      pattern: "[A-Za-z][0-9][A-Za-z] ?[0-9][A-Za-z][0-9]",
-                      required: true %>
+                      pattern: "[A-Za-z][0-9][A-Za-z] ?[0-9][A-Za-z][0-9]" %>
                 </div>
               </div>
             <% end %>

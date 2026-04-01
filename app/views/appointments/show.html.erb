@@ -1,157 +1,653 @@
 <div class="container py-5 mt-5">
   <div class="row justify-content-center">
     <div class="col-lg-8">
-      <div class="appointment-show-page">
-        <!-- Header -->
-        <div class="text-center mb-5">
-          <h1 class="text-primary fw-bold mb-2"><%= @appointment.salon %></h1>
-          <p class="text-muted">
-            <i class="fas fa-map-marker-alt me-2"></i><%= @appointment.location_display %>
-          </p>
-        </div>
 
-        <!-- Stylist Profile Section -->
-        <div class="booking-details-card mb-4">
-          <div class="text-center">
-            <%= link_to stylist_path(@appointment.stylist), class: "text-decoration-none" do %>
-              <div class="profile-picture-wrapper mb-3">
-                <% if @appointment.stylist.avatar.attached? %>
-                  <%= cl_image_tag @appointment.stylist.avatar.key, class: "profile-picture rounded-circle", alt: @appointment.stylist.name, style: "width: 120px; height: 120px; object-fit: cover; border: 4px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); cursor: pointer;" %>
-                <% else %>
-                  <%= image_tag "https://via.placeholder.com/120", class: "profile-picture rounded-circle", style: "width: 120px; height: 120px; object-fit: cover; border: 4px solid #4A5D4F; cursor: pointer;" %>
-                <% end %>
+      <% if current_user&.id == @appointment.stylist_id %>
+        <%# ======================================================== %>
+        <%# STYLIST VIEW %>
+        <%# ======================================================== %>
+
+        <% if @appointment.pending? && @appointment.customer_id.present? %>
+          <%# --- Pending request --- %>
+          <div class="card shadow-sm">
+            <div class="card-header bg-warning">
+              <h4 class="mb-0 fw-bold">
+                <i class="fas fa-clock me-2"></i>Appointment Request — Pending Your Response
+              </h4>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <h6 class="text-muted text-uppercase small fw-semibold mb-3">Customer</h6>
+                  <p class="mb-1"><strong><%= @appointment.customer&.name || 'Unknown' %></strong></p>
+                  <p class="mb-0 text-muted"><%= @appointment.customer&.email || 'N/A' %></p>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="text-muted text-uppercase small fw-semibold mb-3">Appointment Details</h6>
+                  <p class="mb-1"><strong>Service:</strong> <%= @appointment.selected_service || 'Not specified' %></p>
+                  <p class="mb-1"><strong>Date & Time:</strong> <%= @appointment.time.strftime("%A, %B %d, %Y at %l:%M %p") %></p>
+                  <p class="mb-0"><strong>Location:</strong> <%= @appointment.location&.name || 'Not specified' %></p>
+                </div>
               </div>
-              <h5 class="text-primary fw-bold mb-2">Your Stylist</h5>
-              <p class="text-muted mb-3"><%= @appointment.stylist.name %></p>
-            <% end %>
-            <%= link_to "View Stylist Profile", stylist_path(@appointment.stylist), class: "btn btn-outline-primary btn-sm" %>
-          </div>
-        </div>
 
-        <!-- Salon Image -->
-        <% if @appointment.image.attached? %>
-          <div class="salon-image-card mb-4">
-            <%= cl_image_tag @appointment.image.key, class: "rounded", alt: @appointment.salon, style: "width: 100%; height: 250px; object-fit: cover; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);" %>
+              <% if @appointment.appointment_add_ons.any? %>
+                <div class="mt-3">
+                  <h6 class="text-muted text-uppercase small fw-semibold mb-2">Add-Ons</h6>
+                  <ul class="mb-0">
+                    <% @appointment.appointment_add_ons.each do |addon| %>
+                      <li><%= addon.service_name %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
+
+              <hr class="my-4">
+
+              <div class="d-flex gap-2 justify-content-end">
+                <%= button_to "Decline", decline_stylist_appointment_path(@appointment),
+                      method: :patch,
+                      class: "btn btn-outline-danger",
+                      data: { turbo_confirm: "Decline this request? The slot will reopen." } %>
+                <%= button_to "Accept Appointment", accept_stylist_appointment_path(@appointment),
+                      method: :patch,
+                      class: "btn btn-success fw-bold" %>
+              </div>
+            </div>
+          </div>
+
+        <% elsif @appointment.booked? %>
+          <%# --- Confirmed appointment --- %>
+          <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+              <h4 class="mb-0 fw-bold">
+                <i class="fas fa-check-circle me-2"></i>Confirmed Appointment
+              </h4>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <h6 class="text-muted text-uppercase small fw-semibold mb-3">Customer</h6>
+                  <p class="mb-1"><strong><%= @appointment.customer&.name || 'Unknown' %></strong></p>
+                  <p class="mb-0 text-muted"><%= @appointment.customer&.email || 'N/A' %></p>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="text-muted text-uppercase small fw-semibold mb-3">Appointment Details</h6>
+                  <p class="mb-1"><strong>Service:</strong> <%= @appointment.selected_service || 'Not specified' %></p>
+                  <p class="mb-1"><strong>Date & Time:</strong> <%= @appointment.time.strftime("%A, %B %d, %Y at %l:%M %p") %></p>
+                  <p class="mb-0"><strong>Location:</strong> <%= @appointment.location&.name || 'Not specified' %></p>
+                </div>
+              </div>
+
+              <% if @appointment.appointment_add_ons.any? %>
+                <div class="mt-3">
+                  <h6 class="text-muted text-uppercase small fw-semibold mb-2">Add-Ons</h6>
+                  <ul class="mb-0">
+                    <% @appointment.appointment_add_ons.each do |addon| %>
+                      <li><%= addon.service_name %><% if addon.price > 0 %> — $<%= sprintf('%.2f', addon.price) %><% end %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
+
+              <hr class="my-4">
+
+              <div class="d-flex gap-2 justify-content-end flex-wrap">
+                <%= link_to "Message Customer", new_appointment_conversation_path(@appointment), class: "btn btn-outline-primary" %>
+                <%= button_to "Cancel Appointment", cancel_stylist_appointment_path(@appointment),
+                      method: :patch,
+                      class: "btn btn-outline-danger",
+                      data: { turbo_confirm: "Cancel this confirmed appointment?" } %>
+                <%= button_to "Mark Complete", complete_stylist_appointment_path(@appointment),
+                      method: :patch,
+                      class: "btn btn-success fw-bold" %>
+              </div>
+            </div>
+          </div>
+
+        <% elsif @appointment.completed? %>
+          <%# --- Completed --- %>
+          <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+              <h4 class="mb-0 fw-bold">
+                <i class="fas fa-check-double me-2"></i>Completed Appointment
+              </h4>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <h6 class="text-muted text-uppercase small fw-semibold mb-3">Customer</h6>
+                  <p class="mb-1"><strong><%= @appointment.customer&.name || 'Unknown' %></strong></p>
+                  <p class="mb-0 text-muted"><%= @appointment.customer&.email || 'N/A' %></p>
+                </div>
+                <div class="col-md-6">
+                  <h6 class="text-muted text-uppercase small fw-semibold mb-3">Appointment Details</h6>
+                  <p class="mb-1"><strong>Service:</strong> <%= @appointment.selected_service || 'Not specified' %></p>
+                  <p class="mb-1"><strong>Date & Time:</strong> <%= @appointment.time.strftime("%A, %B %d, %Y at %l:%M %p") %></p>
+                  <p class="mb-0"><strong>Location:</strong> <%= @appointment.location&.name || 'Not specified' %></p>
+                </div>
+              </div>
+              <p class="text-success mt-4 mb-0">
+                <i class="fas fa-check-circle me-2"></i>This appointment has been completed.
+              </p>
+            </div>
+          </div>
+
+        <% else %>
+          <%# --- Open slot (pending, no customer) --- %>
+          <div class="card shadow-sm">
+            <div class="card-header">
+              <h4 class="mb-0 fw-bold"><i class="fas fa-calendar me-2"></i>Open Availability Slot</h4>
+            </div>
+            <div class="card-body p-4">
+              <p class="mb-1"><strong>Date & Time:</strong> <%= @appointment.time.strftime("%A, %B %d, %Y at %l:%M %p") %></p>
+              <p class="mb-3"><strong>Location:</strong> <%= @appointment.location&.name || 'Not specified' %></p>
+              <p class="text-muted mb-0">No booking requests yet. This slot is open to customers.</p>
+            </div>
           </div>
         <% end %>
 
-        <!-- Appointment Details -->
-        <div class="booking-details-card mb-4">
-          <h4 class="text-primary fw-bold mb-3">
-            <i class="fas fa-info-circle me-2"></i>Appointment Details
-          </h4>
-
-          <div class="detail-row">
-            <span class="detail-label"><i class="fas fa-clock me-2"></i>Time:</span>
-            <span class="detail-value"><%= @appointment.time.strftime("%b %d, %Y at %I:%M %p") if @appointment.time.present? %></span>
-          </div>
-
-          <div class="detail-row">
-            <span class="detail-label"><i class="fas fa-align-left me-2"></i>Description:</span>
-            <span class="detail-value"><%= @appointment.content %></span>
-          </div>
+        <div class="mt-3">
+          <%= link_to "← Back to Calendar", stylist_availability_blocks_path, class: "btn btn-outline-secondary btn-sm" %>
+          <%= link_to "← All Appointments", stylist_appointments_path, class: "btn btn-outline-secondary btn-sm" %>
         </div>
 
-        <% services = @appointment.services.split("\n") %>
+      <% else %>
+        <%# ======================================================== %>
+        <%# CUSTOMER / GUEST VIEW %>
+        <%# ======================================================== %>
 
-        <!-- Booked/Pending/Completed Status or Service Selection -->
-        <% if @appointment.booked? || @appointment.completed? || @appointment.customer_id.present? %>
-          <div class="alert <%= @appointment.completed? ? 'alert-success' : (@appointment.booked? ? 'alert-warning' : 'alert-info') %> text-center mb-4">
+        <% viewing_own_appointment = current_user && @appointment.customer_id == current_user.id %>
+
+        <div class="appointment-show-page">
+
+          <% if viewing_own_appointment %>
+            <%# ====================================================== %>
+            <%# CUSTOMER VIEWING THEIR OWN APPOINTMENT — DETAILS VIEW %>
+            <%# ====================================================== %>
+
+            <!-- Header -->
+            <div class="text-center mb-5">
+              <h1 class="text-primary fw-bold mb-2"><%= @appointment.salon %></h1>
+              <p class="text-muted">
+                <i class="fas fa-map-marker-alt me-2"></i><%= @appointment.location_display %>
+              </p>
+            </div>
+
+            <!-- Stylist Profile -->
+            <div class="booking-details-card mb-4">
+              <div class="text-center">
+                <%= link_to stylist_path(@appointment.stylist), class: "text-decoration-none" do %>
+                  <div class="profile-picture-wrapper mb-3">
+                    <% if @appointment.stylist.avatar.attached? %>
+                      <%= image_tag url_for(@appointment.stylist.avatar), class: "profile-picture rounded-circle", alt: @appointment.stylist.name, style: "width: 120px; height: 120px; object-fit: cover; border: 4px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;" %>
+                    <% else %>
+                      <%= image_tag "https://via.placeholder.com/120", class: "profile-picture rounded-circle", style: "width: 120px; height: 120px; object-fit: cover; border: 4px solid #4A5D4F; cursor: pointer;" %>
+                    <% end %>
+                  </div>
+                  <h5 class="text-primary fw-bold mb-2">Your Stylist</h5>
+                  <p class="text-muted mb-3"><%= @appointment.stylist.name %></p>
+                <% end %>
+                <% if @appointment.stylist.about.present? %>
+                  <p class="text-muted small mb-3"><%= @appointment.stylist.about %></p>
+                <% end %>
+                <%= link_to "View Stylist Profile", stylist_path(@appointment.stylist), class: "btn btn-outline-primary btn-sm" %>
+              </div>
+            </div>
+
+            <!-- Booking Details Card -->
+            <div class="card mb-4 shadow-sm">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0 fw-bold">
+                  <i class="fas fa-calendar-check me-2"></i>Booking Details
+                </h5>
+              </div>
+              <div class="card-body p-4">
+
+                <!-- Status -->
+                <div class="mb-4">
+                  <% if @appointment.pending? %>
+                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                      <i class="fas fa-hourglass-half me-1"></i>Pending — Waiting for stylist confirmation
+                    </span>
+                  <% elsif @appointment.booked? %>
+                    <span class="badge bg-success fs-6 px-3 py-2">
+                      <i class="fas fa-check-circle me-1"></i>Confirmed
+                    </span>
+                  <% elsif @appointment.cancelled? %>
+                    <span class="badge bg-secondary fs-6 px-3 py-2">
+                      <i class="fas fa-times-circle me-1"></i>Cancelled
+                    </span>
+                  <% end %>
+                </div>
+
+                <% if @appointment.cancelled? %>
+                  <div class="alert alert-secondary">
+                    <strong>Cancelled</strong>
+                    <% if @appointment.cancelled_at.present? %>
+                      <span class="text-muted small ms-2">on <%= @appointment.cancelled_at.strftime('%b %-d at %-I:%M %p') %></span>
+                    <% end %>
+                    <% if @appointment.cancelled_by.present? %>
+                      <span class="badge bg-secondary ms-1">by <%= @appointment.cancelled_by.capitalize %></span>
+                    <% end %>
+                    <% if @appointment.cancellation_reason.present? %>
+                      <p class="mb-0 mt-1 small text-muted">"<%= @appointment.cancellation_reason %>"</p>
+                    <% end %>
+                    <% if @appointment.payment_status == 'refunded' %>
+                      <div class="mt-2 text-success small">
+                        <i class="bi bi-check-circle me-1"></i>Deposit refunded
+                      </div>
+                    <% elsif @appointment.payment_status == 'deposit_kept' %>
+                      <div class="mt-2 text-warning small">
+                        <i class="bi bi-info-circle me-1"></i>Deposit kept (late cancellation)
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+
+                <!-- Appointment info rows -->
+                <% if @appointment.time.present? %>
+                  <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-calendar me-2"></i>Date & Time</span>
+                    <span class="detail-value fw-semibold"><%= @appointment.time.strftime("%A, %B %-d, %Y at %l:%M %p") %></span>
+                  </div>
+                <% end %>
+
+                <div class="detail-row">
+                  <span class="detail-label"><i class="fas fa-map-marker-alt me-2"></i>Location</span>
+                  <span class="detail-value"><%= @appointment.location_display %></span>
+                </div>
+
+                <% if @appointment.selected_service.present? %>
+                  <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-cut me-2"></i>Service</span>
+                    <span class="detail-value fw-semibold"><%= @appointment.selected_service.split(' - $').first %></span>
+                  </div>
+                <% end %>
+
+                <% if @appointment.appointment_add_ons.any? %>
+                  <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-plus-circle me-2"></i>Add-ons</span>
+                    <span class="detail-value">
+                      <% @appointment.appointment_add_ons.each do |add_on| %>
+                        <div><%= add_on.service_name %> <span class="text-muted small">(+$<%= number_with_precision(add_on.price, precision: 2) %>)</span></div>
+                      <% end %>
+                    </span>
+                  </div>
+                <% end %>
+
+                <% if @appointment.total_duration_minutes > 0 %>
+                  <div class="detail-row">
+                    <span class="detail-label"><i class="fas fa-clock me-2"></i>Duration</span>
+                    <span class="detail-value"><%= @appointment.formatted_duration %></span>
+                  </div>
+                <% end %>
+
+                <hr class="my-3">
+
+                <!-- Payment breakdown -->
+                <h6 class="fw-bold mb-3">Payment Details</h6>
+
+                <div class="detail-row">
+                  <span class="detail-label">Service</span>
+                  <span class="detail-value">$<%= number_with_precision(@appointment.base_service_price, precision: 2) %></span>
+                </div>
+
+                <% if @appointment.appointment_add_ons.any? %>
+                  <div class="detail-row">
+                    <span class="detail-label">Add-ons</span>
+                    <span class="detail-value">$<%= number_with_precision(@appointment.total_add_ons_price, precision: 2) %></span>
+                  </div>
+                <% end %>
+
+                <div class="detail-row" style="border-top: 2px solid #dee2e6; margin-top: 0.5rem; padding-top: 0.75rem;">
+                  <span class="detail-label fw-bold">Total</span>
+                  <span class="detail-value fw-bold text-primary">$<%= number_with_precision(@appointment.total_price, precision: 2) %></span>
+                </div>
+
+                <% if @appointment.payment_status == 'deposit_paid' %>
+                  <% deposit = @appointment.total_price * 0.5 %>
+                  <div class="detail-row text-success">
+                    <span class="detail-label"><i class="fas fa-check-circle me-1"></i>50% Deposit Paid</span>
+                    <span class="detail-value">$<%= number_with_precision(deposit, precision: 2) %></span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label text-muted">Balance Due at Completion</span>
+                    <span class="detail-value">$<%= number_with_precision(deposit, precision: 2) %></span>
+                  </div>
+                  <% if @appointment.payment_id.present? %>
+                    <p class="small text-muted mt-2 mb-0">Payment ref: <%= @appointment.payment_id %></p>
+                  <% end %>
+                <% end %>
+
+                <hr class="my-3">
+
+                <!-- Cancel / complete actions -->
+                <div class="d-flex gap-2 flex-wrap">
+                  <% if @appointment.cancellable_by_customer? %>
+                    <button type="button" class="btn btn-outline-danger"
+                            data-bs-toggle="modal" data-bs-target="#cancelModal">
+                      <i class="bi bi-x-circle me-1"></i> Cancel Appointment
+                    </button>
+                  <% end %>
+                  <% if @appointment.booked? && @appointment.time < Time.current %>
+                    <%= button_to "Mark as Completed",
+                          complete_appointment_path(@appointment),
+                          method: :patch,
+                          data: { turbo_confirm: "Mark this appointment as completed?" },
+                          class: "btn btn-success" %>
+                  <% end %>
+                  <% if @appointment.completed? && @appointment.review.present? && @appointment.review.customer == current_user && @appointment.review.editable? %>
+                    <%= link_to "Edit Review",
+                          edit_appointment_review_path(@appointment, @appointment.review),
+                          class: "btn btn-outline-secondary" %>
+                  <% end %>
+                  <% if @appointment.completed? && @appointment.review.nil? && @appointment.customer == current_user %>
+                    <%= link_to "Leave a Review",
+                          new_appointment_review_path(@appointment),
+                          class: "btn btn-outline-primary" %>
+                  <% end %>
+                </div>
+
+                <% if @appointment.review.present? %>
+                  <div class="mt-4 pt-3 border-top">
+                    <h6 class="fw-bold mb-2">Your Review</h6>
+                    <div class="d-flex align-items-center mb-1">
+                      <% @appointment.review.rating.times do %>
+                        <i class="fas fa-star text-warning"></i>
+                      <% end %>
+                      <% (5 - @appointment.review.rating).times do %>
+                        <i class="far fa-star text-warning"></i>
+                      <% end %>
+                    </div>
+                    <p class="mb-1 small"><%= @appointment.review.content %></p>
+                    <% if @appointment.review.photos.attached? %>
+                      <div class="d-flex gap-2 mt-2">
+                        <% @appointment.review.photos.each do |photo| %>
+                          <%= image_tag url_for(photo), class: "rounded", style: "max-height: 120px;" %>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+
+              </div>
+            </div>
+
+            <!-- Cancellation Modal -->
+            <% if @appointment.cancellable_by_customer? %>
+              <div class="modal fade" id="cancelModal" tabindex="-1">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header border-0">
+                      <h5 class="modal-title text-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Cancel Appointment?
+                      </h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      <% if @appointment.full_refund_eligible? %>
+                        <div class="alert alert-success">
+                          <i class="bi bi-check-circle me-1"></i>
+                          <strong>Full refund eligible.</strong>
+                          Your deposit of <%= number_to_currency(@appointment.payment_amount.to_f * 0.5) %> will be returned within 5–10 business days.
+                        </div>
+                      <% elsif @appointment.payment_id.present? %>
+                        <div class="alert alert-warning">
+                          <i class="bi bi-exclamation-triangle me-1"></i>
+                          <strong>No refund available.</strong>
+                          This appointment is within 24 hours. Your deposit of <%= number_to_currency(@appointment.payment_amount.to_f * 0.5) %> will not be returned per our cancellation policy.
+                        </div>
+                      <% end %>
+
+                      <%= form_with url: cancel_appointment_path(@appointment), method: :patch, local: true do |f| %>
+                        <div class="mb-3">
+                          <%= f.label :cancellation_reason, "Reason for cancelling (optional)", class: "form-label text-muted small" %>
+                          <%= f.text_area :cancellation_reason, rows: 3,
+                              class: "form-control",
+                              placeholder: "Let the stylist know why you're cancelling..." %>
+                        </div>
+                        <div class="d-flex gap-2">
+                          <button type="button" class="btn btn-secondary flex-fill" data-bs-dismiss="modal">
+                            Keep Appointment
+                          </button>
+                          <%= f.submit "Yes, Cancel Appointment", class: "btn btn-danger flex-fill" %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+
+          <% else %>
+            <%# ====================================================== %>
+            <%# BROWSING CUSTOMER — BOOKING FORM VIEW %>
+            <%# ====================================================== %>
+
+            <!-- Pending appointments banner -->
+            <% if @pending_appointments&.any? %>
+              <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-3">
+                      <i class="bi bi-info-circle me-1"></i>
+                      You have <%= @pending_appointments.count %> <%= 'appointment'.pluralize(@pending_appointments.count) %> with <%= @appointment.stylist.name %>
+                    </h6>
+
+                    <% @pending_appointments.each_with_index do |appt, i| %>
+                      <div class="<%= i < @pending_appointments.length - 1 ? 'mb-3 pb-3 border-bottom' : 'mb-2' %>">
+                        <div class="row align-items-center g-2">
+                          <div class="col-md-8">
+                            <div class="mb-1">
+                              <% if appt.pending? %>
+                                <span class="badge bg-warning text-dark">Pending</span>
+                              <% else %>
+                                <span class="badge bg-success">Confirmed</span>
+                              <% end %>
+                              <strong class="ms-2"><%= appt.time.strftime("%A, %B %-d at %l:%M %p") if appt.time.present? %></strong>
+                            </div>
+                            <% if appt.selected_service.present? %>
+                              <p class="mb-0 small text-muted"><i class="bi bi-scissors me-1"></i><%= appt.selected_service.split(' - $').first %></p>
+                            <% end %>
+                          </div>
+                          <div class="col-md-4 text-md-end">
+                            <%= link_to "View Details", appointment_path(appt), class: "btn btn-sm btn-outline-primary me-1" %>
+                            <% if appt.pending? %>
+                              <%= button_to "Cancel",
+                                    cancel_appointment_path(appt),
+                                    method: :patch,
+                                    data: { turbo_confirm: "Cancel this appointment request?" },
+                                    class: "btn btn-sm btn-outline-danger" %>
+                            <% end %>
+                          </div>
+                        </div>
+                      </div>
+                    <% end %>
+
+                    <p class="mb-0 small mt-2">
+                      <i class="bi bi-calendar-plus me-1"></i><strong>You can book additional appointments below.</strong>
+                    </p>
+                  </div>
+                  <button type="button" class="btn-close ms-3" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              </div>
+            <% end %>
+
+            <!-- Header -->
+            <div class="text-center mb-5">
+              <h1 class="text-primary fw-bold mb-2"><%= @appointment.salon %></h1>
+              <p class="text-muted">
+                <i class="fas fa-map-marker-alt me-2"></i><%= @appointment.location_display %>
+              </p>
+            </div>
+
+            <!-- Stylist Profile -->
+            <div class="booking-details-card mb-4">
+              <div class="text-center">
+                <%= link_to stylist_path(@appointment.stylist), class: "text-decoration-none" do %>
+                  <div class="profile-picture-wrapper mb-3">
+                    <% if @appointment.stylist.avatar.attached? %>
+                      <%= image_tag url_for(@appointment.stylist.avatar), class: "profile-picture rounded-circle", alt: @appointment.stylist.name, style: "width: 120px; height: 120px; object-fit: cover; border: 4px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;" %>
+                    <% else %>
+                      <%= image_tag "https://via.placeholder.com/120", class: "profile-picture rounded-circle", style: "width: 120px; height: 120px; object-fit: cover; border: 4px solid #4A5D4F; cursor: pointer;" %>
+                    <% end %>
+                  </div>
+                  <h5 class="text-primary fw-bold mb-2">Your Stylist</h5>
+                  <p class="text-muted mb-3"><%= @appointment.stylist.name %></p>
+                <% end %>
+                <% if @appointment.stylist.about.present? %>
+                  <p class="text-muted small mb-3"><%= @appointment.stylist.about %></p>
+                <% end %>
+                <%= link_to "View Stylist Profile", stylist_path(@appointment.stylist), class: "btn btn-outline-primary btn-sm" %>
+              </div>
+            </div>
+
+            <!-- Salon Image -->
+            <% if @appointment.image.attached? %>
+              <div class="salon-image-card mb-4">
+                <%= image_tag url_for(@appointment.image), class: "rounded", alt: @appointment.salon, style: "width: 100%; height: 250px; object-fit: cover; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" %>
+              </div>
+            <% end %>
+
+            <% services = @services %>
+
+            <!-- Status or Booking Form -->
             <% if @appointment.completed? %>
-              <i class="fas fa-check-circle fa-2x mb-3"></i>
-              <h5 class="fw-bold">This appointment is completed</h5>
-              <p class="mb-3">This appointment has been marked as completed.</p>
+              <div class="alert alert-success text-center mb-4">
+                <i class="fas fa-check-circle fa-2x mb-3"></i>
+                <h5 class="fw-bold">This appointment is completed</h5>
+                <p class="mb-0">This appointment has been marked as completed.</p>
+              </div>
+
             <% elsif @appointment.booked? %>
-              <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
-              <h5 class="fw-bold">This chair is already filled</h5>
-              <p class="mb-3">This appointment has been booked by another customer.</p>
-            <% elsif @appointment.customer == current_user %>
-              <i class="fas fa-hourglass-half fa-2x mb-3"></i>
-              <h5 class="fw-bold">Booking request sent</h5>
-              <p class="mb-3">Waiting for the stylist to confirm your booking.</p>
+              <div class="alert alert-warning text-center mb-4">
+                <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                <h5 class="fw-bold">This chair is already filled</h5>
+                <p class="mb-0">This appointment has been booked by another customer.</p>
+              </div>
+
             <% else %>
-              <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
-              <h5 class="fw-bold">This chair has a pending request</h5>
-              <p class="mb-3">Another customer has requested this appointment.</p>
-            <% end %>
-
-            <% if @appointment.customer == current_user && (@appointment.pending? || @appointment.booked?) %>
-              <%= button_to "Cancel Request",
-                    appointment_path(@appointment),
-                    method: :delete,
-                    data: { turbo_confirm: "Are you sure you want to cancel this booking?" },
-                    class: "btn btn-danger" %>
-            <% end %>
-
-            <% if @appointment.booked? && (@appointment.stylist == current_user || (@appointment.customer == current_user && @appointment.time < Time.current)) %>
-              <%= button_to "Mark as Completed",
-                    complete_appointment_path(@appointment),
-                    method: :patch,
-                    data: { turbo_confirm: "Mark this appointment as completed?" },
-                    class: "btn btn-success" %>
-            <% end %>
-          </div>
-        <% else %>
-          <%= form_with url: check_in_appointment_path(@appointment), method: :post, data: { turbo: false } do %>
-            <!-- Main Service Selection -->
-            <div class="booking-details-card mb-4">
-              <h4 class="text-primary fw-bold mb-3">
-                <i class="fas fa-cut me-2"></i>Select Your Main Service
-              </h4>
-
-              <% services.each_with_index do |service, index| %>
-                <% radio_id = "selected_service_#{index}" %>
-                <div class="form-check service-option mb-3 p-3" style="border: 2px solid #dee2e6; border-radius: 8px; transition: all 0.3s;">
-                  <%= radio_button_tag :selected_service, service, false, id: radio_id, class: "form-check-input", required: true %>
-                  <%= label_tag radio_id, service, class: "form-check-label ms-2 fw-bold", style: "color: #333333 !important; font-weight: 700 !important;" %>
+              <%# Available — show booking form %>
+              <% if flash[:alert] %>
+                <div class="alert alert-danger mb-3" role="alert">
+                  <i class="fas fa-exclamation-triangle me-2"></i><%= flash[:alert] %>
                 </div>
               <% end %>
-            </div>
+              <% if user_signed_in? %>
+                <%= form_with url: review_appointment_path(@appointment), method: :post, data: { turbo: false } do |f| %>
+                  <div class="booking-details-card mb-4">
+                    <h4 class="text-primary fw-bold mb-3">
+                      <i class="fas fa-cut me-2"></i>Select Your Main Service
+                    </h4>
+                    <% services.each_with_index do |service, index| %>
+                      <% radio_id = "selected_service_#{index}" %>
+                      <% svc_obj = @service_photo_map&.[](service) %>
+                      <div class="form-check service-option mb-3 p-3 d-flex align-items-center gap-3" style="border: 2px solid #dee2e6; border-radius: 8px; transition: all 0.3s;">
+                        <%= radio_button_tag :selected_service, service, false, id: radio_id, class: "form-check-input flex-shrink-0", required: true %>
+                        <% if svc_obj&.photo&.attached? %>
+                          <%= image_tag url_for(svc_obj.photo),
+                                style: "width: 60px; height: 60px; object-fit: cover; border-radius: 6px; flex-shrink: 0;",
+                                alt: svc_obj.name %>
+                        <% end %>
+                        <%= label_tag radio_id, service, class: "form-check-label fw-bold mb-0", style: "color: #333333 !important; font-weight: 700 !important; cursor: pointer;" %>
+                      </div>
+                    <% end %>
+                  </div>
 
-            <!-- Add-On Services -->
-            <div class="booking-details-card mb-4">
-              <h4 class="text-primary fw-bold mb-3">
-                <i class="fas fa-plus-circle me-2"></i>Add-On Services (Optional)
-              </h4>
-              <p class="text-muted small mb-3">Select any additional services you'd like to add:</p>
+                  <% if @available_add_ons.any? %>
+                    <div class="booking-details-card mb-4">
+                      <h4 class="text-primary fw-bold mb-3">
+                        <i class="fas fa-plus-circle me-2"></i>Add-On Services (Optional)
+                      </h4>
+                      <p class="text-muted small mb-3">Select any additional services you'd like to add:</p>
+                      <% @available_add_ons.each do |add_on| %>
+                        <% checkbox_id = "add_on_#{add_on.id}" %>
+                        <div class="form-check addon-option mb-3 p-3" style="border: 2px solid #dee2e6; border-radius: 8px;">
+                          <%= check_box_tag "add_on_ids[]", add_on.id, false, id: checkbox_id, class: "form-check-input" %>
+                          <%= label_tag checkbox_id, class: "form-check-label ms-2", style: "color: #333333 !important; font-weight: 600 !important;" do %>
+                            <%= add_on.name %>
+                            <span class="text-muted fw-normal small">
+                              (<% if add_on.duration_minutes.present? %>+<%= add_on.duration_minutes %> min, <% end %>+$<%= number_with_precision(add_on.price, precision: 2) %>)
+                            </span>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    </div>
+                  <% end %>
 
-              <% @appointment.relevant_add_ons.each_with_index do |add_on, index| %>
-                <% checkbox_id = "add_on_#{index}" %>
-                <div class="form-check addon-option mb-3 p-3" style="border: 2px solid #dee2e6; border-radius: 8px;">
-                  <%= check_box_tag "selected_add_ons[]", add_on, false, id: checkbox_id, class: "form-check-input" %>
-                  <%= label_tag checkbox_id, add_on, class: "form-check-label ms-2", style: "color: #333333 !important; font-weight: 600 !important;" %>
+                  <% if @available_slots.any? %>
+                    <div class="booking-details-card mb-4"
+                         data-controller="slot-picker"
+                         data-slot-picker-slots-value="<%= @available_slots.to_json %>">
+                      <h4 class="text-primary fw-bold mb-3">
+                        <i class="fas fa-calendar-alt me-2"></i>Choose a Time Slot
+                      </h4>
+                      <div class="mb-3">
+                        <label class="form-label fw-semibold">Select Date</label>
+                        <select id="date-select" class="form-select" required
+                                data-slot-picker-target="dateSelect"
+                                data-action="change->slot-picker#dateChanged">
+                          <option value="">Choose a date...</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label fw-semibold">Select Time</label>
+                        <select id="time-select" name="selected_time" class="form-select" required disabled
+                                data-slot-picker-target="timeSelect">
+                          <option value="">First select a date</option>
+                        </select>
+                      </div>
+                    </div>
+                  <% else %>
+                    <div class="alert alert-info mb-4">
+                      <i class="fas fa-info-circle me-2"></i>No upcoming availability slots posted yet. Check back soon!
+                    </div>
+                  <% end %>
+
+                  <div class="text-center">
+                    <%= f.submit "Review Details", class: "btn btn-primary btn-lg w-100" %>
+                  </div>
+                <% end %>
+              <% else %>
+                <div class="booking-details-card mb-4 text-center">
+                  <i class="fas fa-lock fa-2x text-muted mb-3"></i>
+                  <h5 class="fw-bold mb-2">Ready to book this seat?</h5>
+                  <p class="text-muted mb-4">Sign in to select your services and complete your booking.</p>
+                  <%= link_to "Sign in to Book", new_user_session_path, class: "btn btn-primary btn-lg px-5 py-3 fw-bold" %>
                 </div>
               <% end %>
-            </div>
+            <% end %>
 
-            <div class="text-center">
-              <%= submit_tag "Continue to Check-In", class: "btn btn-primary btn-lg px-5 py-3 fw-bold" %>
+          <% end %>
+
+          <!-- Quick Actions (always shown when signed in) -->
+          <% if user_signed_in? %>
+            <div class="quick-actions-section mt-5">
+              <h5 class="text-primary fw-bold text-center mb-3">Quick Actions</h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <%= link_to new_chat_path(appointment_id: @appointment.id), class: "action-card" do %>
+                    <span style="font-size: 2rem;" class="mb-2 d-block">🐰</span>
+                    <p class="mb-0 fw-bold">Ask HOPPS for Help</p>
+                  <% end %>
+                </div>
+                <div class="col-md-6">
+                  <%= button_to appointment_conversations_path(@appointment), method: :post, params: { appointment_id: @appointment.id }, class: "action-card w-100 border-0" do %>
+                    <i class="fas fa-comment-dots fa-2x mb-2"></i>
+                    <p class="mb-0 fw-bold">Message Stylist</p>
+                  <% end %>
+                </div>
+              </div>
             </div>
           <% end %>
-        <% end %>
-
-        <!-- Quick Actions Section -->
-        <div class="quick-actions-section mt-5">
-          <h5 class="text-primary fw-bold text-center mb-3">Quick Actions</h5>
-          <div class="row g-3">
-            <div class="col-md-6">
-              <%= link_to new_chat_path(appointment_id: @appointment.id), class: "action-card" do %>
-                <span style="font-size: 2rem;" class="mb-2 d-block">🐰</span>
-                <p class="mb-0 fw-bold">Ask HOPPS for Help</p>
-              <% end %>
-            </div>
-            <div class="col-md-6">
-              <%= button_to appointment_conversations_path(@appointment), method: :post, params: { appointment_id: @appointment.id }, class: "action-card w-100 border-0" do %>
-                <i class="fas fa-comment-dots fa-2x mb-2"></i>
-                <p class="mb-0 fw-bold">Message Stylist</p>
-              <% end %>
-            </div>
-          </div>
         </div>
-      </div>
+
+      <% end %>
+
     </div>
   </div>
 </div>
+
 
 <style>
   .service-option:hover, .addon-option:hover {
@@ -159,11 +655,8 @@
     background-color: rgba(74, 93, 79, 0.05);
   }
 
-  /* Nuclear override for service option text colors */
   .service-option .form-check-label,
-  .service-option label.form-check-label,
-  .addon-option .form-check-label,
-  .addon-option label.form-check-label {
+  .addon-option .form-check-label {
     color: #333333 !important;
     font-weight: 600 !important;
   }

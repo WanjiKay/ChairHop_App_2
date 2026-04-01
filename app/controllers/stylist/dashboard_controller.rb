@@ -3,20 +3,24 @@ class Stylist::DashboardController < ApplicationController
   before_action :ensure_stylist!
 
   def index
+    skip_authorization
     @pending_requests = current_user.appointments_as_stylist.pending.where.not(customer_id: nil).count
     @upcoming_appointments = current_user.appointments_as_stylist.booked.where("time >= ?", Time.current).count
     @completed_count = current_user.appointments_as_stylist.completed.count
-    @total_earnings = current_user.appointments_as_stylist.completed.sum do |apt|
-      apt.total_price
-    end
+    @total_earnings = current_user.appointments_as_stylist
+                                   .completed
+                                   .sum('COALESCE(payment_amount, 0)')
     @recent_appointments = current_user.appointments_as_stylist
                                        .includes(:customer)
                                        .order(time: :desc)
                                        .limit(5)
-    @recent_reviews = current_user.reviews_for_stylist
-                                  .includes(:customer)
-                                  .order(created_at: :desc)
-                                  .limit(3)
+    @total_review_count = Review.joins(:appointment)
+                                 .where(appointments: { stylist_id: current_user.id }).count
+    @recent_reviews = Review.joins(:appointment)
+                             .where(appointments: { stylist_id: current_user.id })
+                             .includes(:customer, :appointment, photos_attachments: :blob)
+                             .order(created_at: :desc)
+                             .limit(5)
   end
 
   private

@@ -7,8 +7,13 @@ class PagesController < ApplicationController
   # end
 
   def home
-  @upcoming_appointments = Appointment
-    .where(time: Time.current..(Time.current + 24.hours), booked: false)
-    .order(:time)
-end
+    skip_authorization
+    @available_stylists = User.where(role: :stylist)
+      .where(
+        'EXISTS (SELECT 1 FROM availability_blocks WHERE availability_blocks.stylist_id = users.id AND availability_blocks.end_time > ?)',
+        Time.current
+      )
+      .includes(:locations)
+      .limit(6)
+  end
 end

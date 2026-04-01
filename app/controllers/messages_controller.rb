@@ -3,10 +3,12 @@ class MessagesController < ApplicationController
   before_action :set_chat
 
   def new
+    skip_authorization
     @message = Message.new
   end
 
   def create
+    skip_authorization
     @message = Message.new(message_params)
     @message.chat = @chat
     @message.role = "user"
@@ -19,10 +21,10 @@ class MessagesController < ApplicationController
                                                       distance: "euclidean").first(2)
       rescue RubyLLM::RateLimitError => e
         Rails.logger.warn("RubyLLM rate limit exceeded: #{e.message}")
-        @appointments = Appointment.where(booked: false).order(created_at: :desc).limit(2)
+        @appointments = Appointment.where(status: :pending).order(created_at: :desc).limit(2)
       rescue StandardError => e
         Rails.logger.error("Embedding error: #{e.message}")
-        @appointments = Appointment.where(booked: false).order(created_at: :desc).limit(2)
+        @appointments = Appointment.where(status: :pending).order(created_at: :desc).limit(2)
       end
     else
       @appointments = []
@@ -44,8 +46,6 @@ class MessagesController < ApplicationController
             content: @response.content,
             chat: @chat
           )
-
-          book_appointment(@message.content)
         end
 
         redirect_to chat_path(@chat)
@@ -114,32 +114,21 @@ class MessagesController < ApplicationController
   end
 
   # ------------------------------------------------------
-  # BOOKING HELPER
+  # STYLIST SUGGESTION HELPER
+  # Suggest a stylist to the user and provide a link to their profile/booking page.
   # ------------------------------------------------------
-  def book_appointment(message_content)
-    appointment = @chat.appointment
-    return if appointment.nil?
+  def suggest_stylist(stylist_id)
+    stylist = User.where(role: :stylist).find_by(id: stylist_id)
+    return "I couldn't find that stylist." unless stylist
 
-    text = message_content.downcase
-
-    if text.include?("book") || text.include?("reserve")
-      if appointment.booked?
-        Message.create(role: "assistant", content: "That chair is already taken.", chat: @chat)
-      else
-        appointment.update(booked: true, user: @chat.user)
-        Message.create(
-          role: "assistant",
-          content: "✅ You're all set! I've booked your seat at #{appointment.location} with #{appointment.stylist.name}.",
-          chat: @chat
-        )
-      end
-    end
+    url = stylist_url(stylist)
+    "I'd recommend booking with #{stylist.name}. [View their booking page](#{url})"
   end
 
   private
 
   def set_chat
-    @chat = Chat.find(params[:chat_id])
+    @chat = current_user.chats.find(params[:chat_id])
   end
 
   def message_params
@@ -147,8 +136,10 @@ class MessagesController < ApplicationController
   end
 
   def instruction_without_appointment
-    "You are a helpful assistant. The user might ask about booking an appointment. " \
-    "Provide information about available appointments and assist with the booking process."
+    "You are a helpful assistant for a hair salon booking app called ChairHop. " \
+    "Help users find the right stylist for their needs. " \
+    "Describe available appointments and stylists, and suggest who to book with. " \
+    "Do NOT book appointments on the user's behalf — instead, direct them to the stylist's profile page to complete the booking themselves."
   end
 
   def instruction_with_appointment
@@ -164,11 +155,11 @@ class MessagesController < ApplicationController
     <<~CONTEXT
       Here is the appointment information:
       - Time: #{appointment.time&.strftime('%A, %B %d, %Y at %H:%M')}
-      - Location: #{appointment.location}
+      - Location: #{appointment.location_display}
       - Salon: #{appointment.salon}
       - Stylist: #{appointment.stylist&.name}
       - Selected Service: #{appointment.selected_service}
-      - Available Services: #{appointment.services}
+      - Available Services: #{appointment.availability_block&.available_services&.map { |s| "#{s.name} - $#{sprintf('%.2f', s.price)}" }&.join(', ')}
       - Status: #{appointment.status}
 
       Always use ONLY this information when answering questions about the appointment.

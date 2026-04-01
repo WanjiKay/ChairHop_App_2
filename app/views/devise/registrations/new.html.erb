@@ -1,25 +1,72 @@
-<h2>Sign up</h2>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-5">
+      <div class="card shadow">
+        <div class="card-body p-5">
+          <h2 class="card-title text-center mb-4">Join ChairHop</h2>
 
-<%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= f.error_notification %>
+          <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+            <%= f.error_notification %>
+            <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div class="form-inputs">
-    <%= f.input :email,
-                required: true,
-                autofocus: true,
-                input_html: { autocomplete: "email" }%>
-    <%= f.input :password,
-                required: true,
-                hint: ("#{@minimum_password_length} characters minimum" if @minimum_password_length),
-                input_html: { autocomplete: "new-password" } %>
-    <%= f.input :password_confirmation,
-                required: true,
-                input_html: { autocomplete: "new-password" } %>
+            <!-- Role Selection -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">I want to:</label>
+
+              <div class="form-check mb-2">
+                <%= f.radio_button :role, 'customer', class: 'form-check-input', checked: resource.role.blank? || resource.customer?, id: 'role_customer' %>
+                <label class="form-check-label" for="role_customer">Book appointments <span class="text-muted">(Customer)</span></label>
+              </div>
+
+              <div class="form-check">
+                <%= f.radio_button :role, 'stylist', class: 'form-check-input', id: 'role_stylist' %>
+                <label class="form-check-label" for="role_stylist">Accept bookings <span class="text-muted">(Stylist)</span></label>
+              </div>
+            </div>
+
+            <!-- Name -->
+            <div class="mb-3">
+              <%= f.label :name, "Full Name", class: 'form-label' %>
+              <%= f.text_field :name, autofocus: true, class: 'form-control', placeholder: 'Enter your full name', required: true %>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <%= f.label :email, class: 'form-label' %>
+              <%= f.email_field :email, autocomplete: "email", class: 'form-control', placeholder: 'Enter your email', required: true %>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <%= f.label :password, class: 'form-label' %>
+              <% if @minimum_password_length %>
+                <small class="text-muted d-block mb-1"><%= @minimum_password_length %> characters minimum</small>
+              <% end %>
+              <%= f.password_field :password, autocomplete: "new-password", class: 'form-control', placeholder: 'Create a password', required: true %>
+            </div>
+
+            <!-- Password Confirmation -->
+            <div class="mb-4">
+              <%= f.label :password_confirmation, "Confirm Password", class: 'form-label' %>
+              <%= f.password_field :password_confirmation, autocomplete: "new-password", class: 'form-control', placeholder: 'Confirm your password', required: true %>
+            </div>
+
+            <!-- Submit -->
+            <div class="d-grid">
+              <%= f.submit "Create Account", class: "btn btn-primary btn-lg" %>
+            </div>
+          <% end %>
+
+          <hr class="my-4">
+
+          <div class="text-center">
+            <p class="mb-0">
+              Already have an account?
+              <%= link_to "Sign in", new_session_path(resource_name), class: "text-primary" %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <div class="form-actions">
-    <%= f.button :submit, "Sign up" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>
