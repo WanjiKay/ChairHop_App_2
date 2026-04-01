@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; }
+    .header { background: #212529; color: white; padding: 24px; text-align: center; }
+    .header h2 { margin: 0; }
+    .body { padding: 24px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    .detail-row:last-child { border-bottom: none; }
+    .card { border: 1px solid #dee2e6; border-radius: 6px; padding: 16px; margin: 16px 0; }
+    .total-row { display: flex; justify-content: space-between; padding: 12px 0; font-size: 16px; font-weight: bold; border-top: 2px solid #212529; margin-top: 8px; }
+    .btn { display: inline-block; background: #212529; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 8px; margin-right: 8px; }
+    .btn-outline { background: white; color: #212529; border: 2px solid #212529; }
+    .footer { background: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d; margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Appointment Complete!</h2>
+    <p style="margin:8px 0 0; opacity:0.8;">Thank you for choosing ChairHop</p>
+  </div>
+  <div class="body">
+    <p>Hi <%= @customer.name %>,</p>
+    <p>Your appointment with <strong><%= @stylist.name %></strong> is complete. Here's your receipt.</p>
+
+    <div class="card">
+      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.name %></strong></div>
+      <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
+      <div class="detail-row"><span>Date &amp; Time</span><strong><%= format_datetime(@appointment.time) %></strong></div>
+      <% if @appointment.location.present? %>
+        <div class="detail-row"><span>Location</span><strong><%= @appointment.location.name %></strong></div>
+      <% end %>
+      <% if @appointment.appointment_add_ons.any? %>
+        <div class="detail-row"><span>Add-ons</span><strong><%= @appointment.appointment_add_ons.map(&:service_name).join(", ") %></strong></div>
+      <% end %>
+      <% if @appointment.payment_id.present? %>
+        <div class="detail-row"><span>Transaction ID</span><code style="font-size:12px;"><%= @appointment.payment_id %></code></div>
+      <% end %>
+      <div class="detail-row"><span>Deposit Paid</span><strong><%= number_to_currency(@deposit_paid) %></strong></div>
+      <div class="detail-row"><span>Balance Paid</span><strong><%= number_to_currency(@balance_paid) %></strong></div>
+      <div class="total-row"><span>Total Paid</span><span><%= number_to_currency(@deposit_paid + @balance_paid) %></span></div>
+    </div>
+
+    <p>Enjoyed your experience? Leave a review for <%= @stylist.name %>!</p>
+    <a href="<%= new_appointment_review_url(@appointment) %>" class="btn">Leave a Review</a>
+    <a href="<%= confirmation_appointment_url(@appointment) %>" class="btn btn-outline">View Full Receipt</a>
+  </div>
+  <div class="footer">&copy; ChairHop &middot; You're receiving this because you have an account with us.</div>
+</body>
+</html>

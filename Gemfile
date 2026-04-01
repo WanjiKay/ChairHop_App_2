@@ -23,9 +23,6 @@ gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
 
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder"
-
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 
@@ -46,9 +43,7 @@ gem "bootsnap", require: false
 
 gem "bootstrap", "~> 5.3"
 gem "devise"
-gem "devise-jwt"
 gem "pundit"
-gem "rack-cors"
 gem "autoprefixer-rails"
 gem "font-awesome-sass", "~> 6.1"
 gem "simple_form", github: "heartcombo/simple_form"
@@ -60,13 +55,9 @@ gem "kramdown-parser-gfm"
 gem "sassc-rails"
 gem "image_processing", "~> 1.2"
 gem "solid_cable"
+gem "solid_queue"
 gem "neighbor"
-gem 'kaminari'
-gem 'exponent-server-sdk'
 gem 'square.rb'
-gem 'geocoder'
-gem 'oauth2'
-gem 'httparty'
 
 group :development, :test do
   gem "dotenv-rails"
@@ -77,6 +68,7 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  gem "letter_opener"
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"

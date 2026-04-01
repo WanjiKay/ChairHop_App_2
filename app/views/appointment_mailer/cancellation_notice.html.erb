@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; }
+    .header { background: #dc3545; color: white; padding: 20px; text-align: center; }
+    .body { padding: 24px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+    .footer { background: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d; }
+    .refund-box { background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; padding: 12px; margin: 16px 0; }
+    .no-refund-box { background: #fff3cd; border: 1px solid #ffeeba; border-radius: 4px; padding: 12px; margin: 16px 0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2 style="margin:0;">Appointment Cancelled</h2>
+  </div>
+  <div class="body">
+    <p>Hi <%= @recipient.name %>,</p>
+
+    <% if @cancelled_by == 'customer' %>
+      <p>The customer <strong><%= @appointment.customer.name %></strong> has cancelled their appointment with you.</p>
+    <% else %>
+      <p>Unfortunately, <strong><%= @appointment.stylist.name %></strong> has cancelled your upcoming appointment.</p>
+    <% end %>
+
+    <div class="detail-row"><span>Service</span><span><%= @appointment.selected_service %></span></div>
+    <div class="detail-row"><span>Date &amp; Time</span><span><%= @appointment.time.strftime('%A, %B %-d at %-I:%M %p') %></span></div>
+    <% if @appointment.location.present? %>
+      <div class="detail-row"><span>Location</span><span><%= @appointment.location_display %></span></div>
+    <% end %>
+    <% if @appointment.cancellation_reason.present? %>
+      <div class="detail-row"><span>Reason</span><span><%= @appointment.cancellation_reason %></span></div>
+    <% end %>
+
+    <% if @recipient_role == 'customer' %>
+      <% if @refund_issued %>
+        <div class="refund-box">
+          <strong>Refund Issued</strong><br>
+          Your deposit of <%= number_to_currency(@appointment.payment_amount.to_f * 0.5) %> will be returned within 5-10 business days.
+        </div>
+      <% elsif @appointment.payment_status == 'deposit_kept' %>
+        <div class="no-refund-box">
+          <strong>No Refund Issued</strong><br>
+          As this cancellation was made within 24 hours of your appointment, your deposit has been kept per our cancellation policy.
+        </div>
+      <% end %>
+    <% end %>
+
+    <p style="margin-top: 24px;">If you have any questions, please contact us through the ChairHop app.</p>
+    <p>The ChairHop Team</p>
+  </div>
+  <div class="footer">
+    &copy; ChairHop. You're receiving this because you have an account on ChairHop.
+  </div>
+</body>
+</html>

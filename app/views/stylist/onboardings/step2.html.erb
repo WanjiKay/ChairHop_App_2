@@ -1,0 +1,90 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+
+      <!-- Progress -->
+      <div class="mb-4">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="badge bg-primary">Step 2 of 4</span>
+          <span class="text-muted">Your Services</span>
+        </div>
+        <div class="progress" style="height: 5px;">
+          <div class="progress-bar" role="progressbar" style="width: 50%"></div>
+        </div>
+      </div>
+
+      <div class="card shadow">
+        <div class="card-body p-5">
+          <h2 class="card-title mb-1">Add Your First Service</h2>
+          <p class="text-muted mb-4">What services do you offer? You can add more from your dashboard later.</p>
+
+          <%= form_with model: @service, url: complete_step2_stylist_onboarding_path, local: true do |f| %>
+
+            <% if @service.errors.any? %>
+              <div class="alert alert-danger">
+                <ul class="mb-0">
+                  <% @service.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <!-- Service Name -->
+            <div class="mb-3">
+              <%= f.label :name, "Service Name *", class: 'form-label fw-bold' %>
+              <%= f.text_field :name,
+                    class: 'form-control',
+                    placeholder: "e.g., Women's Haircut",
+                    required: true %>
+            </div>
+
+            <!-- Duration -->
+            <div class="mb-3">
+              <%= f.label :duration_minutes, "Duration (minutes) *", class: 'form-label fw-bold' %>
+              <%= f.number_field :duration_minutes,
+                    class: 'form-control',
+                    placeholder: "60",
+                    min: 15,
+                    step: 15,
+                    required: true %>
+              <small class="text-muted">How long does this service typically take?</small>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-4">
+              <%= f.label :price, "Price *", class: 'form-label fw-bold' %>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <%= f.number_field :price,
+                      class: 'form-control',
+                      placeholder: "65.00",
+                      min: 0,
+                      step: 0.01,
+                      required: true %>
+              </div>
+            </div>
+
+            <!-- Description (Optional) -->
+            <div class="mb-4">
+              <%= f.label :description, "Description (optional)", class: 'form-label' %>
+              <%= f.text_area :description,
+                    class: 'form-control',
+                    rows: 3,
+                    placeholder: "Optional: Add details about what's included..." %>
+            </div>
+
+            <div class="d-grid">
+              <%= f.submit "Continue to Location →", class: "btn btn-primary btn-lg" %>
+            </div>
+          <% end %>
+
+          <div class="text-center mt-3">
+            <small class="text-muted">You can add more services from your dashboard after setup</small>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

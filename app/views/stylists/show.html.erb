@@ -1,6 +1,6 @@
 <% content_for :meta_title, "#{@stylist.name}" %>
-<% content_for :meta_description, @stylist.about %>
-<% content_for :meta_image, cl_image_path(@stylist.avatar.key) %>
+<% content_for :meta_description, @stylist.about.presence || "Professional stylist on ChairHop" %>
+<% content_for :meta_image, @stylist.avatar.attached? ? url_for(@stylist.avatar) : asset_path("profile.png") %>
 
 <div class="container py-5">
   <div class="row justify-content-center">
@@ -13,7 +13,7 @@
           <!-- Circular Profile Picture Below Name -->
           <div class="profile-picture-wrapper mb-4">
             <% if @stylist.avatar.attached? %>
-              <%= cl_image_tag @stylist.avatar.key, class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" %>
+              <%= image_tag url_for(@stylist.avatar), class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" %>
             <% else %>
               <%= image_tag "profile.png", class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F;" %>
             <% end %>
@@ -32,33 +32,291 @@
           <p class="text-muted mb-0"><%= @stylist.about %></p>
         </div>
 
-
-        <!-- Available Appointments Section -->
-        <div class="booking-details-card mb-4">
-          <h4 class="text-primary fw-bold mb-3">
-            <i class="fas fa-calendar-check me-2"></i>Available Appointments
-          </h4>
-
-          <% if @appointments.any? %>
-            <div class="appointments-list">
-              <% @appointments.each do |appt| %>
-                <div class="detail-row mb-3">
-                  <div>
-                    <i class="fas fa-clock me-2 text-primary"></i>
-                    <span class="detail-label"><%= appt.time.strftime("%b %d, %Y at %I:%M %p") if appt.time.present? %></span>
-                    <br>
-                    <small class="text-muted ms-4"><i class="fas fa-map-marker-alt me-2"></i><%= appt.location %></small>
-                  </div>
-                  <div>
-                    <%= link_to "View", appointment_path(appt), class: "btn btn-primary btn-sm" %>
-                  </div>
+        <!-- Portfolio Section -->
+        <% if @stylist.portfolio_photos.attached? %>
+          <div class="booking-details-card mb-4">
+            <h4 class="text-primary fw-bold mb-3">
+              <i class="fas fa-images me-2"></i>Portfolio
+            </h4>
+            <div class="d-flex gap-3 overflow-auto pb-2"
+                 style="scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
+              <% @stylist.portfolio_photos.each do |photo| %>
+                <div style="flex: 0 0 auto; scroll-snap-align: start;">
+                  <%= image_tag url_for(photo),
+                        style: "height: 200px; width: 200px; object-fit: cover; border-radius: 8px;",
+                        alt: "Portfolio photo by #{@stylist.name}" %>
                 </div>
               <% end %>
             </div>
+          </div>
+        <% end %>
+
+        <!-- Services Section -->
+        <% if @services.any? %>
+          <div class="booking-details-card mb-4">
+            <h4 class="text-primary fw-bold mb-3">
+              <i class="fas fa-cut me-2"></i>Services
+            </h4>
+            <% @services.each do |service| %>
+              <div class="d-flex align-items-center gap-3 mb-3 pb-3" style="border-bottom: 1px solid #f0f0f0;">
+
+                <% if service.photo.attached? %>
+                  <button type="button"
+                          class="border-0 bg-transparent p-0 flex-shrink-0"
+                          data-bs-toggle="modal"
+                          data-bs-target="#serviceModal<%= service.id %>">
+                    <%= image_tag url_for(service.photo),
+                          style: "width: 48px; height: 48px; object-fit: cover; border-radius: 6px; cursor: pointer;",
+                          alt: service.name %>
+                  </button>
+
+                  <div class="modal fade" id="serviceModal<%= service.id %>"
+                       tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header border-0">
+                          <h5 class="modal-title fw-bold"><%= service.name %></h5>
+                          <button type="button" class="btn-close"
+                                  data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-0">
+                          <%= image_tag url_for(service.photo),
+                                class: "w-100",
+                                style: "max-height: 400px; object-fit: cover;",
+                                alt: service.name %>
+                        </div>
+                        <div class="modal-footer flex-column align-items-start border-0">
+                          <% if service.description.present? %>
+                            <p class="text-muted mb-2"><%= service.description %></p>
+                          <% end %>
+                          <div class="d-flex gap-3 text-muted small">
+                            <% if service.duration_minutes.present? %>
+                              <span><i class="fas fa-clock me-1"></i><%= service.duration_minutes %> min</span>
+                            <% end %>
+                            <span><i class="fas fa-tag me-1"></i>$<%= number_with_precision(service.price, precision: 2) %></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+
+                <div class="flex-grow-1">
+                  <div class="fw-semibold"><%= service.name %></div>
+                  <% if service.description.present? %>
+                    <small class="text-muted"><%= truncate(service.description, length: 80) %></small>
+                  <% end %>
+                </div>
+                <div class="text-end flex-shrink-0">
+                  <div class="fw-bold text-primary">$<%= number_with_precision(service.price, precision: 2) %></div>
+                  <% if service.duration_minutes.present? %>
+                    <small class="text-muted"><%= service.duration_minutes %> min</small>
+                  <% end %>
+                </div>
+
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <!-- Booking Section -->
+        <div id="book" class="mt-5 pt-4 border-top">
+          <h4 class="fw-bold text-primary mb-4">
+            <i class="fas fa-calendar-plus me-2"></i>Book an Appointment
+          </h4>
+
+          <% if @availability_blocks.any? %>
+            <script>
+              window.CHAIRHOP_AVAILABLE_DATES = <%= raw @available_dates.to_json %>;
+            </script>
+            <div data-controller="booking-form"
+                 data-booking-form-stylist-id-value="<%= @stylist.id %>"
+                 data-booking-form-slots-url-value="<%= booking_slots_path %>">
+
+              <!-- Step 1: Date picker (Flatpickr) -->
+              <div class="mb-4">
+                <label class="form-label fw-semibold">
+                  <span class="badge bg-primary me-1">1</span> Choose a Date
+                </label>
+                <input type="text"
+                       class="form-control"
+                       style="max-width: 280px;"
+                       placeholder="Select a date..."
+                       readonly
+                       data-booking-form-target="datePicker"
+                       data-action="change->booking-form#dateChanged">
+                <small class="text-muted">Only dates with availability are shown</small>
+              </div>
+
+              <!-- Step 2: Time slots -->
+              <div class="mb-4" data-booking-form-target="timeSection" style="display:none;">
+                <label class="form-label fw-semibold">
+                  <span class="badge bg-primary me-1">2</span> Choose a Time
+                </label>
+                <div data-booking-form-target="timeSlots"
+                     class="d-flex flex-wrap gap-2"></div>
+                <input type="hidden" data-booking-form-target="selectedTime">
+                <input type="hidden" data-booking-form-target="selectedBlockId">
+                <input type="hidden" data-booking-form-target="selectedLocationId">
+                <p class="text-muted small mt-2 mb-0">Pick a date and time to continue</p>
+              </div>
+
+              <!-- Service + Add-on Selection Modal -->
+              <div class="modal fade" id="serviceSelectionModal" tabindex="-1"
+                   aria-labelledby="serviceSelectionModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title fw-bold" id="serviceSelectionModalLabel">
+                        <i class="fas fa-scissors me-2"></i>Choose Your Service
+                      </h5>
+                      <button type="button" class="btn-close"
+                              data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+
+                      <!-- Selected date/time summary at top -->
+                      <div class="alert alert-light border mb-4">
+                        <i class="fas fa-calendar me-2 text-primary"></i>
+                        <span data-booking-form-target="modalDateTime"
+                              class="fw-semibold"></span>
+                        <span class="text-muted ms-2"
+                              data-booking-form-target="modalLocation"></span>
+                      </div>
+
+                      <!-- Service selection -->
+                      <h6 class="fw-semibold mb-3">Select a Service</h6>
+                      <div data-booking-form-target="modalServiceList"
+                           class="row g-2 mb-4">
+                        <% @services.each do |service| %>
+                          <div class="col-md-6">
+                            <div class="border rounded p-3 service-option h-100"
+                                 style="cursor:pointer;"
+                                 data-service-name="<%= service.name %>"
+                                 data-service-price="<%= service.price %>"
+                                 data-service-duration="<%= service.duration_minutes %>"
+                                 data-action="click->booking-form#selectService">
+                              <div class="d-flex align-items-center gap-2">
+                                <% if service.photo.attached? %>
+                                  <%= image_tag url_for(service.photo),
+                                        style: "width:48px;height:48px;object-fit:cover;border-radius:6px;",
+                                        alt: service.name %>
+                                <% end %>
+                                <div>
+                                  <div class="fw-semibold"><%= service.name %></div>
+                                  <small class="text-muted">
+                                    $<%= service.price %> &middot;
+                                    <%= service.duration_minutes %> min
+                                  </small>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
+
+                      <!-- Add-on selection (hidden until service selected) -->
+                      <div data-booking-form-target="addOnSection" style="display:none;">
+                        <h6 class="fw-semibold mb-3">Add-Ons <small class="text-muted fw-normal">(optional)</small></h6>
+                        <div data-booking-form-target="addOnList" class="row g-2 mb-4">
+                          <% @stylist.services.active.add_ons.includes(photo_attachment: :blob).each do |addon| %>
+                            <div class="col-md-6">
+                              <div class="border rounded p-3 addon-option"
+                                   style="cursor:pointer;"
+                                   data-addon-name="<%= addon.name %>"
+                                   data-addon-price="<%= addon.price %>"
+                                   data-addon-id="<%= addon.id %>"
+                                   data-action="click->booking-form#toggleAddon">
+                                <div class="d-flex align-items-center gap-2">
+                                  <div class="form-check mb-0">
+                                    <input type="checkbox"
+                                           class="form-check-input addon-checkbox"
+                                           id="addon_<%= addon.id %>"
+                                           value="<%= addon.id %>">
+                                  </div>
+                                  <div>
+                                    <label class="form-check-label fw-semibold mb-0"
+                                           for="addon_<%= addon.id %>">
+                                      <%= addon.name %>
+                                    </label>
+                                    <small class="text-muted d-block">
+                                      +$<%= addon.price %>
+                                    </small>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          <% end %>
+                        </div>
+                      </div>
+
+                      <!-- Summary -->
+                      <div data-booking-form-target="modalSummary" style="display:none;">
+                        <div class="card border-primary">
+                          <div class="card-body">
+                            <h6 class="card-title fw-bold">Booking Summary</h6>
+                            <div class="row g-2 text-muted small">
+                              <div class="col-6">Date & Time:</div>
+                              <div class="col-6 fw-semibold text-dark"
+                                   data-booking-form-target="summaryTime"></div>
+                              <div class="col-6">Service:</div>
+                              <div class="col-6 fw-semibold text-dark"
+                                   data-booking-form-target="summaryService"></div>
+                              <div data-booking-form-target="summaryAddOnsRow"
+                                   class="col-12 row g-2" style="display:none;">
+                                <div class="col-6">Add-Ons:</div>
+                                <div class="col-6 fw-semibold text-dark"
+                                     data-booking-form-target="summaryAddOns"></div>
+                              </div>
+                              <div class="col-6">Deposit (50%):</div>
+                              <div class="col-6 fw-semibold text-primary"
+                                   data-booking-form-target="summaryDeposit"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-outline-secondary"
+                              data-bs-dismiss="modal">Cancel</button>
+
+                      <%= form_with url: bookings_path, method: :post,
+                            local: true,
+                            data: { booking_form_target: "form" } do |f| %>
+                        <%= hidden_field_tag :stylist_id, @stylist.id %>
+                        <input type="hidden" name="selected_time"
+                               data-booking-form-target="formTime">
+                        <input type="hidden" name="availability_block_id"
+                               data-booking-form-target="formBlockId">
+                        <input type="hidden" name="selected_service_name"
+                               data-booking-form-target="formServiceName">
+                        <input type="hidden" name="add_on_ids[]"
+                               data-booking-form-target="formAddOnIds">
+
+                        <% if user_signed_in? %>
+                          <button type="submit"
+                                  class="btn btn-primary px-4"
+                                  data-booking-form-target="submitBtn"
+                                  style="display:none;">
+                            Request Appointment
+                          </button>
+                        <% else %>
+                          <%= link_to "Sign in to Book",
+                                new_user_session_path(return_to: request.fullpath + '#book'),
+                                class: "btn btn-primary px-4" %>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           <% else %>
             <div class="text-center py-4">
-              <i class="fas fa-calendar-times fa-3x text-muted mb-3" style="opacity: 0.3;"></i>
-              <p class="text-muted mb-0">No available appointments at this time.</p>
+              <i class="fas fa-calendar-times fa-3x text-muted mb-3" style="opacity:0.3;"></i>
+              <p class="text-muted">No upcoming availability. Check back soon.</p>
             </div>
           <% end %>
         </div>
@@ -84,7 +342,20 @@
                   </div>
                   <small class="text-muted">by <%= review.customer.name %></small>
                 </div>
-                <p class="mb-0"><%= review.content %></p>
+                <p class="mb-1"><%= review.content %></p>
+                <% if review.photos.attached? %>
+                  <div class="d-flex gap-2 mt-2">
+                    <% review.photos.each do |photo| %>
+                      <%= image_tag url_for(photo), class: "rounded", style: "max-height: 120px;" %>
+                    <% end %>
+                  </div>
+                <% end %>
+                <% if review.stylist_response.present? %>
+                  <div class="mt-2 p-2 bg-light rounded border-start border-primary border-3">
+                    <small class="fw-semibold text-primary">Response from <%= @stylist.name %>:</small>
+                    <p class="mb-0 small mt-1"><%= review.stylist_response %></p>
+                  </div>
+                <% end %>
               </div>
             <% end %>
           <% else %>
@@ -102,4 +373,24 @@
       </div>
     </div>
   </div>
+
+  <!-- Sticky Book Now button -->
+  <div id="sticky-book-btn"
+       style="position:fixed; bottom:24px; right:24px; z-index:1000;
+              display:none;">
+    <%= link_to "#book",
+          class: "btn btn-primary btn-lg shadow-lg rounded-pill px-4" do %>
+      <i class="fas fa-calendar-plus me-2"></i>Book Now
+    <% end %>
+  </div>
+
+  <script>
+    window.addEventListener('scroll', function() {
+      var btn = document.getElementById('sticky-book-btn')
+      var bookSection = document.getElementById('book')
+      if (!btn || !bookSection) return
+      var bookTop = bookSection.getBoundingClientRect().top
+      btn.style.display = bookTop > window.innerHeight ? 'block' : 'none'
+    })
+  </script>
 </div>

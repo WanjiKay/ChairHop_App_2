@@ -1,0 +1,200 @@
+<%= form_with model: availability_block, url: form_url, method: form_method, local: true do |f| %>
+  <% if availability_block.errors.any? %>
+    <div class="alert alert-danger">
+      <h6 class="fw-bold mb-2"><%= pluralize(availability_block.errors.count, "error") %> prevented this block from being saved:</h6>
+      <ul class="mb-0">
+        <% availability_block.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- When -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title mb-3">When are you available?</h5>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <%= f.label :start_time, "Start Date & Time", class: "form-label fw-semibold" %>
+          <%= f.datetime_local_field :start_time, class: "form-control", required: true %>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :end_time, "End Date & Time", class: "form-label fw-semibold" %>
+          <%= f.datetime_local_field :end_time, class: "form-control", required: true %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Where -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Where will you be?</h5>
+      <%= f.label :location_id, "Location", class: "form-label fw-semibold" %>
+      <%= f.select :location_id,
+            options_from_collection_for_select(locations, :id, :name, availability_block.location_id),
+            { prompt: "Select a location" },
+            { class: "form-select", required: true } %>
+      <% if locations.empty? %>
+        <div class="alert alert-warning mt-2 mb-0">
+          You need to add a location first.
+          <%= link_to "Add Location", new_stylist_location_path, class: "alert-link" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Which services -->
+  <% main_services = services.reject { |s| s.is_add_on } %>
+  <% add_on_services = services.select { |s| s.is_add_on } %>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title mb-1">Which services?</h5>
+      <p class="text-muted small mb-3">
+        Select which services you'll be available for during this block.
+        Toggle <strong>All Services</strong> to make yourself available for everything,
+        or hand-pick specific services and add-ons below.
+      </p>
+
+      <!-- Master toggle -->
+      <div class="form-check mb-3">
+        <%= f.check_box :available_for_all_services,
+              class: "form-check-input",
+              id: "all_services_toggle" %>
+        <%= f.label :available_for_all_services, "Available for all my services", class: "form-check-label fw-bold" %>
+      </div>
+
+      <div id="service-selection" style="display: none;">
+
+        <% if main_services.any? %>
+          <!-- Main Services group -->
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="text-muted text-uppercase fw-semibold mb-0" style="font-size: 0.75rem; letter-spacing: 0.05em;">Main Services</h6>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-primary select-group-btn" data-group="main">
+                  Select All
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary deselect-group-btn" data-group="main">
+                  Deselect All
+                </button>
+              </div>
+            </div>
+            <div class="row g-2">
+              <% main_services.each do |service| %>
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <%= check_box_tag "availability_block[service_ids][]", service.id,
+                          availability_block.service_ids.include?(service.id),
+                          id: "service_#{service.id}",
+                          class: "form-check-input service-checkbox service-checkbox-main" %>
+                    <%= label_tag "service_#{service.id}", class: "form-check-label" do %>
+                      <%= service.name %>
+                      <small class="text-muted d-block">~<%= service.duration_minutes || 60 %> min · $<%= service.price %></small>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <% if add_on_services.any? %>
+          <!-- Add-Ons group -->
+          <div class="mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="text-muted text-uppercase fw-semibold mb-0" style="font-size: 0.75rem; letter-spacing: 0.05em;">Add-Ons</h6>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-primary select-group-btn" data-group="addon">
+                  Select All
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary deselect-group-btn" data-group="addon">
+                  Deselect All
+                </button>
+              </div>
+            </div>
+            <div class="row g-2">
+              <% add_on_services.each do |service| %>
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <%= check_box_tag "availability_block[service_ids][]", service.id,
+                          availability_block.service_ids.include?(service.id),
+                          id: "service_#{service.id}",
+                          class: "form-check-input service-checkbox service-checkbox-addon" %>
+                    <%= label_tag "service_#{service.id}", class: "form-check-label" do %>
+                      <%= service.name %>
+                      <span class="badge bg-secondary ms-1" style="font-size: 0.65em;">Add-on</span>
+                      <small class="text-muted d-block">~<%= service.duration_minutes || 60 %> min · $<%= service.price %></small>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+      </div>
+
+      <% if services.empty? %>
+        <div class="alert alert-warning mt-2 mb-0">
+          You need to add services first.
+          <%= link_to "Add Service", new_stylist_service_path, class: "alert-link" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Notes <span class="text-muted fw-normal fs-6">(optional)</span></h5>
+      <%= f.text_area :notes, class: "form-control", rows: 3,
+            placeholder: "e.g., Bring portable chair setup, parking available out front" %>
+      <small class="text-muted">Only visible to you</small>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= f.submit submit_label, class: "btn btn-primary px-4" %>
+    <%= link_to "Cancel", stylist_availability_blocks_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>
+
+<script>
+  function initServiceToggle() {
+    const toggle    = document.getElementById('all_services_toggle');
+    const selection = document.getElementById('service-selection');
+
+    // Show/hide the entire service-selection section based on master toggle
+    function syncVisibility() {
+      if (selection) selection.style.display = toggle.checked ? 'none' : 'block';
+    }
+
+    if (toggle) {
+      toggle.addEventListener('change', syncVisibility);
+      syncVisibility();
+    }
+
+    // Per-group Select All / Deselect All buttons
+    document.querySelectorAll('.select-group-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const group = btn.dataset.group;
+        const cls   = group === 'main' ? '.service-checkbox-main' : '.service-checkbox-addon';
+        document.querySelectorAll(cls).forEach(function (cb) { cb.checked = true; });
+      });
+    });
+
+    document.querySelectorAll('.deselect-group-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const group = btn.dataset.group;
+        const cls   = group === 'main' ? '.service-checkbox-main' : '.service-checkbox-addon';
+        document.querySelectorAll(cls).forEach(function (cb) { cb.checked = false; });
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initServiceToggle);
+  document.addEventListener('turbo:load', initServiceToggle);
+</script>

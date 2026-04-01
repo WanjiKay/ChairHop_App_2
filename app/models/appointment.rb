@@ -1,7 +1,9 @@
 class Appointment < ApplicationRecord
-  belongs_to :customer,class_name: "User", optional: true
+  belongs_to :customer, class_name: "User", optional: true
   belongs_to :stylist, class_name: "User"
   belongs_to :location, optional: true
+  belongs_to :cancelled_by_user, class_name: "User", foreign_key: :cancelled_by_id, optional: true
+  belongs_to :availability_block, optional: true
   has_many :chats, dependent: :nullify
   has_one :conversation, dependent: :nullify
   has_one :review, dependent: :destroy
@@ -9,12 +11,11 @@ class Appointment < ApplicationRecord
   has_one_attached :image
   has_neighbors :embedding
   after_create :set_embedding
-  after_update :sync_to_quickbooks, if: :completed_and_paid?
-  # validate :user_cannot_book_multiple, on: :update
-
+  before_save :set_end_time
   validates :time, presence: true
-  validates :location, presence: true
-  validates :payment_status, inclusion: { in: %w[pending paid refunded failed] }, allow_nil: true
+  validate :no_overlapping_appointments, on: [:create, :update]
+  validates :location_id, presence: true, on: :create
+  validates :payment_status, inclusion: { in: %w[pending deposit_paid balance_due paid refunded deposit_kept failed] }, allow_nil: true
 
   enum status: {
     pending: 0,
@@ -23,71 +24,39 @@ class Appointment < ApplicationRecord
     cancelled: 3
   }
 
-  SALON_ADD_ONS = {
-    "Glow Lounge" => [
-      "Scalp Massage - $15",
-      "Scalp Treatment - $25",
-      "Deep Conditioning Treatment - $20",
-      "Hair Mask - $22",
-      "Hot Oil Treatment - $15",
-      "Hair Steaming - $18",
-      "Split-End Repair Treatment - $18",
-      "Bond Builder Treatment (Olaplex, K18) - $45",
-      "Toning / Gloss Refresh - $25"
-    ],
-    "Brows and Locks Salon" => [
-      "Deep Conditioning Treatment - $20",
-      "Scalp Treatment - $25",
-      "Split-End Repair Treatment - $18",
-      "Hair Mask - $22",
-      "Olaplex Treatment - $35",
-      "Keratin Smoothing Add-On - $40",
-      "Toning / Gloss Refresh - $25",
-      "Hot Oil Treatment - $15",
-      "Hair Steaming - $18",
-      "Extra-Long or Thick-Hair Charge - $15",
-      "Curl Definition Add-On - $20"
-    ],
-    "Chic Studio" => [
-      "Olaplex Treatment - $35",
-      "Hair Mask - $22",
-      "Deep Conditioning Treatment - $20",
-      "Split-End Repair Treatment - $18",
-      "Keratin Smoothing Add-On - $40",
-      "Toning / Gloss Refresh - $25",
-      "Hot Oil Treatment - $15",
-      "Scalp Treatment - $25",
-      "Hair Steaming - $18",
-      "Extra-Long or Thick-Hair Charge - $15",
-      "Curl Definition Add-On - $20",
-      "Bond Builder Treatment (Olaplex, K18) - $45"
-    ],
-    "Downtown Cuts" => [
-      "Beard Trim - $10",
-      "Beard Line-Up - $8",
-      "Razor Shape-Up - $10",
-      "Neck Razor Shave - $12",
-      "Beard Conditioning - $12",
-      "Hot Towel Treatment - $5",
-      "Hair Wash / Shampoo - $8",
-      "Scalp Massage - $15"
-    ]
-  }.freeze
-
-  # Default add-ons for salons not in the list
-  DEFAULT_ADD_ONS = [
-    "Scalp Massage - $15",
-    "Hair Wash / Shampoo - $8",
-    "Deep Conditioning Treatment - $20",
-    "Hot Towel Treatment - $5"
-  ].freeze
-
-  def relevant_add_ons
-    SALON_ADD_ONS[salon] || DEFAULT_ADD_ONS
-  end
 
   def total_add_ons_price
     appointment_add_ons.sum(:price)
+  end
+
+  def total_duration_minutes
+    total = 0
+
+    if selected_service.present?
+      service_name = selected_service.split(' - $').first
+      service = stylist.services.find_by(name: service_name)
+      total += service.duration_minutes.to_i if service
+    end
+
+    appointment_add_ons.each do |add_on|
+      total += add_on.service.duration_minutes.to_i if add_on.service
+    end
+
+    total
+  end
+
+  def formatted_duration
+    mins = total_duration_minutes
+    hours   = mins / 60
+    minutes = mins % 60
+
+    if hours > 0 && minutes > 0
+      "#{hours}h #{minutes}m"
+    elsif hours > 0
+      "#{hours}h"
+    else
+      "#{minutes}m"
+    end
   end
 
   def base_service_price
@@ -101,57 +70,83 @@ class Appointment < ApplicationRecord
   def accept!
     return false unless pending?
     self.status = :booked
-    self.booked = true
     save
   end
 
-  def cancel!
+  def cancel!(cancelled_by: nil)
     self.status = :cancelled
-    self.booked = false
+    self.cancelled_by_user = cancelled_by if cancelled_by
     self.customer = nil
     save
+  end
+
+  CANCELLATION_WINDOW_HOURS = 24
+
+  def cancellable_by_customer?
+    (pending? || booked?) && !completed? && !cancelled?
+  end
+
+  def full_refund_eligible?
+    time > CANCELLATION_WINDOW_HOURS.hours.from_now
+  end
+
+  def hours_until_appointment
+    ((time - Time.current) / 1.hour).round(1)
   end
 
   def location_display
     if location.present?
       location.full_address
-    elsif self[:location].present?
-      self[:location]
     else
       "Location not specified"
     end
   end
 
+  def calculated_end_time
+    return nil unless time.present?
+    duration = total_duration_minutes
+    duration = 60 if duration == 0
+    time + duration.minutes
+  end
+
   private
 
+  def set_end_time
+    self.end_time = calculated_end_time if time.present?
+  end
+
+  def no_overlapping_appointments
+    return unless time.present? && stylist_id.present? && selected_service.present?
+
+    duration = total_duration_minutes
+    duration = 60 if duration == 0
+    appt_end = time + duration.minutes
+
+    conflicts = Appointment
+      .where(stylist_id: stylist_id)
+      .where(status: [:pending, :booked])
+      .where.not(id: id)
+      .where(
+        '(appointments.time < ? AND appointments.end_time > ?) OR
+         (appointments.time >= ? AND appointments.time < ?)',
+        appt_end, time,
+        time, appt_end
+      )
+
+    if conflicts.exists?
+      conflict = conflicts.first
+      errors.add(:time,
+        "conflicts with an existing appointment at #{conflict.time.strftime('%b %-d at %-I:%M %p')}. " \
+        "Please choose a different time.")
+    end
+  end
+
   def set_embedding
-    embedding = RubyLLM.embed("Time: #{time}.
-    Booked: #{booked}.
-    Location #{location_display}.
-    Stylist: #{stylist.name}.
-    Services: #{services}.")
+    embedding = RubyLLM.embed("Time: #{time}. Location: #{location_display}. Stylist: #{stylist.name}.")
     update(embedding: embedding.vectors)
   rescue => e
     # Silently skip embedding if API is not configured or rate limit is hit
     Rails.logger.warn "Skipping embedding for appointment #{id}: #{e.message}"
   end
 
-  def completed_and_paid?
-    saved_change_to_status? &&
-    status == 'completed' &&
-    customer.present? &&
-    stylist.quickbooks_connected?
-  end
-
-  def sync_to_quickbooks
-    QuickbooksJob.perform_later(id)
-  rescue => e
-    Rails.logger.error "Failed to queue QuickBooks sync: #{e.message}"
-  end
-
-  # def user_cannot_book_multiple
-  #   if booked && customer && customer.appointments_as_customer.where(booked: true).where.not(id: id).exists?
-  #     errors.add(:base, "Honey, you can't sit in two chairs at once!")
-  #   end
-  # end
 end

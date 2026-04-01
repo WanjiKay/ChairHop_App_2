@@ -1,176 +1,117 @@
-<div class="container my-5">
-  <br>
-  <h1 class="mb-4">My Appointments</h1>
+<div class="container py-4">
+  <h4 class="fw-bold mb-4">My Appointments</h4>
 
-  <% if @my_appointments.any? %>
-    <% booked_appointments = @my_appointments.select(&:booked?) %>
-    <% completed_appointments = @my_appointments.select(&:completed?) %>
-    <% cancelled_appointments = @my_appointments.select(&:cancelled?) %>
-
-    <!-- Booked Appointments Section -->
-    <% if booked_appointments.any? %>
-      <h3 class="text-primary mb-3">Upcoming Appointments</h3>
-      <div class="row g-4 mb-5">
-        <% booked_appointments.each do |appointment| %>
-          <div class="col-md-6">
-            <div class="card appointment-card">
-              <% if appointment.image.attached? %>
-                <%= cl_image_tag appointment.image.key, class: "card-img-top", alt: appointment.salon %>
-              <% else %>
-                <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400",
-                              class: "card-img-top",
-                              alt: "Salon" %>
-              <% end %>
-
-              <div class="card-body">
-                <h5 class="card-title"><%= appointment.salon %></h5>
-
-                <p class="card-text">
-                  <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
-                  <strong>Location:</strong> <%= appointment.location_display %><br>
-                  <strong>Time:</strong> <%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %><br>
-                  <% if appointment.selected_service.present? %>
-                    <strong>Service:</strong> <%= appointment.selected_service %>
-                  <% end %>
-                </p>
-
-                <div class="d-flex gap-2">
-                  <%= link_to "View Details", appointment_path(appointment), class: "btn btn-primary" %>
-                  <% if appointment.time < Time.current %>
-                    <%= button_to "Mark as Completed",
-                                  complete_appointment_path(appointment),
-                                  method: :patch,
-                                  data: { confirm: "Mark this appointment as completed?" },
-                                  class: "btn btn-success" %>
-                  <% else %>
-                    <%= button_to "Unbook",
-                                  appointment_path(appointment),
-                                  method: :delete,
-                                  data: { confirm: "Are you sure you want to unbook this appointment?" },
-                                  class: "btn btn-danger" %>
-                  <% end %>
-                </div>
-
-                <div class="mt-3">
-                  <span class="badge bg-info">Booked</span>
-                  <% if appointment.time < Time.current %>
-                    <span class="badge bg-warning text-dark ms-2">Ready to Complete</span>
-                  <% end %>
-                </div>
-              </div>
-            </div>
-          </div>
+  <%# Bootstrap Tabs %>
+  <ul class="nav nav-tabs mb-4" id="appointmentTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="upcoming-tab" data-bs-toggle="tab"
+              data-bs-target="#upcoming" type="button" role="tab">
+        Upcoming
+        <% if @upcoming.any? %>
+          <span class="badge bg-primary ms-1"><%= @upcoming.count %></span>
         <% end %>
-      </div>
-    <% end %>
-
-    <!-- Completed Appointments Section -->
-    <% if completed_appointments.any? %>
-      <h3 class="text-success mb-3">Completed Appointments</h3>
-      <div class="row g-4 mb-5">
-        <% completed_appointments.each do |appointment| %>
-          <div class="col-md-6">
-            <div class="card appointment-card border-success">
-              <% if appointment.image.attached? %>
-                <%= image_tag appointment.image, class: "card-img-top", alt: appointment.salon %>
-              <% else %>
-                <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400",
-                              class: "card-img-top",
-                              alt: "Salon" %>
-              <% end %>
-
-              <div class="card-body">
-                <h5 class="card-title"><%= appointment.salon %></h5>
-
-                <p class="card-text">
-                  <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
-                  <strong>Location:</strong> <%= appointment.location_display %><br>
-                  <strong>Time:</strong> <%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %><br>
-                  <% if appointment.selected_service.present? %>
-                    <strong>Service:</strong> <%= appointment.selected_service %>
-                  <% end %>
-                </p>
-
-                <div class="d-flex gap-2 mb-3">
-                  <%= link_to "View Details", appointment_path(appointment), class: "btn btn-primary" %>
-                  <% if appointment.review.blank? %>
-                    <%= link_to "Leave a Review",
-                                new_appointment_review_path(appointment),
-                                class: "btn btn-outline-primary" %>
-                  <% end %>
-                </div>
-
-                <div class="mb-3">
-                  <span class="badge bg-success">Completed</span>
-                </div>
-
-                <!-- REVIEW STAR RATING -->
-                <% if appointment.review.present? %>
-                  <div class="mt-3">
-                    <strong class="text-muted d-block mb-1">Your Rating:</strong>
-                    <div>
-                      <% appointment.review.rating.times do %>
-                        <i class="fas fa-star text-warning"></i>
-                      <% end %>
-                      <% (5 - appointment.review.rating).times do %>
-                        <i class="far fa-star text-warning"></i>
-                      <% end %>
-                      <span class="ms-2"><%= appointment.review.rating %>/5</span>
-                    </div>
-                  </div>
-                <% end %>
-                <!-- END REVIEW STAR RATING -->
-              </div>
-            </div>
-          </div>
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="pending-tab" data-bs-toggle="tab"
+              data-bs-target="#pending" type="button" role="tab">
+        Pending
+        <% if @pending.any? %>
+          <span class="badge bg-warning text-dark ms-1"><%= @pending.count %></span>
         <% end %>
-      </div>
-    <% end %>
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="completed-tab" data-bs-toggle="tab"
+              data-bs-target="#completed" type="button" role="tab">
+        Completed
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="cancelled-tab" data-bs-toggle="tab"
+              data-bs-target="#cancelled" type="button" role="tab">
+        Cancelled
+      </button>
+    </li>
+  </ul>
 
-    <!-- Cancelled Appointments Section -->
-    <% if cancelled_appointments.any? %>
-      <h3 class="text-muted mb-3">Cancelled Appointments</h3>
-      <div class="row g-4 mb-5">
-        <% cancelled_appointments.each do |appointment| %>
-          <div class="col-md-6">
-            <div class="card appointment-card border-secondary opacity-75">
-              <% if appointment.image.attached? %>
-                <%= image_tag appointment.image, class: "card-img-top", alt: appointment.salon %>
-              <% else %>
-                <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400",
-                              class: "card-img-top",
-                              alt: "Salon" %>
-              <% end %>
+  <div class="tab-content" id="appointmentTabsContent">
 
-              <div class="card-body">
-                <h5 class="card-title text-muted"><%= appointment.salon %></h5>
-
-                <p class="card-text text-muted">
-                  <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
-                  <strong>Location:</strong> <%= appointment.location_display %><br>
-                  <strong>Time:</strong> <%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %><br>
-                  <% if appointment.selected_service.present? %>
-                    <strong>Service:</strong> <%= appointment.selected_service %>
-                  <% end %>
-                </p>
-
-                <%= link_to "View Details", appointment_path(appointment), class: "btn btn-outline-secondary" %>
-
-                <div class="mt-3">
-                  <span class="badge bg-secondary">Cancelled</span>
-                </div>
-              </div>
-            </div>
-          </div>
+    <%# ── UPCOMING TAB ── %>
+    <div class="tab-pane fade show active" id="upcoming" role="tabpanel">
+      <% if @upcoming.any? %>
+        <% @upcoming.each do |appointment| %>
+          <%= render partial: "appointment_card",
+                     locals: { appointment: appointment, card_type: :upcoming } %>
         <% end %>
-      </div>
-    <% end %>
-  <% else %>
-    <div class="alert alert-info">
-      <p class="mb-0">You don't have any appointments yet.</p>
-      <%= link_to "Browse available appointments", appointments_path, class: "btn btn-primary mt-3" %>
+      <% else %>
+        <%= render partial: "appointments_empty_state",
+                   locals: {
+                     icon: "bi-calendar-check",
+                     title: "No upcoming appointments",
+                     message: "You don't have any confirmed appointments yet.",
+                     link_path: stylists_path,
+                     link_text: "Find a Stylist"
+                   } %>
+      <% end %>
     </div>
-  <% end %>
 
-  <%= link_to "Back to Home", root_path, class: "btn btn-secondary mt-4" %>
+    <%# ── PENDING TAB ── %>
+    <div class="tab-pane fade" id="pending" role="tabpanel">
+      <% if @pending.any? %>
+        <% @pending.each do |appointment| %>
+          <%= render partial: "appointment_card",
+                     locals: { appointment: appointment, card_type: :pending } %>
+        <% end %>
+      <% else %>
+        <%= render partial: "appointments_empty_state",
+                   locals: {
+                     icon: "bi-hourglass-split",
+                     title: "No pending requests",
+                     message: "You don't have any appointments awaiting confirmation.",
+                     link_path: stylists_path,
+                     link_text: "Book an Appointment"
+                   } %>
+      <% end %>
+    </div>
+
+    <%# ── COMPLETED TAB ── %>
+    <div class="tab-pane fade" id="completed" role="tabpanel">
+      <% if @completed.any? %>
+        <% @completed.each do |appointment| %>
+          <%= render partial: "appointment_card",
+                     locals: { appointment: appointment, card_type: :completed } %>
+        <% end %>
+      <% else %>
+        <%= render partial: "appointments_empty_state",
+                   locals: {
+                     icon: "bi-check-circle",
+                     title: "No completed appointments",
+                     message: "Your completed appointments will appear here.",
+                     link_path: stylists_path,
+                     link_text: "Book an Appointment"
+                   } %>
+      <% end %>
+    </div>
+
+    <%# ── CANCELLED TAB ── %>
+    <div class="tab-pane fade" id="cancelled" role="tabpanel">
+      <% if @cancelled.any? %>
+        <% @cancelled.each do |appointment| %>
+          <%= render partial: "appointment_card",
+                     locals: { appointment: appointment, card_type: :cancelled } %>
+        <% end %>
+      <% else %>
+        <%= render partial: "appointments_empty_state",
+                   locals: {
+                     icon: "bi-x-circle",
+                     title: "No cancelled appointments",
+                     message: "You haven't cancelled any appointments.",
+                     link_path: stylists_path,
+                     link_text: "Book an Appointment"
+                   } %>
+      <% end %>
+    </div>
+
+  </div>
 </div>

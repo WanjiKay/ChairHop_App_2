@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; }
+    .header { background: #198754; color: white; padding: 24px; text-align: center; }
+    .header h2 { margin: 0; }
+    .body { padding: 24px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    .detail-row:last-child { border-bottom: none; }
+    .card { border: 1px solid #dee2e6; border-radius: 6px; padding: 16px; margin: 16px 0; }
+    .refund-box { background: #d1e7dd; border: 1px solid #a3cfbb; border-radius: 6px; padding: 16px; margin: 16px 0; text-align: center; }
+    .btn { display: inline-block; background: #198754; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 16px; }
+    .footer { background: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d; margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Refund Processed</h2>
+    <p style="margin:8px 0 0; opacity:0.9;">Your deposit is on its way back</p>
+  </div>
+  <div class="body">
+    <p>Hi <%= @customer.name %>,</p>
+    <p>Your deposit refund has been processed successfully.</p>
+
+    <div class="refund-box">
+      <div style="font-size: 28px; font-weight: bold; color: #198754;">
+        <%= number_to_currency(@refund_amount) %>
+      </div>
+      <div style="color: #6c757d; font-size: 14px; margin-top: 4px;">
+        Refund to your original payment method
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="detail-row"><span>Booking #</span><strong>#<%= @appointment.id.to_s.rjust(6, "0") %></strong></div>
+      <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
+      <div class="detail-row"><span>Original Date</span><strong><%= format_datetime(@appointment.time) %></strong></div>
+      <% if @appointment.payment_id.present? %>
+        <div class="detail-row"><span>Transaction ID</span><code style="font-size:12px;"><%= @appointment.payment_id %></code></div>
+      <% end %>
+    </div>
+
+    <p style="color: #6c757d; font-size: 14px;">
+      Please allow 5&ndash;10 business days for the refund to appear on your statement.
+    </p>
+    <a href="<%= stylists_url %>" class="btn">Book Again</a>
+  </div>
+  <div class="footer">&copy; ChairHop &middot; You're receiving this because you have an account with us.</div>
+</body>
+</html>

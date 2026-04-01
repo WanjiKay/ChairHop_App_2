@@ -1,67 +1,133 @@
-<div class="container my-4">
-  <h1 class="mb-4">Available Appointments</h1>
-
-  <div class="search-bar mb-4">
-    <%= form_with url: appointments_path, method: :get, class: "d-flex gap-2" do %>
-      <%= label_tag :query, "Search", class: "visually-hidden" %>
-      <%= text_field_tag :query,
-            params[:query],
-            class: "form-control",
-            placeholder: "Search by salon, location, service, or stylist name"
-        %>
-      <%= submit_tag "Search", name: "", class: "btn btn-primary" %>
-      <% if params[:query].present? %>
-        <%= link_to "Clear", appointments_path, class: "btn btn-outline-secondary" %>
-      <% end %>
-    <% end %>
+<div class="container py-5 mt-5">
+  <div class="text-center mb-4">
+    <h1 class="fw-bold text-primary">Browse Availability</h1>
+    <p class="text-muted">Find a stylist and time that works for you</p>
   </div>
 
-  <%= render "shared/searchbar" %>
-
-  <% if params[:query].present? %>
-    <p class="text-muted mb-3">
-      Showing results for: <strong>"<%= params[:query] %>"</strong>
-      (<%= pluralize(@appointments.count, 'appointment') %> found)
-    </p>
-  <% end %>
-
-  <% if @appointments.any? %>
-    <div class="row g-3">
-      <% @appointments.each do |appointment| %>
-        <div class="col-md-6">
-          <%= link_to appointment_path(appointment), class: "text-decoration-none" do %>
-            <div class="card appointment-card">
-              <% if appointment.image.attached? %>
-                <%= cl_image_tag appointment.image.key, class: "card-img-top", alt: appointment.salon %>
-              <% else %>
-                <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
-                <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
-              <% end %>
-              <div class="card-body">
-                <h5 class="card-title"><%= appointment.salon %></h5>
-                <p class="card-text">
-                  <strong>Stylist:</strong> <%= appointment.stylist.name %><br>
-                  <strong>Location:</strong> <%= appointment.location_display %>
-                  <% if appointment.time.present? %>
-                    <br><small><%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %></small>
-                  <% end %>
-                </p>
-              </div>
-            </div>
-          <% end %>
+  <!-- Search & Filter Form -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <%= form_with url: appointments_path, method: :get, local: true do |f| %>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <%= label_tag :query, "Search", class: "form-label fw-semibold" %>
+            <%= text_field_tag :query, params[:query],
+                  class: "form-control",
+                  placeholder: "Stylist name, service, or city" %>
+          </div>
+          <div class="col-md-2">
+            <%= label_tag "search[service]", "Service", class: "form-label fw-semibold" %>
+            <%= text_field_tag "search[service]", params.dig(:search, :service),
+                  class: "form-control",
+                  placeholder: "e.g. Braids" %>
+          </div>
+          <div class="col-md-2">
+            <%= label_tag "search[date]", "Date", class: "form-label fw-semibold" %>
+            <%= date_field_tag "search[date]", params.dig(:search, :date),
+                  class: "form-control" %>
+          </div>
+          <div class="col-md-2">
+            <%= label_tag "search[location]", "Location", class: "form-label fw-semibold" %>
+            <%= text_field_tag "search[location]", params.dig(:search, :location),
+                  class: "form-control",
+                  placeholder: "City or area" %>
+          </div>
+          <div class="col-md-2 d-flex gap-2">
+            <%= submit_tag "Search", class: "btn btn-primary flex-grow-1" %>
+            <% if params[:query].present? || params[:search].present? %>
+              <%= link_to "Clear", appointments_path, class: "btn btn-outline-secondary" %>
+            <% end %>
+          </div>
         </div>
       <% end %>
     </div>
+  </div>
+
+  <% if params[:query].present? || params[:search]&.values&.any?(&:present?) %>
+    <p class="text-muted mb-3">
+      Showing filtered results
+      (<%= pluralize(@availability_blocks.count, 'block') %> found)
+    </p>
+  <% end %>
+
+  <% if @availability_blocks.any? %>
+    <%# Group by calendar date %>
+    <% @availability_blocks.group_by { |b| b.start_time.to_date }.each do |date, blocks| %>
+      <h5 class="fw-bold text-secondary mt-4 mb-3">
+        <i class="fas fa-calendar-day me-2"></i><%= date.strftime("%A, %B %-d, %Y") %>
+      </h5>
+
+      <div class="row g-3 mb-2">
+        <% blocks.each do |block| %>
+          <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                  <!-- Stylist avatar -->
+                  <% if block.stylist.avatar.attached? %>
+                    <%= image_tag url_for(block.stylist.avatar),
+                          class: "rounded-circle flex-shrink-0",
+                          style: "width:56px;height:56px;object-fit:cover;border:2px solid #4A5D4F;" %>
+                  <% else %>
+                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center flex-shrink-0"
+                         style="width:56px;height:56px;color:white;font-size:1.3rem;">
+                      <%= block.stylist.name&.first&.upcase || "S" %>
+                    </div>
+                  <% end %>
+
+                  <div>
+                    <h6 class="fw-bold mb-0"><%= block.stylist.name %></h6>
+                    <% if block.location %>
+                      <small class="text-muted">
+                        <i class="fas fa-map-marker-alt me-1"></i><%= block.location.name %>, <%= block.location.city %>
+                      </small>
+                    <% end %>
+                  </div>
+                </div>
+
+                <!-- Time window -->
+                <div class="mb-2">
+                  <i class="fas fa-clock me-1 text-primary"></i>
+                  <span class="fw-semibold">
+                    <%= block.start_time.strftime("%-I:%M %p") %> &ndash; <%= block.end_time.strftime("%-I:%M %p") %>
+                  </span>
+                </div>
+
+                <!-- Services offered -->
+                <% services = block.available_services.limit(4) %>
+                <% if services.any? %>
+                  <div class="mb-3">
+                    <% services.each do |svc| %>
+                      <span class="badge bg-light text-dark me-1 mb-1"><%= svc.name %></span>
+                    <% end %>
+                    <% if block.available_services.count > 4 %>
+                      <span class="badge bg-light text-muted">+<%= block.available_services.count - 4 %> more</span>
+                    <% end %>
+                  </div>
+                <% end %>
+
+                <%= link_to stylist_path(block.stylist, anchor: 'book'), class: "btn btn-primary btn-sm w-100" do %>
+                  <i class="fas fa-calendar-plus me-1"></i>Book with <%= block.stylist.name %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
   <% else %>
-    <div class="alert alert-info">
-      <h4>No appointments found</h4>
-      <% if params[:query].present? %>
-        <p class="mb-0">No appointments match your search for "<%= params[:query] %>". Try a different search term.</p>
+    <div class="alert alert-info text-center mt-4">
+      <i class="fas fa-calendar-times fa-2x mb-2 d-block text-muted"></i>
+      <% if params[:query].present? || params[:search]&.values&.any?(&:present?) %>
+        <p class="mb-0">No availability found matching your search — try adjusting your filters.</p>
       <% else %>
-        <p class="mb-0">There are no available appointments at this time.</p>
+        <p class="mb-0">No upcoming availability at this time. Check back soon!</p>
       <% end %>
     </div>
   <% end %>
 
-  <%= link_to "Back to Home", root_path, class: "btn btn-outline-primary mt-4" %>
+  <div class="mt-4 d-flex gap-2">
+    <%= link_to "Browse Stylists", stylists_path, class: "btn btn-outline-primary" %>
+    <%= link_to "Back to Home", root_path, class: "btn btn-outline-secondary" %>
+  </div>
 </div>

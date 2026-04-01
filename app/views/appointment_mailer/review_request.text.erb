@@ -1,0 +1,20 @@
+How was your appointment with <%= @stylist.name %>?
+
+Hi <%= @customer.name %>,
+
+Your appointment with <%= @stylist.name %> has been marked as complete. We hope it was a great experience!
+
+Appointment details:
+  Stylist:  <%= @stylist.name %>
+<% if @appointment.selected_service.present? %>
+  Service:  <%= @appointment.selected_service.split(' - $').first %>
+<% end %>
+  Date:     <%= @appointment.time.strftime("%A, %B %-d, %Y") %>
+
+Leave your review here:
+<%= new_appointment_review_url(@appointment) %>
+
+Note: You have 3 days from appointment completion to leave a review. After that the review window will close.
+
+-- ChairHop
+You're receiving this because you completed an appointment on ChairHop.

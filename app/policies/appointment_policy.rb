@@ -4,10 +4,10 @@ class AppointmentPolicy < ApplicationPolicy
     true
   end
 
-  # Only customer or stylist involved can view their appointments
+  # Anyone (including guests) can view pending appointments; parties can view their own
   def show?
-    return true if record.pending? # Anyone can view pending/available appointments
-    user_is_customer_or_stylist?
+    return true if record.pending?
+    user.present? && user_is_customer_or_stylist?
   end
 
   # Customers can book available appointments
@@ -15,13 +15,13 @@ class AppointmentPolicy < ApplicationPolicy
     user.customer? && record.pending?
   end
 
-  # Same as book - checking in is part of the booking flow
-  def check_in?
+  # Same as book - reviewing is part of the booking flow
+  def review?
     book?
   end
 
   def confirmation?
-    book?
+    user.present? && record.customer_id == user.id
   end
 
   def booked?
@@ -75,6 +75,7 @@ class AppointmentPolicy < ApplicationPolicy
   private
 
   def user_is_customer_or_stylist?
+    return false unless user
     (record.customer_id == user.id) || (record.stylist_id == user.id)
   end
 end

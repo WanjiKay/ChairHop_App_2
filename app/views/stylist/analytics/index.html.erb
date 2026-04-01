@@ -1,0 +1,252 @@
+<div class="container py-4">
+
+  <!-- Page header -->
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <%= link_to stylist_dashboard_path, class: "btn btn-outline-secondary btn-sm" do %>
+      <i class="fas fa-arrow-left me-1"></i>Dashboard
+    <% end %>
+    <h1 class="fw-bold text-primary mb-0">Earnings &amp; Analytics</h1>
+  </div>
+
+  <!-- Date range filter -->
+  <%= form_with url: stylist_analytics_path, method: :get,
+        local: true, class: "d-flex flex-wrap gap-2 align-items-end mb-4" do |f| %>
+    <div>
+      <%= f.label :from, "From", class: "form-label small fw-semibold mb-1" %>
+      <%= f.date_field :from, value: @period_start,
+            class: "form-control form-control-sm" %>
+    </div>
+    <div>
+      <%= f.label :to, "To", class: "form-label small fw-semibold mb-1" %>
+      <%= f.date_field :to, value: @period_end,
+            class: "form-control form-control-sm" %>
+    </div>
+    <%= f.submit "Apply", class: "btn btn-primary btn-sm" %>
+    <%= link_to "Last 30 days", stylist_analytics_path,
+          class: "btn btn-outline-secondary btn-sm" %>
+  <% end %>
+
+  <% if @total_appointments == 0 %>
+
+    <!-- Empty state -->
+    <div class="text-center py-5">
+      <i class="fas fa-chart-bar fa-4x text-muted mb-4" style="opacity:0.25;"></i>
+      <h4 class="text-muted">No completed appointments yet</h4>
+      <p class="text-muted">
+        Analytics will appear here once you complete your first appointment.
+      </p>
+      <%= link_to "View Appointments", stylist_appointments_path,
+            class: "btn btn-primary mt-2" %>
+    </div>
+
+  <% else %>
+
+    <!-- Summary metric cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <p class="text-muted small mb-1">Period Earned</p>
+            <h3 class="fw-bold text-success mb-0">
+              $<%= number_with_precision(@period_earned, precision: 2, delimiter: ',') %>
+            </h3>
+            <small class="text-muted">
+              <%= @period_start.strftime("%b %-d") %> –
+              <%= @period_end.strftime("%b %-d, %Y") %>
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <p class="text-muted small mb-1">Period Appointments</p>
+            <h3 class="fw-bold text-primary mb-0"><%= @period_appointments %></h3>
+            <small class="text-muted">completed this period</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <p class="text-muted small mb-1">All-Time Earned</p>
+            <h3 class="fw-bold mb-0">
+              $<%= number_with_precision(@total_earned, precision: 2, delimiter: ',') %>
+            </h3>
+            <small class="text-muted"><%= @total_appointments %> total completed</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <p class="text-muted small mb-1">Average Rating</p>
+            <% if @avg_rating %>
+              <h3 class="fw-bold mb-0">
+                <%= @avg_rating %>
+                <i class="fas fa-star text-warning" style="font-size:1.2rem;"></i>
+              </h3>
+            <% else %>
+              <h3 class="fw-bold text-muted mb-0">—</h3>
+              <small class="text-muted">No reviews yet</small>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly earnings bar chart -->
+    <% if @monthly_earnings.any? { |m| m[:earned] > 0 } %>
+      <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title fw-bold mb-4">Monthly Earnings</h5>
+          <% max_val = @monthly_earnings.map { |m| m[:earned] }.max %>
+          <% max_val = 1 if max_val == 0 %>
+          <div class="d-flex align-items-end gap-3" style="height: 180px;">
+            <% @monthly_earnings.each do |month| %>
+              <% pct = (month[:earned] / max_val * 100).round %>
+              <div class="d-flex flex-column align-items-center flex-grow-1">
+                <small class="text-muted mb-1" style="font-size:10px;">
+                  $<%= number_with_precision(month[:earned], precision: 0, delimiter: ',') %>
+                </small>
+                <div class="rounded-top w-100"
+                     style="height: <%= pct %>%;
+                            min-height: <%= month[:earned] > 0 ? '8px' : '0px' %>;
+                            background-color: <%= month[:earned] > 0 ? '#0d6efd' : '#e9ecef' %>;
+                            "></div>
+                <small class="text-muted mt-1 text-center" style="font-size:10px;">
+                  <%= month[:month] %>
+                </small>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="row g-4">
+
+      <!-- Top services -->
+      <% if @top_services.any? %>
+        <div class="col-md-5">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title fw-bold mb-3">Top Services This Period</h5>
+              <table class="table table-sm mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-muted fw-semibold">Service</th>
+                    <th class="text-muted fw-semibold text-end">Bookings</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @top_services.each do |service, count| %>
+                    <tr>
+                      <td><%= service.split(' - $').first %></td>
+                      <td class="text-end fw-semibold"><%= count %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Period stats summary -->
+      <div class="col-md-<%= @top_services.any? ? 7 : 12 %>">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title fw-bold mb-3">Period Summary</h5>
+            <div class="row g-2 text-center">
+              <div class="col-4">
+                <div class="border rounded p-3">
+                  <div class="fw-bold fs-4 text-warning"><%= @pending_count %></div>
+                  <small class="text-muted">Pending</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="border rounded p-3">
+                  <div class="fw-bold fs-4 text-danger"><%= @cancelled_count %></div>
+                  <small class="text-muted">Cancelled</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="border rounded p-3">
+                  <div class="fw-bold fs-4 text-success"><%= @period_appointments %></div>
+                  <small class="text-muted">Completed</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Recent completed appointments -->
+    <% if @recent_completed.any? %>
+      <div class="card mt-4 border-0 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title fw-bold mb-3">Recent Completed Appointments</h5>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr>
+                  <th class="text-muted fw-semibold">Customer</th>
+                  <th class="text-muted fw-semibold">Service</th>
+                  <th class="text-muted fw-semibold">Completed</th>
+                  <th class="text-muted fw-semibold text-end">Earned</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @recent_completed.each do |apt| %>
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center gap-2">
+                        <% if apt.customer&.avatar&.attached? %>
+                          <%= image_tag url_for(apt.customer.avatar),
+                                class: "rounded-circle",
+                                style: "width:32px;height:32px;object-fit:cover;" %>
+                        <% else %>
+                          <div class="rounded-circle bg-secondary d-flex align-items-center
+                                      justify-content-center text-white"
+                               style="width:32px;height:32px;font-size:0.85rem;flex-shrink:0;">
+                            <%= apt.customer&.name&.first&.upcase || "?" %>
+                          </div>
+                        <% end %>
+                        <span class="fw-semibold"><%= apt.customer&.name || "—" %></span>
+                      </div>
+                    </td>
+                    <td>
+                      <small><%= apt.selected_service&.split(' - $')&.first || "—" %></small>
+                      <% if apt.appointment_add_ons.any? %>
+                        <small class="text-muted d-block">
+                          + <%= apt.appointment_add_ons.map(&:service_name).join(', ') %>
+                        </small>
+                      <% end %>
+                    </td>
+                    <td>
+                      <small class="text-muted">
+                        <%= apt.completed_at&.strftime("%b %-d, %Y") || "—" %>
+                      </small>
+                    </td>
+                    <td class="text-end fw-semibold text-success">
+                      $<%= number_with_precision(apt.payment_amount || 0,
+                            precision: 2, delimiter: ',') %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+  <% end %>
+
+</div>

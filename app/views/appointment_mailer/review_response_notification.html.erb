@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; }
+    .header { background: #0d6efd; color: white; padding: 24px; text-align: center; }
+    .header h2 { margin: 0; }
+    .body { padding: 24px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    .detail-row:last-child { border-bottom: none; }
+    .card { border: 1px solid #dee2e6; border-radius: 6px; padding: 16px; margin: 16px 0; }
+    .review-block { background: #f8f9fa; border-radius: 6px; padding: 14px 16px; margin: 12px 0; }
+    .response-block { background: #e8f0fe; border-left: 4px solid #0d6efd; border-radius: 0 6px 6px 0; padding: 14px 16px; margin: 12px 0; }
+    .stars { color: #ffc107; font-size: 18px; letter-spacing: 2px; }
+    .btn { display: inline-block; background: #0d6efd; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 16px; }
+    .footer { background: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d; margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Response to Your Review</h2>
+    <p style="margin:8px 0 0; opacity:0.9;"><%= @stylist.name %> replied to your feedback</p>
+  </div>
+  <div class="body">
+    <p>Hi <%= @customer.name %>,</p>
+    <p><strong><%= @stylist.name %></strong> has responded to the review you left for your appointment on <%= @appointment.time.strftime("%B %-d, %Y") %>.</p>
+
+    <p style="font-weight:600; margin-bottom:4px;">Your review:</p>
+    <div class="review-block">
+      <div class="stars">
+        <%= "★" * @review.rating %><%= "☆" * (5 - @review.rating) %>
+      </div>
+      <p style="margin: 8px 0 0; font-size: 14px;"><%= @review.content %></p>
+    </div>
+
+    <p style="font-weight:600; margin-bottom:4px;"><%= @stylist.name %>'s response:</p>
+    <div class="response-block">
+      <p style="margin: 0; font-size: 14px;"><%= @review.stylist_response %></p>
+    </div>
+
+    <div class="card">
+      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.name %></strong></div>
+      <div class="detail-row"><span>Appointment</span><strong><%= @appointment.time.strftime("%B %-d, %Y at %I:%M %p") %></strong></div>
+      <% if @appointment.selected_service.present? %>
+        <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
+      <% end %>
+    </div>
+
+    <a href="<%= appointment_url(@appointment) %>" class="btn">View Appointment</a>
+  </div>
+  <div class="footer">&copy; ChairHop &middot; You're receiving this because you have an account with us.</div>
+</body>
+</html>
