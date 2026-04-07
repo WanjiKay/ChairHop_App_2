@@ -1,79 +1,68 @@
-.hopps-wrapper {
-  position: absolute !important;
-  top: 50% !important;
-  right: 20px !important;
-  transform: translateY(-50%) !important;
-  z-index: 3000 !important;
-  text-align: center !important;
-}
+// ================================================
+//  buttons.scss – ChairHop button styles
+// ================================================
 
-/* THE CIRCLE BUTTON */
-.hopps-btn {
-  width: 60px !important;
-  height: 60px !important;
+// Base button styles for navbar
+.chairhop-navbar__cta {
+  font-family: $body-font;
+  font-weight: $weight-semi;
+  font-size: $font-size-cta;
+  letter-spacing: $tracking-cta;
+  text-transform: uppercase;
+  padding: 10px 28px;
+  border: none;
+  border-radius: 30px;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.15s ease;
 
-  min-width: 60px !important;
-  min-height: 60px !important;
-  max-width: 60px !important;
-  max-height: 60px !important;
-
-  padding: 0 !important;
-  margin: 0 !important;
-  border: none !important;
-  border-radius: 50% !important;
-  overflow: hidden !important;
-
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-
-  background: #0dcaf0 !important;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
-  cursor: pointer !important;
-  text-decoration: none !important;
-  color: white !important;
-  font-weight: 600 !important;
-}
-
-/* TEXT UNDER BUTTON */
-.hopps-label {
-  margin-top: 6px !important;
-  font-size: 0.8rem !important;
-  color: #333 !important;
-  font-weight: 600 !important;
-}
-
-/* hover effect */
-.hopps-btn:hover {
-  transform: scale(1.08);
-}
-
-/* ----------------------------------
-   PHONE OPTIMIZATION (max-width: 480px)
-   ---------------------------------- */
-@media (max-width: 480px) {
-
-  .hopps-wrapper {
-    top: auto !important;
-    bottom: 20px !important;
-    right: 15px !important;
-    transform: none !important;   // cleaner on phone
+  &:hover {
+    transform: scale(1.04);
   }
 
-  .hopps-btn {
-    width: 48px !important;
-    height: 48px !important;
-    min-width: 48px !important;
-    min-height: 48px !important;
-    max-width: 48px !important;
-    max-height: 48px !important;
-
-    box-shadow: 0 3px 6px rgba(0,0,0,0.18) !important;
-    font-size: 0.85rem !important;
+  &:active {
+    transform: scale(0.97);
   }
+}
 
-  .hopps-label {
-    margin-top: 4px !important;
-    font-size: 0.7rem !important;
+// ── Hopps button (brown) ─────────────────────────
+.chairhop-navbar__cta--hopps {
+  background-color: $color-brown-btn;
+  color: $color-white;
+
+  &:hover {
+    background-color: darken($color-brown-btn, 10%);
+    color: $color-white;
+  }
+}
+
+// ── Book Now button (green) ─────────────────────
+.chairhop-navbar__cta--book-now {
+  background-color: #28a745; // green
+  color: $color-white;
+
+  &:hover {
+    background-color: darken(#28a745, 8%);
+    color: $color-white;
+  }
+}
+
+// ── Sign In / Sign Up buttons (brown style) ─────
+.chairhop-navbar__cta--auth {
+  background-color: $color-brown-btn;
+  color: $color-white;
+
+  &:hover {
+    background-color: darken($color-brown-btn, 10%);
+    color: $color-white;
+  }
+}
+
+// ── Responsive adjustments ───────────────────────
+@include respond-tablet {
+  .chairhop-navbar__cta {
+    font-size: $font-size-cta-sm;
+    padding: 8px 18px;
   }
 }

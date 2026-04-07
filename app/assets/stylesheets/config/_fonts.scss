@@ -1,16 +1,7 @@
-// Import Google fonts
-@import url('https://fonts.googleapis.com/css2?family=Genos:ital,wght@0,100..900;1,100..900&family=Special+Elite&display=swap');
+// ─── Fonts ───────────────────────────────────────
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
 
-// Define fonts for body and headers
-$body-font: "Genos", "sans-serif";
-$headers-font: "Special Elite", "system-ui";
 
-// To use a font file (.woff) uncomment following lines
-// @font-face {
-//   font-family: "Font Name";
-//   src: font-url('FontFile.eot');
-//   src: font-url('FontFile.eot?#iefix') format('embedded-opentype'),
-//        font-url('FontFile.woff') format('woff'),
-//        font-url('FontFile.ttf') format('truetype')
-// }
-// $my-font: "Font Name";
+$font-display:  'Playfair Display', serif;
+$body-font:     'DM Sans', sans-serif;
+$headers-font:  $font-display;
