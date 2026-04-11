@@ -44,6 +44,19 @@ header,
   width: 42px;
 }
 
+.chairhop-navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chairhop-navbar__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
 .chairhop-navbar__brand {
   text-decoration: none;
   background: none;
@@ -217,5 +230,6 @@ body {
 }
 
 .main-content {
-  margin-top: 50px;
+  margin-top: 90px;
+  margin-bottom: 20px;
 }

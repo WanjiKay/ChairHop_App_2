@@ -1,4 +1,6 @@
 module ApplicationHelper
+  DEFAULT_AVATAR_URL = "https://res.cloudinary.com/dxxsqdiay/image/upload/v1775931118/ChairHop_Icon_Light_FIXED_ieefrl.png".freeze
+
   def markdown_to_html(text)
     return "" if text.blank?
 

@@ -28,7 +28,7 @@
                 <% if conversation.stylist.avatar.attached? %>
                   <%= image_tag conversation.stylist.avatar, class: "ai-avatar-img rounded-circle", alt: conversation.stylist.name %>
                 <% else %>
-                  <%= image_tag "profile.png", class: "ai-avatar-img rounded-circle", alt: conversation.stylist.name %>
+                  <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "ai-avatar-img rounded-circle", alt: conversation.stylist.name %>
                 <% end %>
               </div>
               <div class="message-content">
@@ -94,7 +94,7 @@
                 <% if conversation.customer.avatar.attached? %>
                   <%= image_tag conversation.customer.avatar, class: "ai-avatar-img rounded-circle", alt: conversation.customer.name %>
                 <% else %>
-                  <%= image_tag "profile.png", class: "ai-avatar-img rounded-circle", alt: conversation.customer.name %>
+                  <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "ai-avatar-img rounded-circle", alt: conversation.customer.name %>
                 <% end %>
               </div>
               <div class="message-content">

@@ -1,6 +1,6 @@
 <% content_for :meta_title, "#{@stylist.name}" %>
 <% content_for :meta_description, @stylist.about.presence || "Professional stylist on ChairHop" %>
-<% content_for :meta_image, @stylist.avatar.attached? ? url_for(@stylist.avatar) : asset_path("profile.png") %>
+<% content_for :meta_image, @stylist.avatar.attached? ? url_for(@stylist.avatar) : ApplicationHelper::DEFAULT_AVATAR_URL %>
 
 <div class="container py-5">
   <div class="row justify-content-center">
@@ -15,7 +15,7 @@
             <% if @stylist.avatar.attached? %>
               <%= image_tag url_for(@stylist.avatar), class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" %>
             <% else %>
-              <%= image_tag "profile.png", class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F;" %>
+              <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F;" %>
             <% end %>
           </div>
 

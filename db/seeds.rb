@@ -1,3 +1,5 @@
+require 'open-uri'
+
 puts "Seeding ChairHop database..."
 
 # ============================================================
@@ -103,6 +105,15 @@ ActiveRecord::Base.transaction do
     about:                   "Loctician and natural hair artist with 10 years of experience in starter locs, retwists, and loc maintenance. I take a holistic approach to hair care and guide clients through every stage of their loc journey."
   )
 
+  puts "  Attaching avatars to stylists..."
+  default_avatar_url = ApplicationHelper::DEFAULT_AVATAR_URL
+  [maya, derek, sofia, jordan, aaliyah, marcus, priya, claire].each do |stylist|
+    stylist.avatar.attach(
+      io: URI.open(default_avatar_url),
+      filename: "avatar.png",
+      content_type: "image/png"
+    )
+  end
   puts "  Done."
 
   # ============================================================

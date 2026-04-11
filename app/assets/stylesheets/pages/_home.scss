@@ -8,13 +8,29 @@ body{
 .appointment-details-page {
   background-color: #f0efeb;
   min-height: 100vh;
+  padding: 0 1.5rem 1.5rem;
+
+  > section,
+  > div {
+    margin-bottom: 2rem;
+  }
 }
 
 //Hero Section
 .hero-section {
   position: relative;
-  height: 150px;
+  height: 180px;
   overflow: hidden;
+  padding-top: 1.5rem;
+  background-color: $color-cream;
+
+  .hero-image-wrapper {
+    position: absolute;
+    top: 1.5rem;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 1.5rem);
+  }
 
   .hero-image {
     width: 100%;
@@ -38,7 +54,7 @@ body{
 
   .hero-title {
     position: absolute;
-    top: 50%;
+    top: calc(50% + 0.75rem);
     left: 50%;
     transform: translate(-50%, -50%);
     font-family: $headers-font;
@@ -51,6 +67,15 @@ body{
     color: $color-brown-deep;
     font-weight: 500;
     z-index: 2;
+  }
+
+  .hero-cta {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    white-space: nowrap;
   }
 }
 
@@ -207,6 +232,10 @@ h3 {
 }
 
 @media (max-width: 768px) {
+  .hero-section {
+    height: 240px;
+  }
+
   .home-page,
   .results-page,
   .appointment-details-page {

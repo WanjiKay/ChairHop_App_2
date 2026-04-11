@@ -9,7 +9,6 @@
     <h1 class="hero-title">Our chairs are always open</h1>
 
     <div class="hero-cta mt-3 d-flex gap-2 justify-content-center">
-      <%= link_to "Find a Stylist", stylists_path, class: "btn btn-primary btn-lg" %>
       <% unless user_signed_in? %>
         <%= link_to "Sign In", new_user_session_path, class: "btn btn-outline-light btn-lg" %>
         <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-outline-light btn-lg" %>
@@ -30,7 +29,7 @@
   </div>
 
   <!-- USER APPOINTMENTS LINK -->
-  <% if defined?(user_signed_in?) && user_signed_in? %>
+  <% if defined?(user_signed_in?) && user_signed_in? && current_user.customer? %>
     <div class="mb-3 text-start">
       <%= link_to my_appointments_path, class: "btn btn-primary" do %>
         My Appointments

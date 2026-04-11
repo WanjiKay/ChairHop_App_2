@@ -10,9 +10,6 @@
     <div class="chairhop-navbar__links">
 
       <% if user_signed_in? %>
-        <!-- Hopps button -->
-        <%= link_to "Hopps", new_chat_path, class: "chairhop-navbar__cta chairhop-navbar__cta--hopps" %>
-
         <%= link_to "Hopps", new_chat_path, class: "btn btn-info btn-hopps" %>
 
         <div class="dropdown">
@@ -28,7 +25,7 @@
             <% if current_user&.avatar&.attached? %>
               <%= image_tag url_for(current_user.avatar), class: "avatar-img", alt: "User menu" %>
             <% else %>
-              <%= image_tag "profile.png", class: "avatar-img", alt: "User menu" %>
+              <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "avatar-img", alt: "User menu" %>
             <% end %>
           </a>
 
@@ -37,6 +34,9 @@
             <li><span class="dropdown-item-text text-muted" style="font-size: 0.8rem; margin-top: -0.5rem;"><%= current_user.email %></span></li>
             <li><hr class="dropdown-divider"></li>
             <li><%= link_to "Profile", profile_path(edit: 1), class: "dropdown-item" %></li>
+            <% if current_user.stylist? %>
+              <li><%= link_to "Dashboard", stylist_dashboard_path, class: "dropdown-item" %></li>
+            <% end %>
             <li><%= link_to "Settings", edit_user_registration_path, class: "dropdown-item" %></li>
             <li><%= link_to "Chats", chats_path, class: "dropdown-item" %></li>
             <li><%= link_to "Conversations", conversations_path, class: "dropdown-item" %></li>
