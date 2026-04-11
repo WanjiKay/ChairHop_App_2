@@ -4,3 +4,4 @@
 //= link popper.js
 //= link bootstrap.min.js
 //= link icons/manifest.json
+//= link application.js

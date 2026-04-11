@@ -23,7 +23,7 @@
     align-items: center;
 
     padding: 1.75rem 1.5rem;
-    background: linear-gradient(145deg, lighten($color-muted-olive, 10%), $color-muted-olive);
+    background: linear-gradient(145deg, lighten($color-brown-deep, 10%), $color-brown-deep);
     border: 1px solid rgba($color-soft-gray, 0.5);
     border-radius: 16px;
 
@@ -43,7 +43,7 @@
     }
 
     small {
-      color: darken($color-muted-olive, 15%);
+      color: darken($color-brown-deep, 15%);
       font-weight: 600;
     }
   }
@@ -77,7 +77,7 @@
     &:hover {
       transform: none;
       box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
-      background: linear-gradient(145deg, lighten($color-muted-olive, 10%), $color-muted-olive);
+      background: linear-gradient(145deg, lighten($color-brown-deep, 10%), $color-brown-deep);
     }
   }
 }

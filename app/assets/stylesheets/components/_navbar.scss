@@ -14,15 +14,15 @@ header,
 }
 
 
-.navbar-lewagon {
+.chairhop-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1.5rem;
 
-  background: $primary;
+  background: $color-cream;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  border-bottom: 2px solid lighten($primary, 10%);
+  border-bottom: 2px solid lighten($color-cream, 1%);
 
   position: fixed;
   top: 0;
@@ -34,7 +34,7 @@ header,
 }
 
 
-.navbar-lewagon.sticky-top {
+.chairhop-navbar.sticky-top {
   top: 0 !important;
   margin-top: 0 !important;
   border-top: none !important;
@@ -44,12 +44,33 @@ header,
   width: 42px;
 }
 
-.navbar-lewagon .navbar-brand img {
-  width: 42px;
-  border-radius: 6px;
+.chairhop-navbar__brand {
+  text-decoration: none;
+  background: none;
+  border: none;
+
+  color: $primary;
+  font-family: $headers-font;
+  font-size: 1.5rem;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  letter-spacing: none;
+  line-height: 1;
+
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:focus {
+    outline: none;
+  }
 }
 
-.navbar-lewagon .nav-link {
+.chairhop-navbar .nav-link {
   color: $color-cream;
   font-weight: 500;
   margin: 0 0.5rem;
@@ -61,7 +82,7 @@ header,
   }
 }
 
-.navbar-lewagon .dropdown-menu {
+.chairhop-navbar .dropdown-menu {
   background-color: $color-cream;
   border: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
@@ -76,7 +97,7 @@ header,
   }
 }
 
-.navbar-lewagon .btn-login {
+.chairhop-navbar .btn-login {
   background-color: transparent;
   color: $color-cream;
   border: 1.5px solid $color-cream;
@@ -165,7 +186,7 @@ header,
 }
 
 @media (max-width: 768px) {
-  .navbar-lewagon {
+  .chairhop-navbar {
     left: 0;
     right: 0;
     z-index: 9999;
@@ -177,7 +198,7 @@ header,
     font-size: 13px;
   }
 
-  .navbar-lewagon .dropdown-menu {
+  .chairhop-navbar .dropdown-menu {
     position: absolute;
     right: 0;
     left: auto;

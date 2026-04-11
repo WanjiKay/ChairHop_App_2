@@ -1,16 +1,7 @@
-// Import Google fonts
-@import url('https://fonts.googleapis.com/css2?family=Genos:ital,wght@0,100..900;1,100..900&family=Special+Elite&display=swap');
+// ─── Fonts ───────────────────────────────────────
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,100..1000;1,100..1000&family=Ultra&display=swap');
 
-// Define fonts for body and headers
-$body-font: "Genos", "sans-serif";
-$headers-font: "Special Elite", "system-ui";
-
-// To use a font file (.woff) uncomment following lines
-// @font-face {
-//   font-family: "Font Name";
-//   src: font-url('FontFile.eot');
-//   src: font-url('FontFile.eot?#iefix') format('embedded-opentype'),
-//        font-url('FontFile.woff') format('woff'),
-//        font-url('FontFile.ttf') format('truetype')
-// }
-// $my-font: "Font Name";
+// Font variables
+$font-display: 'Ultra', serif;   // for "ChairHop" logo
+$body-font: 'DM Sans', sans-serif;
+$headers-font: $font-display;

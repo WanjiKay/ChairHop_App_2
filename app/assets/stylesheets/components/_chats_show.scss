@@ -72,7 +72,7 @@
     width: 45px;
     height: 45px;
     object-fit: cover;
-    border: 2px solid $color-muted-olive;
+    border: 2px solid $color-brown-deep;
   }
 }
 
@@ -93,7 +93,7 @@
 
 .conversation-preview {
   font-size: 0.85rem;
-  color: $color-muted-olive;
+  color: $color-brown-deep;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -125,7 +125,7 @@
   }
 
   small {
-    color: $color-muted-olive;
+    color: $color-brown-deep;
     font-weight: 600;
   }
 }
@@ -134,7 +134,7 @@
   width: 50px;
   height: 50px;
   object-fit: cover;
-  border: 2px solid $color-muted-olive;
+  border: 2px solid $color-brown-deep;
 }
 
 // Messages Container - matching _messages.scss
@@ -160,7 +160,7 @@
 }
 
 .empty-state-icon {
-  color: $color-muted-olive;
+  color: $color-brown-deep;
   opacity: 0.5;
   margin-bottom: 1.5rem;
 }
@@ -281,7 +281,7 @@
   }
 
   .upload-btn {
-    color: $color-muted-olive;
+    color: $color-brown-deep;
     font-size: 1.5rem;
     padding: 0.5rem;
 
@@ -333,7 +333,7 @@
     height: auto;
     object-fit: contain;
     border-radius: $border-radius-lg;
-    border: 2px solid $color-muted-olive;
+    border: 2px solid $color-brown-deep;
   }
 
   .remove-image {
