@@ -1,11 +1,18 @@
 puts "Seeding ChairHop database..."
 
-ActiveRecord::Base.transaction do
+# ============================================================
+# HELPERS
+# ============================================================
 
+def fmt_svc(service)
+  "#{service.name} - $#{'%.2f' % service.price}"
+end
+
+ActiveRecord::Base.transaction do
   # ============================================================
   # CLEANUP (FK-safe order — children before parents)
   # ============================================================
-  puts "Clearing existing data..."
+  puts "  Clearing existing data..."
   ConversationMessage.destroy_all
   Conversation.destroy_all
   Message.destroy_all
@@ -20,48 +27,48 @@ ActiveRecord::Base.transaction do
   puts "  Done."
 
   # ============================================================
-  # STYLISTS (10)
+  # STYLISTS (8)
   # ============================================================
-  puts "Creating stylists..."
+  puts "  Creating stylists..."
 
   maya = User.create!(
-    email:                   "maya.johnson@example.com",
+    email:                   "maya@example.com",
     password:                "password123",
     name:                    "Maya Johnson",
     role:                    :stylist,
     onboarding_completed_at: Time.current,
-    about:                   "Natural hair specialist with 9 years of experience in silk presses, protective styles, and scalp health. I celebrate the beauty and versatility of textured hair and help every client leave feeling confident and cared for."
+    about:                   "Natural hair specialist with 9 years of experience in silk presses, protective styles, and scalp care. I celebrate the versatility of textured hair and help every client leave feeling confident and cared for."
   )
 
   derek = User.create!(
-    email:                   "derek.kim@example.com",
+    email:                   "derek@example.com",
     password:                "password123",
     name:                    "Derek Kim",
     role:                    :stylist,
     onboarding_completed_at: Time.current,
-    about:                   "Precision barber with 11 years of experience in fades, tapers, beard sculpting, and classic barbering. Known for clean lines, consistent results, and a relaxed chair-side manner that keeps clients coming back."
+    about:                   "Precision barber with 11 years of experience in fades, tapers, and beard sculpting. Known for clean lines, consistent results, and a relaxed chair-side manner that keeps clients coming back."
   )
 
   sofia = User.create!(
-    email:                   "sofia.rivera@example.com",
+    email:                   "sofia@example.com",
     password:                "password123",
     name:                    "Sofia Rivera",
     role:                    :stylist,
     onboarding_completed_at: Time.current,
-    about:                   "Color specialist with 7 years of experience in balayage, highlights, and full-color transformations. I use premium, low-damage products to create stunning, long-lasting results tailored to each client's vision."
+    about:                   "Color specialist with 7 years of experience in balayage, highlights, and full-color transformations. I use premium, low-damage products to create stunning results tailored to each client's vision."
   )
 
   jordan = User.create!(
-    email:                   "jordan.hayes@example.com",
+    email:                   "jordan@example.com",
     password:                "password123",
     name:                    "Jordan Hayes",
     role:                    :stylist,
     onboarding_completed_at: Time.current,
-    about:                   "Curl specialist and DevaCurl-certified stylist with 6 years helping clients embrace their natural texture. I specialize in curly cuts, co-wash routines, and building personalized care plans for every curl pattern."
+    about:                   "Curl specialist and DevaCurl-certified stylist with 6 years helping clients embrace their natural texture. I specialize in curly cuts and building personalized care plans for every curl pattern."
   )
 
   aaliyah = User.create!(
-    email:                   "aaliyah.brooks@example.com",
+    email:                   "aaliyah@example.com",
     password:                "password123",
     name:                    "Aaliyah Brooks",
     role:                    :stylist,
@@ -69,8 +76,8 @@ ActiveRecord::Base.transaction do
     about:                   "Licensed cosmetologist specializing in bridal and special-occasion styling. With 8 years of experience in updos, blowouts, and editorial looks, I make sure every client feels camera-ready for their biggest moments."
   )
 
-  marcus_s = User.create!(
-    email:                   "marcus.dupont@example.com",
+  marcus = User.create!(
+    email:                   "marcus@example.com",
     password:                "password123",
     name:                    "Marcus Dupont",
     role:                    :stylist,
@@ -78,8 +85,8 @@ ActiveRecord::Base.transaction do
     about:                   "Master barber with 14 years of craft behind the chair, specializing in high-top fades, lineups, and hot towel shaves. My shop is a community space where every client gets top-tier service and genuine conversation."
   )
 
-  priya_s = User.create!(
-    email:                   "priya.menon@example.com",
+  priya = User.create!(
+    email:                   "priya@example.com",
     password:                "password123",
     name:                    "Priya Menon",
     role:                    :stylist,
@@ -88,1592 +95,805 @@ ActiveRecord::Base.transaction do
   )
 
   claire = User.create!(
-    email:                   "claire.osei@example.com",
+    email:                   "claire@example.com",
     password:                "password123",
     name:                    "Claire Osei",
     role:                    :stylist,
     onboarding_completed_at: Time.current,
-    about:                   "Loctician and natural hair artist with 10 years of experience in starter locs, retwists, and loc maintenance. I take a holistic approach to hair care and guide clients through every stage of their loc journey with patience and expertise."
+    about:                   "Loctician and natural hair artist with 10 years of experience in starter locs, retwists, and loc maintenance. I take a holistic approach to hair care and guide clients through every stage of their loc journey."
   )
 
-  ben = User.create!(
-    email:                   "ben.nakamura@example.com",
-    password:                "password123",
-    name:                    "Ben Nakamura",
-    role:                    :stylist,
-    onboarding_completed_at: Time.current,
-    about:                   "Freelance stylist and texture specialist with 6 years in both salon and editorial settings. I focus on precision cuts, Japanese straightening, and lived-in color that works with your natural hair rather than against it."
-  )
-
-  taylor = User.create!(
-    email:                   "taylor.west@example.com",
-    password:                "password123",
-    name:                    "Taylor West",
-    role:                    :stylist,
-    onboarding_completed_at: Time.current,
-    about:                   "Scalp health advocate and trichology-trained stylist with 8 years helping clients restore hair density and shine. I combine science-backed treatments with personalized consultation to get your hair and scalp thriving again."
-  )
-
-  stylists = [maya, derek, sofia, jordan, aaliyah, marcus_s, priya_s, claire, ben, taylor]
-  puts "  Created #{User.stylist.count} stylists."
+  puts "  Done."
 
   # ============================================================
-  # CUSTOMERS (20)
+  # CUSTOMERS (10)
   # ============================================================
-  puts "Creating customers..."
+  puts "  Creating customers..."
 
-  emma      = User.create!(email: "emma.wilson@example.com",    password: "password123", name: "Emma Wilson",      role: :customer)
-  james     = User.create!(email: "james.carter@example.com",   password: "password123", name: "James Carter",     role: :customer)
-  olivia    = User.create!(email: "olivia.chen@example.com",    password: "password123", name: "Olivia Chen",      role: :customer)
-  tyler     = User.create!(email: "tyler.brooks@example.com",   password: "password123", name: "Tyler Brooks",     role: :customer)
-  zoe       = User.create!(email: "zoe.williams@example.com",   password: "password123", name: "Zoe Williams",     role: :customer)
-  marcus_c  = User.create!(email: "marcus.lee@example.com",     password: "password123", name: "Marcus Lee",       role: :customer)
-  priya_c   = User.create!(email: "priya.patel@example.com",    password: "password123", name: "Priya Patel",      role: :customer)
-  daniel    = User.create!(email: "daniel.nguyen@example.com",  password: "password123", name: "Daniel Nguyen",    role: :customer)
-  aisha     = User.create!(email: "aisha.grant@example.com",    password: "password123", name: "Aisha Grant",      role: :customer)
-  leo       = User.create!(email: "leo.santos@example.com",     password: "password123", name: "Leo Santos",       role: :customer)
-  nina      = User.create!(email: "nina.park@example.com",      password: "password123", name: "Nina Park",        role: :customer)
-  caleb     = User.create!(email: "caleb.moore@example.com",    password: "password123", name: "Caleb Moore",      role: :customer)
-  simone    = User.create!(email: "simone.baker@example.com",   password: "password123", name: "Simone Baker",     role: :customer)
-  ryan      = User.create!(email: "ryan.thomas@example.com",    password: "password123", name: "Ryan Thomas",      role: :customer)
-  jasmine   = User.create!(email: "jasmine.ford@example.com",   password: "password123", name: "Jasmine Ford",     role: :customer)
-  evan      = User.create!(email: "evan.clark@example.com",     password: "password123", name: "Evan Clark",       role: :customer)
-  destiny   = User.create!(email: "destiny.hall@example.com",   password: "password123", name: "Destiny Hall",     role: :customer)
-  miguel    = User.create!(email: "miguel.reyes@example.com",   password: "password123", name: "Miguel Reyes",     role: :customer)
-  hannah    = User.create!(email: "hannah.scott@example.com",   password: "password123", name: "Hannah Scott",     role: :customer)
-  andre     = User.create!(email: "andre.white@example.com",    password: "password123", name: "Andre White",      role: :customer)
+  emma   = User.create!(email: "emma@example.com",   password: "password123", name: "Emma Wilson",  role: :customer)
+  james  = User.create!(email: "james@example.com",  password: "password123", name: "James Carter", role: :customer)
+  olivia = User.create!(email: "olivia@example.com", password: "password123", name: "Olivia Chen",  role: :customer)
+  tyler  = User.create!(email: "tyler@example.com",  password: "password123", name: "Tyler Brooks", role: :customer)
+  zoe    = User.create!(email: "zoe@example.com",    password: "password123", name: "Zoe Williams", role: :customer)
+  aisha  = User.create!(email: "aisha@example.com",  password: "password123", name: "Aisha Grant",  role: :customer)
+  leo    = User.create!(email: "leo@example.com",    password: "password123", name: "Leo Santos",   role: :customer)
+  nina   = User.create!(email: "nina@example.com",   password: "password123", name: "Nina Park",    role: :customer)
+  caleb  = User.create!(email: "caleb@example.com",  password: "password123", name: "Caleb Moore",  role: :customer)
+  simone = User.create!(email: "simone@example.com", password: "password123", name: "Simone Baker", role: :customer)
 
-  customers = [emma, james, olivia, tyler, zoe, marcus_c, priya_c, daniel, aisha, leo,
-               nina, caleb, simone, ryan, jasmine, evan, destiny, miguel, hannah, andre]
-  puts "  Created #{User.customer.count} customers."
+  puts "  Done."
 
   # ============================================================
-  # LOCATIONS (1-2 per stylist)
+  # LOCATIONS (1 per stylist)
   # ============================================================
-  puts "Creating locations..."
+  puts "  Creating locations..."
 
-  # Maya Johnson — San Francisco, CA — home studio + rented chair
-  maya_loc1 = Location.create!(
-    user:           maya,
-    name:           "Glow Studio",
-    street_address: "1842 Fillmore St",
-    city:           "San Francisco",
-    state:          "CA",
-    zip_code:       "94115"
-  )
-  maya_loc2 = Location.create!(
-    user:           maya,
-    name:           "The Chair at Salon Muse",
-    street_address: "3390 18th St",
-    city:           "San Francisco",
-    state:          "CA",
-    zip_code:       "94110"
-  )
+  maya_loc    = maya.locations.create!(    name: "Maya's Studio",            street_address: "1214 Fillmore St",       city: "San Francisco", state: "CA", zip_code: "94115")
+  derek_loc   = derek.locations.create!(   name: "Derek's Barbershop",       street_address: "456 Atlantic Ave",       city: "Brooklyn",      state: "NY", zip_code: "11217")
+  sofia_loc   = sofia.locations.create!(   name: "Sofia Color Studio",       street_address: "789 South Congress Ave", city: "Austin",        state: "TX", zip_code: "78704")
+  jordan_loc  = jordan.locations.create!(  name: "Curl Lab ATL",             street_address: "321 Auburn Ave NE",      city: "Atlanta",       state: "GA", zip_code: "30312")
+  aaliyah_loc = aaliyah.locations.create!( name: "Aaliyah's Salon Suite",    street_address: "55 W Wacker Dr",         city: "Chicago",       state: "IL", zip_code: "60601")
+  marcus_loc  = marcus.locations.create!(  name: "Dupont's Barbershop",      street_address: "900 Magazine St",        city: "New Orleans",   state: "LA", zip_code: "70130")
+  priya_loc   = priya.locations.create!(   name: "Priya's Extension Bar",    street_address: "6420 Wilshire Blvd",     city: "Los Angeles",   state: "CA", zip_code: "90048")
+  claire_loc  = claire.locations.create!(  name: "Claire's Loc Studio",      street_address: "1400 U Street NW",       city: "Washington",    state: "DC", zip_code: "20009")
 
-  # Derek Kim — Brooklyn, NY — salon suite
-  derek_loc = Location.create!(
-    user:           derek,
-    name:           "Sharp Cuts Suite",
-    street_address: "456 Bedford Ave",
-    city:           "Brooklyn",
-    state:          "NY",
-    zip_code:       "11211"
-  )
-
-  # Sofia Rivera — Austin, TX — color bar (salon suite)
-  sofia_loc = Location.create!(
-    user:           sofia,
-    name:           "Chic Color Bar",
-    street_address: "2104 S Lamar Blvd",
-    city:           "Austin",
-    state:          "TX",
-    zip_code:       "78704"
-  )
-
-  # Jordan Hayes — Atlanta, GA — home studio + mobile
-  jordan_loc1 = Location.create!(
-    user:           jordan,
-    name:           "Curl Haus Studio",
-    street_address: "741 Ralph McGill Blvd NE",
-    city:           "Atlanta",
-    state:          "GA",
-    zip_code:       "30312"
-  )
-  jordan_loc2 = Location.create!(
-    user:           jordan,
-    name:           "Mobile — Atlanta Metro",
-    street_address: "600 Peachtree St NE",
-    city:           "Atlanta",
-    state:          "GA",
-    zip_code:       "30308"
-  )
-
-  # Aaliyah Brooks — Chicago, IL — rented chair in bridal salon
-  aaliyah_loc = Location.create!(
-    user:           aaliyah,
-    name:           "Blanc Bridal Salon",
-    street_address: "875 N Michigan Ave",
-    city:           "Chicago",
-    state:          "IL",
-    zip_code:       "60611"
-  )
-
-  # Marcus Dupont — New Orleans, LA — barbershop (owns)
-  marcus_s_loc = Location.create!(
-    user:           marcus_s,
-    name:           "Uptown Fade Barbershop",
-    street_address: "4523 Magazine St",
-    city:           "New Orleans",
-    state:          "LA",
-    zip_code:       "70115"
-  )
-
-  # Priya Menon — Los Angeles, CA — salon suite + mobile
-  priya_s_loc1 = Location.create!(
-    user:           priya_s,
-    name:           "Luxe Extensions Studio",
-    street_address: "8310 W 3rd St",
-    city:           "Los Angeles",
-    state:          "CA",
-    zip_code:       "90048"
-  )
-  priya_s_loc2 = Location.create!(
-    user:           priya_s,
-    name:           "Mobile — Greater LA",
-    street_address: "6801 Hollywood Blvd",
-    city:           "Los Angeles",
-    state:          "CA",
-    zip_code:       "90028"
-  )
-
-  # Claire Osei — Washington, DC — home studio
-  claire_loc = Location.create!(
-    user:           claire,
-    name:           "Roots & Coils Home Studio",
-    street_address: "1247 U St NW",
-    city:           "Washington",
-    state:          "DC",
-    zip_code:       "20009"
-  )
-
-  # Ben Nakamura — Seattle, WA — rented chair in indie salon
-  ben_loc = Location.create!(
-    user:           ben,
-    name:           "Chair at Kinfolk Salon",
-    street_address: "314 E Pike St",
-    city:           "Seattle",
-    state:          "WA",
-    zip_code:       "98122"
-  )
-
-  # Taylor West — Miami, FL — wellness salon suite + second location
-  taylor_loc1 = Location.create!(
-    user:           taylor,
-    name:           "Scalp & Strand Studio",
-    street_address: "1111 Lincoln Rd",
-    city:           "Miami Beach",
-    state:          "FL",
-    zip_code:       "33139"
-  )
-  taylor_loc2 = Location.create!(
-    user:           taylor,
-    name:           "Wynwood Wellness Suite",
-    street_address: "2750 NW 3rd Ave",
-    city:           "Miami",
-    state:          "FL",
-    zip_code:       "33127"
-  )
-
-  puts "  Created #{Location.count} locations."
+  puts "  Done."
 
   # ============================================================
-  # SERVICES (5-8 per stylist, price in dollars via price= setter)
+  # SERVICES
+  # Main services + 2 add-ons per stylist.
+  # price= setter accepts dollars, stored as price_cents (integer cents).
   # ============================================================
-  puts "Creating services..."
+  puts "  Creating services..."
 
-  # --- Maya Johnson — natural hair (San Francisco) ---
-  maya_silk_press    = Service.create!(stylist: maya, name: "Silk Press",                  price: 65,  duration_minutes: 75,  is_add_on: false, description: "Silky straight finish for natural hair using low-heat pressing technique.")
-  maya_braids        = Service.create!(stylist: maya, name: "Protective Braids",           price: 120, duration_minutes: 180, is_add_on: false, description: "Knotless box braids or twist variations in any length.")
-  maya_wash_go       = Service.create!(stylist: maya, name: "Wash & Go",                   price: 70,  duration_minutes: 90,  is_add_on: false, description: "Clarifying wash, deep condition, and curl definition for natural hair.")
-  maya_consultation  = Service.create!(stylist: maya, name: "Hair Health Consultation",    price: 40,  duration_minutes: 45,  is_add_on: false, description: "One-on-one session for hair routine, scalp health, and product guidance.")
-  maya_big_chop      = Service.create!(stylist: maya, name: "Big Chop",                    price: 55,  duration_minutes: 60,  is_add_on: false, description: "Transitioning cut to fully natural hair with a customized shape.")
-                       Service.create!(stylist: maya, name: "Deep Conditioning Treatment", price: 20,  duration_minutes: 20,  is_add_on: true,  description: "Intensive moisture treatment added to any service.")
-                       Service.create!(stylist: maya, name: "Scalp Massage",               price: 15,  duration_minutes: 15,  is_add_on: true,  description: "Relaxing scalp massage with essential oils.")
-                       Service.create!(stylist: maya, name: "Protein Treatment",           price: 25,  duration_minutes: 20,  is_add_on: true,  description: "Strengthening protein treatment to reduce breakage.")
+  # ---- Maya — natural hair ----
+  maya_silk_press  = maya.services.create!(name: "Silk Press",                    price: 75,  duration_minutes: 90,  active: true, description: "Full straightening treatment with heat protectant and shine serum.")
+  maya_braid_out   = maya.services.create!(name: "Braid Out & Style",             price: 55,  duration_minutes: 60,  active: true, description: "Defined braid-out set with moisturizing products.")
+  maya_protective  = maya.services.create!(name: "Protective Style Consult",      price: 45,  duration_minutes: 45,  active: true, description: "Consultation on protective styles best suited for your hair.")
+  maya_deep_cond   = maya.services.create!(name: "Deep Conditioning Treatment",   price: 40,  duration_minutes: 45,  active: true, description: "Intensive moisture treatment with steam and Olaplex.")
+  maya_scalp_treat = maya.services.create!(name: "Scalp Treatment",               price: 35,  duration_minutes: 30,  active: true, is_add_on: true, description: "Detoxifying scalp mask and massage.")
+  maya_trim        = maya.services.create!(name: "Trim & Shape",                  price: 25,  duration_minutes: 20,  active: true, is_add_on: true, description: "Light dusting and shape-up for healthy ends.")
 
-  # --- Derek Kim — precision barber (Brooklyn) ---
-  derek_fade     = Service.create!(stylist: derek, name: "Men's Fade",      price: 35, duration_minutes: 40, is_add_on: false, description: "Precision skin or low fade with a sharp line-up.")
-  derek_cut      = Service.create!(stylist: derek, name: "Classic Cut",     price: 28, duration_minutes: 35, is_add_on: false, description: "Scissors and clipper cut for any length.")
-  derek_kids     = Service.create!(stylist: derek, name: "Kids Cut",        price: 20, duration_minutes: 30, is_add_on: false, description: "Patient, thorough cuts for children 12 and under.")
-  derek_beard    = Service.create!(stylist: derek, name: "Beard Shape-Up",  price: 25, duration_minutes: 25, is_add_on: false, description: "Full beard sculpt, oil, and precision line detailing.")
-  derek_shampoo  = Service.create!(stylist: derek, name: "Shampoo & Style", price: 40, duration_minutes: 45, is_add_on: false, description: "Shampoo, condition, and finished style.")
-                   Service.create!(stylist: derek, name: "Hot Towel Treatment", price: 8,  duration_minutes: 10, is_add_on: true, description: "Classic hot towel treatment for face and neck.")
-                   Service.create!(stylist: derek, name: "Razor Line-Up",       price: 10, duration_minutes: 10, is_add_on: true, description: "Straight-razor edge-up on hairline and sideburns.")
-                   Service.create!(stylist: derek, name: "Beard Conditioning",  price: 12, duration_minutes: 10, is_add_on: true, description: "Softening conditioning and oil treatment for beard.")
+  # ---- Derek — barber ----
+  derek_fade       = derek.services.create!(name: "Men's Fade",                   price: 40,  duration_minutes: 45,  active: true, description: "Classic fade with sharp taper and lineup.")
+  derek_beard      = derek.services.create!(name: "Beard Sculpt",                 price: 30,  duration_minutes: 30,  active: true, description: "Full beard shaping and sculpting with hot towel finish.")
+  derek_hot_towel  = derek.services.create!(name: "Hot Towel Shave",              price: 35,  duration_minutes: 30,  active: true, description: "Traditional straight razor shave with hot towel treatment.")
+  derek_kid        = derek.services.create!(name: "Kids Cut (under 12)",          price: 25,  duration_minutes: 30,  active: true, description: "Quick, clean haircut for children under 12.")
+  derek_lineup     = derek.services.create!(name: "Lineup & Edge Up",             price: 15,  duration_minutes: 15,  active: true, is_add_on: true, description: "Crisp edge lineup on hairline and beard.")
+  derek_shampoo    = derek.services.create!(name: "Shampoo & Condition",          price: 10,  duration_minutes: 15,  active: true, is_add_on: true, description: "Cleansing shampoo and lightweight condition.")
 
-  # --- Sofia Rivera — color specialist (Austin) ---
-  sofia_balayage   = Service.create!(stylist: sofia, name: "Balayage",            price: 180, duration_minutes: 180, is_add_on: false, description: "Hand-painted highlights for natural-looking dimension and depth.")
-  sofia_full_color = Service.create!(stylist: sofia, name: "Full Color",          price: 110, duration_minutes: 120, is_add_on: false, description: "Root-to-tip single process color, all shades.")
-  sofia_cut        = Service.create!(stylist: sofia, name: "Women's Cut & Style", price: 65,  duration_minutes: 60,  is_add_on: false, description: "Precision cut and blowout finish.")
-  sofia_highlights = Service.create!(stylist: sofia, name: "Highlights",          price: 130, duration_minutes: 150, is_add_on: false, description: "Foil highlights, partial or full coverage.")
-  sofia_keratin    = Service.create!(stylist: sofia, name: "Keratin Treatment",   price: 200, duration_minutes: 180, is_add_on: false, description: "Professional smoothing treatment for frizz control and shine.")
-                     Service.create!(stylist: sofia, name: "Olaplex Treatment", price: 35, duration_minutes: 20, is_add_on: true, description: "Bond-repairing Olaplex add-on for color services.")
-                     Service.create!(stylist: sofia, name: "Toning Gloss",      price: 25, duration_minutes: 20, is_add_on: true, description: "Gloss toner for shine and color refresh between appointments.")
-                     Service.create!(stylist: sofia, name: "Deep Conditioning", price: 20, duration_minutes: 20, is_add_on: true, description: "Intensive deep conditioning treatment add-on.")
+  # ---- Sofia — color ----
+  sofia_balayage   = sofia.services.create!(name: "Balayage",                     price: 195, duration_minutes: 180, active: true, description: "Hand-painted highlights for a natural, sun-kissed look.")
+  sofia_highlights = sofia.services.create!(name: "Full Highlights",              price: 150, duration_minutes: 150, active: true, description: "Full head of foil highlights, customized to your base.")
+  sofia_color_melt = sofia.services.create!(name: "Color Melt",                   price: 165, duration_minutes: 165, active: true, description: "Seamless blending of two to three complementary tones.")
+  sofia_toner      = sofia.services.create!(name: "Toner & Gloss",                price: 55,  duration_minutes: 30,  active: true, description: "Refreshes tone and adds luminous shine.")
+  sofia_root_touch = sofia.services.create!(name: "Root Touch-Up",                price: 70,  duration_minutes: 45,  active: true, is_add_on: true, description: "Single-process color applied at the root.")
+  sofia_olaplex    = sofia.services.create!(name: "Olaplex Treatment",            price: 30,  duration_minutes: 20,  active: true, is_add_on: true, description: "Bond-building in-salon treatment added to any service.")
 
-  # --- Jordan Hayes — curl specialist (Atlanta) ---
-  jordan_curly_cut   = Service.create!(stylist: jordan, name: "Curly Cut",             price: 75, duration_minutes: 75, is_add_on: false, description: "Dry or wet cut shaped specifically for your curl pattern.")
-  jordan_deva        = Service.create!(stylist: jordan, name: "DevaCut",               price: 85, duration_minutes: 90, is_add_on: false, description: "DevaCurl-certified curl-by-curl cutting technique for defined shape.")
-  jordan_cowash      = Service.create!(stylist: jordan, name: "Co-Wash & Style",       price: 65, duration_minutes: 75, is_add_on: false, description: "Gentle co-wash, detangle, and curl definition styling.")
-  jordan_consult     = Service.create!(stylist: jordan, name: "Curl Consultation",     price: 40, duration_minutes: 45, is_add_on: false, description: "Personalized curl analysis and hair care routine plan.")
-  jordan_big_chop    = Service.create!(stylist: jordan, name: "Big Chop",              price: 60, duration_minutes: 60, is_add_on: false, description: "Transitioning cut to fully natural curls with a fresh shape.")
-                       Service.create!(stylist: jordan, name: "Diffuser Dry",              price: 15, duration_minutes: 20, is_add_on: true, description: "Professional diffuser dry for defined, frizz-free curls.")
-                       Service.create!(stylist: jordan, name: "Curl Defining Treatment",   price: 25, duration_minutes: 20, is_add_on: true, description: "Deep curl-enhancing treatment added to any wash service.")
+  # ---- Jordan — curls ----
+  jordan_deva_cut  = jordan.services.create!(name: "DevaCut",                     price: 90,  duration_minutes: 90,  active: true, description: "Dry curl-by-curl cut for defined, bouncy curls.")
+  jordan_co_wash   = jordan.services.create!(name: "Curl Co-Wash & Style",        price: 65,  duration_minutes: 75,  active: true, description: "Gentle co-wash followed by curl-defining styling.")
+  jordan_diffuse   = jordan.services.create!(name: "Diffuse & Define",            price: 50,  duration_minutes: 60,  active: true, description: "Full diffuse dry with curl-enhancing products.")
+  jordan_consult   = jordan.services.create!(name: "Curl Consultation",           price: 35,  duration_minutes: 30,  active: true, description: "Personalized curl type analysis and product recommendations.")
+  jordan_gloss     = jordan.services.create!(name: "Curl Gloss",                  price: 25,  duration_minutes: 20,  active: true, is_add_on: true, description: "Shine-enhancing gloss treatment for curls.")
+  jordan_protein   = jordan.services.create!(name: "Protein Treatment",           price: 30,  duration_minutes: 20,  active: true, is_add_on: true, description: "Strengthening protein mask for damaged or fragile curls.")
 
-  # --- Aaliyah Brooks — bridal & event stylist (Chicago) ---
-  aaliyah_updo    = Service.create!(stylist: aaliyah, name: "Bridal Updo",          price: 150, duration_minutes: 90, is_add_on: false, description: "Custom updo for weddings — timeless and tailored to your vision.")
-  aaliyah_blowout = Service.create!(stylist: aaliyah, name: "Event Blowout & Style", price: 80, duration_minutes: 60, is_add_on: false, description: "Blowout and finished style for any special occasion.")
-  aaliyah_trial   = Service.create!(stylist: aaliyah, name: "Trial Run Style",      price: 100, duration_minutes: 75, is_add_on: false, description: "Pre-wedding trial to perfect your bridal look.")
-  aaliyah_halfup  = Service.create!(stylist: aaliyah, name: "Half-Up Style",         price: 65, duration_minutes: 45, is_add_on: false, description: "Elegant half-up, half-down style for events and portraits.")
-  aaliyah_braid   = Service.create!(stylist: aaliyah, name: "Braid & Pin",           price: 70, duration_minutes: 60, is_add_on: false, description: "Braided and pinned updo styles for formal occasions.")
-                    Service.create!(stylist: aaliyah, name: "Hair Accessory Placement", price: 20, duration_minutes: 15, is_add_on: true, description: "Placement and securing of veils, pins, florals, or clips.")
-                    Service.create!(stylist: aaliyah, name: "Veil Attachment",          price: 15, duration_minutes: 10, is_add_on: true, description: "Secure veil attachment with hidden combs and pins.")
+  # ---- Aaliyah — bridal / occasion ----
+  aaliyah_updo     = aaliyah.services.create!(name: "Bridal Updo",                price: 165, duration_minutes: 120, active: true, description: "Custom bridal updo designed to complement your wedding style.")
+  aaliyah_blowout  = aaliyah.services.create!(name: "Blowout & Style",            price: 70,  duration_minutes: 60,  active: true, description: "Full blowout and finish for sleek, voluminous results.")
+  aaliyah_trial    = aaliyah.services.create!(name: "Bridal Trial",               price: 95,  duration_minutes: 90,  active: true, description: "Preview your wedding day hair before the big day.")
+  aaliyah_event    = aaliyah.services.create!(name: "Event Style",                price: 85,  duration_minutes: 75,  active: true, description: "Red-carpet-ready styling for galas, parties, and special occasions.")
+  aaliyah_veil     = aaliyah.services.create!(name: "Veil & Accessory Pinning",   price: 20,  duration_minutes: 15,  active: true, is_add_on: true, description: "Secure attachment of veils, combs, or hair accessories.")
+  aaliyah_curling  = aaliyah.services.create!(name: "Curling Iron Add-On",        price: 15,  duration_minutes: 15,  active: true, is_add_on: true, description: "Wand curls or waves added to any style.")
 
-  # --- Marcus Dupont — master barber (New Orleans) ---
-  marcus_s_hightop = Service.create!(stylist: marcus_s, name: "High-Top Fade",        price: 45, duration_minutes: 50, is_add_on: false, description: "Classic high-top fade with sculpted top and crisp line-up.")
-  marcus_s_taper   = Service.create!(stylist: marcus_s, name: "Classic Taper",         price: 35, duration_minutes: 40, is_add_on: false, description: "Clean taper cut with a natural or low fade finish.")
-  marcus_s_shave   = Service.create!(stylist: marcus_s, name: "Hot Towel Shave",       price: 40, duration_minutes: 35, is_add_on: false, description: "Traditional straight-razor shave with hot towel prep and aftershave.")
-  marcus_s_lineup  = Service.create!(stylist: marcus_s, name: "Shape-Up Only",         price: 20, duration_minutes: 20, is_add_on: false, description: "Precision edge-up on hairline, temples, and sideburns.")
-  marcus_s_groom   = Service.create!(stylist: marcus_s, name: "Full Groom Package",    price: 70, duration_minutes: 75, is_add_on: false, description: "Fade, beard shape-up, hot towel, and aftercare — all in one.")
-                     Service.create!(stylist: marcus_s, name: "Beard Line-Up",  price: 10, duration_minutes: 10, is_add_on: true, description: "Precision beard line detailing added to any cut.")
-                     Service.create!(stylist: marcus_s, name: "Edge Touch-Up",  price: 8,  duration_minutes: 10, is_add_on: true, description: "Quick hairline and temple touch-up between appointments.")
+  # ---- Marcus — barber ----
+  marcus_fade      = marcus.services.create!(name: "High-Top Fade",               price: 50,  duration_minutes: 60,  active: true, description: "Signature high-top fade with crisp taper and lineup.")
+  marcus_taper     = marcus.services.create!(name: "Classic Taper",               price: 35,  duration_minutes: 45,  active: true, description: "Clean, timeless taper cut for any hair type.")
+  marcus_full_svc  = marcus.services.create!(name: "Full Service Cut & Shave",    price: 65,  duration_minutes: 75,  active: true, description: "Haircut plus full hot-towel straight razor shave.")
+  marcus_lining    = marcus.services.create!(name: "Shape-Up & Lining",           price: 20,  duration_minutes: 20,  active: true, is_add_on: true, description: "Precision edge-up on hairline and beard.")
+  marcus_steam     = marcus.services.create!(name: "Steam & Condition",           price: 12,  duration_minutes: 10,  active: true, is_add_on: true, description: "Deep-steam condition to soften texture pre-cut.")
 
-  # --- Priya Menon — extension specialist (Los Angeles) ---
-  priya_s_tapein    = Service.create!(stylist: priya_s, name: "Tape-In Extensions",       price: 300, duration_minutes: 180, is_add_on: false, description: "Seamless tape-in extension application for length and volume.")
-  priya_s_sewin     = Service.create!(stylist: priya_s, name: "Sew-In Weave",             price: 250, duration_minutes: 150, is_add_on: false, description: "Cornrow base sew-in weave for full coverage and versatility.")
-  priya_s_fusion    = Service.create!(stylist: priya_s, name: "Fusion Bond Extensions",   price: 400, duration_minutes: 240, is_add_on: false, description: "Keratin bond fusion extensions for the most natural movement.")
-  priya_s_removal   = Service.create!(stylist: priya_s, name: "Extension Removal",        price: 80,  duration_minutes: 60,  is_add_on: false, description: "Safe, gentle removal of any extension type without damage.")
-  priya_s_consult   = Service.create!(stylist: priya_s, name: "Extension Consultation",   price: 45,  duration_minutes: 45,  is_add_on: false, description: "Hair assessment and extension recommendation session.")
-                      Service.create!(stylist: priya_s, name: "Toner",          price: 30, duration_minutes: 20, is_add_on: true, description: "Custom toner to blend extensions seamlessly with natural hair.")
-                      Service.create!(stylist: priya_s, name: "Blowout & Style", price: 40, duration_minutes: 30, is_add_on: true, description: "Blowout and finish added after extension application.")
+  # ---- Priya — extensions ----
+  priya_tape_in    = priya.services.create!(name: "Tape-In Extensions",           price: 250, duration_minutes: 180, active: true, description: "Seamless tape-in extensions blended with your natural hair.")
+  priya_sew_in     = priya.services.create!(name: "Sew-In Weave",                 price: 200, duration_minutes: 180, active: true, description: "Full sew-in with protective braided base.")
+  priya_removal    = priya.services.create!(name: "Extension Removal",            price: 75,  duration_minutes: 60,  active: true, description: "Safe, damage-free removal of existing extensions.")
+  priya_consult    = priya.services.create!(name: "Extension Consultation",       price: 30,  duration_minutes: 30,  active: true, description: "Hair analysis and extension type recommendation.")
+  priya_toning     = priya.services.create!(name: "Toning Gloss",                 price: 40,  duration_minutes: 30,  active: true, is_add_on: true, description: "Color gloss to match extensions to natural hair tone.")
+  priya_trim_ext   = priya.services.create!(name: "Blended Trim",                 price: 25,  duration_minutes: 20,  active: true, is_add_on: true, description: "Trim to blend extensions with natural hair length.")
 
-  # --- Claire Osei — loctician (Washington, DC) ---
-  claire_starter    = Service.create!(stylist: claire, name: "Starter Locs",       price: 150, duration_minutes: 180, is_add_on: false, description: "New loc installation using two-strand twist, comb coil, or braid method.")
-  claire_retwist    = Service.create!(stylist: claire, name: "Loc Retwist",        price: 80,  duration_minutes: 90,  is_add_on: false, description: "Palm-roll or interlocking retwist to maintain neat, defined locs.")
-  claire_repair     = Service.create!(stylist: claire, name: "Loc Repair",         price: 60,  duration_minutes: 60,  is_add_on: false, description: "Targeted repair for thinning, broken, or unraveling locs.")
-  claire_detox      = Service.create!(stylist: claire, name: "Loc Detox & Wash",   price: 70,  duration_minutes: 75,  is_add_on: false, description: "Deep cleansing detox wash to remove buildup from locs.")
-  claire_interlock  = Service.create!(stylist: claire, name: "Interlocking",       price: 90,  duration_minutes: 90,  is_add_on: false, description: "Interlocking technique for lasting roots and reduced frizz.")
-                      Service.create!(stylist: claire, name: "Beeswax Treatment",   price: 15, duration_minutes: 10, is_add_on: true, description: "Natural beeswax application for frizz control and shine.")
-                      Service.create!(stylist: claire, name: "Scalp Oil Treatment", price: 20, duration_minutes: 15, is_add_on: true, description: "Nourishing scalp oil application to soothe dryness and promote growth.")
+  # ---- Claire — locs ----
+  claire_starter   = claire.services.create!(name: "Starter Locs",               price: 180, duration_minutes: 240, active: true, description: "Beginning your loc journey with properly sectioned starter locs.")
+  claire_retwist   = claire.services.create!(name: "Retwist & Style",             price: 80,  duration_minutes: 90,  active: true, description: "Full retwist to maintain loc definition and growth.")
+  claire_repair    = claire.services.create!(name: "Loc Repair",                  price: 60,  duration_minutes: 60,  active: true, description: "Repair of thin, breaking, or unraveling locs.")
+  claire_consult   = claire.services.create!(name: "Loc Consultation",            price: 25,  duration_minutes: 20,  active: true, description: "Assessment of loc health and maintenance planning.")
+  claire_oil_treat = claire.services.create!(name: "Scalp Oil Treatment",         price: 20,  duration_minutes: 15,  active: true, is_add_on: true, description: "Nourishing oil applied to scalp and loc roots.")
+  claire_crochet   = claire.services.create!(name: "Crochet Locs",                price: 150, duration_minutes: 180, active: true, description: "Faux loc installation using crochet method.")
 
-  # --- Ben Nakamura — texture specialist (Seattle) ---
-  ben_precision  = Service.create!(stylist: ben, name: "Precision Cut",              price: 60,  duration_minutes: 60,  is_add_on: false, description: "Clean, deliberate cut tailored to your texture and face shape.")
-  ben_japanese   = Service.create!(stylist: ben, name: "Japanese Straightening",     price: 250, duration_minutes: 180, is_add_on: false, description: "Permanent thermal straightening for smooth, long-lasting results.")
-  ben_lived_in   = Service.create!(stylist: ben, name: "Lived-In Color",             price: 120, duration_minutes: 120, is_add_on: false, description: "Soft, low-maintenance color that grows out naturally.")
-  ben_mens       = Service.create!(stylist: ben, name: "Men's Cut & Style",          price: 50,  duration_minutes: 50,  is_add_on: false, description: "Cut and finish styled for texture — not against it.")
-  ben_consult    = Service.create!(stylist: ben, name: "Texture Consultation",       price: 40,  duration_minutes: 45,  is_add_on: false, description: "Hair health and texture assessment with a personalized care plan.")
-                   Service.create!(stylist: ben, name: "Gloss Treatment",        price: 25, duration_minutes: 20, is_add_on: true, description: "Clear or tinted gloss for shine and color longevity.")
-                   Service.create!(stylist: ben, name: "Bond Repair Treatment",  price: 35, duration_minutes: 20, is_add_on: true, description: "Bond-building treatment to protect hair during chemical services.")
-
-  # --- Taylor West — scalp health specialist (Miami) ---
-  taylor_analysis  = Service.create!(stylist: taylor, name: "Scalp Analysis & Treatment",   price: 90, duration_minutes: 75, is_add_on: false, description: "In-depth scalp assessment followed by a targeted treatment plan.")
-  taylor_detox     = Service.create!(stylist: taylor, name: "Clarifying Detox",              price: 75, duration_minutes: 60, is_add_on: false, description: "Enzyme and acid clarifying treatment to remove buildup and reset scalp health.")
-  taylor_growth    = Service.create!(stylist: taylor, name: "Growth Stimulation Treatment",  price: 80, duration_minutes: 60, is_add_on: false, description: "Targeted scalp treatment to stimulate follicles and support hair growth.")
-  taylor_trichology = Service.create!(stylist: taylor, name: "Trichology Consultation",     price: 50, duration_minutes: 45, is_add_on: false, description: "Science-backed consultation for hair loss, breakage, and scalp concerns.")
-  taylor_dht       = Service.create!(stylist: taylor, name: "DHT-Blocking Treatment",        price: 95, duration_minutes: 75, is_add_on: false, description: "Topical DHT-blocking serum treatment for clients experiencing thinning.")
-                     Service.create!(stylist: taylor, name: "Scalp Oil Infusion", price: 20, duration_minutes: 15, is_add_on: true, description: "Warm oil infusion to nourish and hydrate the scalp between treatments.")
-                     Service.create!(stylist: taylor, name: "Biotin Scalp Mask",  price: 25, duration_minutes: 20, is_add_on: true, description: "Biotin-enriched mask to strengthen hair at the root and reduce shedding.")
-
-  puts "  Created #{Service.where(is_add_on: false).count} main services, #{Service.where(is_add_on: true).count} add-ons."
+  puts "  Done."
 
   # ============================================================
-  # AVAILABILITY BLOCKS (4-8 per stylist, next 4 weeks)
-  # service_ids stored as array of id strings per schema
+  # AVAILABILITY BLOCKS
+  #
+  # PAST blocks (for completed/cancelled appointments):
+  #   ~3 weeks ago: 2026-03-21, 2026-03-22, 2026-03-28
+  #   ~1 week ago:  2026-04-04
+  #
+  # FUTURE blocks (for pending/booked appointments):
+  #   Next week:    2026-04-17, 2026-04-18, 2026-04-19
+  #   2 weeks out:  2026-04-25, 2026-05-02, 2026-05-03
+  #
+  # Every appointment created below must fall within its block's
+  # [start_time, end_time] window and reference availability_block_id.
   # ============================================================
-  puts "Creating availability blocks..."
+  puts "  Creating availability blocks..."
 
-  today = Date.today
+  # ---- Maya (SF) ----
+  maya_past_1   = AvailabilityBlock.create!(stylist: maya, location: maya_loc, start_time: Time.zone.parse("2026-03-21 09:00"), end_time: Time.zone.parse("2026-03-21 17:00"), available_for_all_services: true)
+  maya_past_2   = AvailabilityBlock.create!(stylist: maya, location: maya_loc, start_time: Time.zone.parse("2026-03-28 09:00"), end_time: Time.zone.parse("2026-03-28 17:00"), available_for_all_services: true)
+  maya_future_1 = AvailabilityBlock.create!(stylist: maya, location: maya_loc, start_time: Time.zone.parse("2026-04-17 09:00"), end_time: Time.zone.parse("2026-04-17 17:00"), available_for_all_services: true)
+  maya_future_2 = AvailabilityBlock.create!(stylist: maya, location: maya_loc, start_time: Time.zone.parse("2026-04-25 10:00"), end_time: Time.zone.parse("2026-04-25 16:00"), available_for_all_services: true)
 
-  # Helper so each block reads as: base date + hour offset
-  # All times land within 8am-6pm. Each stylist uses non-overlapping days.
+  # ---- Derek (Brooklyn) ----
+  derek_past_1   = AvailabilityBlock.create!(stylist: derek, location: derek_loc, start_time: Time.zone.parse("2026-03-20 10:00"), end_time: Time.zone.parse("2026-03-20 18:00"), available_for_all_services: true)
+  derek_past_2   = AvailabilityBlock.create!(stylist: derek, location: derek_loc, start_time: Time.zone.parse("2026-04-04 10:00"), end_time: Time.zone.parse("2026-04-04 18:00"), available_for_all_services: true)
+  derek_future_1 = AvailabilityBlock.create!(stylist: derek, location: derek_loc, start_time: Time.zone.parse("2026-04-18 10:00"), end_time: Time.zone.parse("2026-04-18 18:00"), available_for_all_services: true)
+  derek_future_2 = AvailabilityBlock.create!(stylist: derek, location: derek_loc, start_time: Time.zone.parse("2026-04-25 10:00"), end_time: Time.zone.parse("2026-04-25 18:00"), available_for_all_services: true)
 
-  # --- Maya Johnson — 6 blocks, alternates between 2 locations ---
-  AvailabilityBlock.create!(
-    stylist: maya, location: maya_loc1,
-    start_time: (today + 2).beginning_of_day + 9.hours,
-    end_time:   (today + 2).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: maya, location: maya_loc2,
-    start_time: (today + 5).beginning_of_day + 10.hours,
-    end_time:   (today + 5).beginning_of_day + 16.hours,
-    available_for_all_services: false,
-    service_ids: [maya_silk_press.id.to_s, maya_braids.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: maya, location: maya_loc1,
-    start_time: (today + 9).beginning_of_day + 9.hours,
-    end_time:   (today + 9).beginning_of_day + 15.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: maya, location: maya_loc2,
-    start_time: (today + 13).beginning_of_day + 11.hours,
-    end_time:   (today + 13).beginning_of_day + 17.hours,
-    available_for_all_services: false,
-    service_ids: [maya_wash_go.id.to_s, maya_consultation.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: maya, location: maya_loc1,
-    start_time: (today + 18).beginning_of_day + 9.hours,
-    end_time:   (today + 18).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: maya, location: maya_loc1,
-    start_time: (today + 24).beginning_of_day + 10.hours,
-    end_time:   (today + 24).beginning_of_day + 16.hours,
-    available_for_all_services: false,
-    service_ids: [maya_silk_press.id.to_s, maya_big_chop.id.to_s]
-  )
+  # ---- Sofia (Austin) ----
+  sofia_past_1   = AvailabilityBlock.create!(stylist: sofia, location: sofia_loc, start_time: Time.zone.parse("2026-03-21 08:00"), end_time: Time.zone.parse("2026-03-21 18:00"), available_for_all_services: true)
+  sofia_future_1 = AvailabilityBlock.create!(stylist: sofia, location: sofia_loc, start_time: Time.zone.parse("2026-04-18 08:00"), end_time: Time.zone.parse("2026-04-18 18:00"), available_for_all_services: true)
+  sofia_future_2 = AvailabilityBlock.create!(stylist: sofia, location: sofia_loc, start_time: Time.zone.parse("2026-05-02 08:00"), end_time: Time.zone.parse("2026-05-02 18:00"), available_for_all_services: true)
 
-  # --- Derek Kim — 5 blocks, single location ---
-  AvailabilityBlock.create!(
-    stylist: derek, location: derek_loc,
-    start_time: (today + 1).beginning_of_day + 9.hours,
-    end_time:   (today + 1).beginning_of_day + 15.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: derek, location: derek_loc,
-    start_time: (today + 4).beginning_of_day + 10.hours,
-    end_time:   (today + 4).beginning_of_day + 18.hours,
-    available_for_all_services: false,
-    service_ids: [derek_fade.id.to_s, derek_beard.id.to_s, derek_shampoo.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: derek, location: derek_loc,
-    start_time: (today + 8).beginning_of_day + 9.hours,
-    end_time:   (today + 8).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: derek, location: derek_loc,
-    start_time: (today + 14).beginning_of_day + 8.hours,
-    end_time:   (today + 14).beginning_of_day + 14.hours,
-    available_for_all_services: false,
-    service_ids: [derek_fade.id.to_s, derek_cut.id.to_s, derek_kids.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: derek, location: derek_loc,
-    start_time: (today + 21).beginning_of_day + 9.hours,
-    end_time:   (today + 21).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
+  # ---- Jordan (Atlanta) ----
+  jordan_past_1   = AvailabilityBlock.create!(stylist: jordan, location: jordan_loc, start_time: Time.zone.parse("2026-03-28 09:00"), end_time: Time.zone.parse("2026-03-28 17:00"), available_for_all_services: true)
+  jordan_future_1 = AvailabilityBlock.create!(stylist: jordan, location: jordan_loc, start_time: Time.zone.parse("2026-04-19 09:00"), end_time: Time.zone.parse("2026-04-19 17:00"), available_for_all_services: true)
+  jordan_future_2 = AvailabilityBlock.create!(stylist: jordan, location: jordan_loc, start_time: Time.zone.parse("2026-05-03 09:00"), end_time: Time.zone.parse("2026-05-03 17:00"), available_for_all_services: true)
 
-  # --- Sofia Rivera — 4 blocks (long color sessions), single location ---
-  AvailabilityBlock.create!(
-    stylist: sofia, location: sofia_loc,
-    start_time: (today + 3).beginning_of_day + 10.hours,
-    end_time:   (today + 3).beginning_of_day + 18.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: sofia, location: sofia_loc,
-    start_time: (today + 7).beginning_of_day + 9.hours,
-    end_time:   (today + 7).beginning_of_day + 17.hours,
-    available_for_all_services: false,
-    service_ids: [sofia_balayage.id.to_s, sofia_highlights.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: sofia, location: sofia_loc,
-    start_time: (today + 15).beginning_of_day + 10.hours,
-    end_time:   (today + 15).beginning_of_day + 18.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: sofia, location: sofia_loc,
-    start_time: (today + 22).beginning_of_day + 9.hours,
-    end_time:   (today + 22).beginning_of_day + 17.hours,
-    available_for_all_services: false,
-    service_ids: [sofia_full_color.id.to_s, sofia_keratin.id.to_s, sofia_cut.id.to_s]
-  )
+  # ---- Aaliyah (Chicago) ----
+  aaliyah_past_1   = AvailabilityBlock.create!(stylist: aaliyah, location: aaliyah_loc, start_time: Time.zone.parse("2026-03-22 10:00"), end_time: Time.zone.parse("2026-03-22 18:00"), available_for_all_services: true)
+  aaliyah_future_1 = AvailabilityBlock.create!(stylist: aaliyah, location: aaliyah_loc, start_time: Time.zone.parse("2026-04-19 10:00"), end_time: Time.zone.parse("2026-04-19 18:00"), available_for_all_services: true)
+  aaliyah_future_2 = AvailabilityBlock.create!(stylist: aaliyah, location: aaliyah_loc, start_time: Time.zone.parse("2026-05-03 10:00"), end_time: Time.zone.parse("2026-05-03 18:00"), available_for_all_services: true)
 
-  # --- Jordan Hayes — 6 blocks, alternates between 2 locations ---
-  AvailabilityBlock.create!(
-    stylist: jordan, location: jordan_loc1,
-    start_time: (today + 2).beginning_of_day + 9.hours,
-    end_time:   (today + 2).beginning_of_day + 15.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: jordan, location: jordan_loc2,
-    start_time: (today + 5).beginning_of_day + 10.hours,
-    end_time:   (today + 5).beginning_of_day + 16.hours,
-    available_for_all_services: false,
-    service_ids: [jordan_curly_cut.id.to_s, jordan_deva.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: jordan, location: jordan_loc1,
-    start_time: (today + 9).beginning_of_day + 9.hours,
-    end_time:   (today + 9).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: jordan, location: jordan_loc2,
-    start_time: (today + 12).beginning_of_day + 10.hours,
-    end_time:   (today + 12).beginning_of_day + 16.hours,
-    available_for_all_services: false,
-    service_ids: [jordan_cowash.id.to_s, jordan_consult.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: jordan, location: jordan_loc1,
-    start_time: (today + 17).beginning_of_day + 9.hours,
-    end_time:   (today + 17).beginning_of_day + 15.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: jordan, location: jordan_loc1,
-    start_time: (today + 25).beginning_of_day + 10.hours,
-    end_time:   (today + 25).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
+  # ---- Marcus (New Orleans) ----
+  marcus_past_1   = AvailabilityBlock.create!(stylist: marcus, location: marcus_loc, start_time: Time.zone.parse("2026-03-21 09:00"), end_time: Time.zone.parse("2026-03-21 17:00"), available_for_all_services: true)
+  marcus_past_2   = AvailabilityBlock.create!(stylist: marcus, location: marcus_loc, start_time: Time.zone.parse("2026-04-04 09:00"), end_time: Time.zone.parse("2026-04-04 17:00"), available_for_all_services: true)
+  marcus_future_1 = AvailabilityBlock.create!(stylist: marcus, location: marcus_loc, start_time: Time.zone.parse("2026-04-18 09:00"), end_time: Time.zone.parse("2026-04-18 17:00"), available_for_all_services: true)
 
-  # --- Aaliyah Brooks — 5 blocks, single location ---
-  AvailabilityBlock.create!(
-    stylist: aaliyah, location: aaliyah_loc,
-    start_time: (today + 3).beginning_of_day + 10.hours,
-    end_time:   (today + 3).beginning_of_day + 16.hours,
-    available_for_all_services: false,
-    service_ids: [aaliyah_updo.id.to_s, aaliyah_trial.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: aaliyah, location: aaliyah_loc,
-    start_time: (today + 6).beginning_of_day + 9.hours,
-    end_time:   (today + 6).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: aaliyah, location: aaliyah_loc,
-    start_time: (today + 10).beginning_of_day + 9.hours,
-    end_time:   (today + 10).beginning_of_day + 15.hours,
-    available_for_all_services: false,
-    service_ids: [aaliyah_blowout.id.to_s, aaliyah_halfup.id.to_s, aaliyah_braid.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: aaliyah, location: aaliyah_loc,
-    start_time: (today + 16).beginning_of_day + 10.hours,
-    end_time:   (today + 16).beginning_of_day + 18.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: aaliyah, location: aaliyah_loc,
-    start_time: (today + 23).beginning_of_day + 10.hours,
-    end_time:   (today + 23).beginning_of_day + 16.hours,
-    available_for_all_services: true
-  )
+  # ---- Priya (LA) ----
+  priya_past_1   = AvailabilityBlock.create!(stylist: priya, location: priya_loc, start_time: Time.zone.parse("2026-03-28 09:00"), end_time: Time.zone.parse("2026-03-28 18:00"), available_for_all_services: true)
+  priya_future_1 = AvailabilityBlock.create!(stylist: priya, location: priya_loc, start_time: Time.zone.parse("2026-04-18 09:00"), end_time: Time.zone.parse("2026-04-18 18:00"), available_for_all_services: true)
+  priya_future_2 = AvailabilityBlock.create!(stylist: priya, location: priya_loc, start_time: Time.zone.parse("2026-05-02 09:00"), end_time: Time.zone.parse("2026-05-02 18:00"), available_for_all_services: true)
 
-  # --- Marcus Dupont — 6 blocks, single location ---
-  AvailabilityBlock.create!(
-    stylist: marcus_s, location: marcus_s_loc,
-    start_time: (today + 1).beginning_of_day + 8.hours,
-    end_time:   (today + 1).beginning_of_day + 14.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: marcus_s, location: marcus_s_loc,
-    start_time: (today + 4).beginning_of_day + 9.hours,
-    end_time:   (today + 4).beginning_of_day + 17.hours,
-    available_for_all_services: false,
-    service_ids: [marcus_s_hightop.id.to_s, marcus_s_taper.id.to_s, marcus_s_lineup.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: marcus_s, location: marcus_s_loc,
-    start_time: (today + 8).beginning_of_day + 8.hours,
-    end_time:   (today + 8).beginning_of_day + 16.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: marcus_s, location: marcus_s_loc,
-    start_time: (today + 11).beginning_of_day + 9.hours,
-    end_time:   (today + 11).beginning_of_day + 15.hours,
-    available_for_all_services: false,
-    service_ids: [marcus_s_shave.id.to_s, marcus_s_groom.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: marcus_s, location: marcus_s_loc,
-    start_time: (today + 18).beginning_of_day + 8.hours,
-    end_time:   (today + 18).beginning_of_day + 14.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: marcus_s, location: marcus_s_loc,
-    start_time: (today + 25).beginning_of_day + 9.hours,
-    end_time:   (today + 25).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
+  # ---- Claire (DC) ----
+  claire_past_1   = AvailabilityBlock.create!(stylist: claire, location: claire_loc, start_time: Time.zone.parse("2026-03-21 08:00"), end_time: Time.zone.parse("2026-03-21 18:00"), available_for_all_services: true)
+  claire_future_1 = AvailabilityBlock.create!(stylist: claire, location: claire_loc, start_time: Time.zone.parse("2026-04-19 08:00"), end_time: Time.zone.parse("2026-04-19 18:00"), available_for_all_services: true)
+  claire_future_2 = AvailabilityBlock.create!(stylist: claire, location: claire_loc, start_time: Time.zone.parse("2026-05-03 08:00"), end_time: Time.zone.parse("2026-05-03 18:00"), available_for_all_services: true)
 
-  # --- Priya Menon — 5 blocks (long extension sessions), alternates 2 locations ---
-  AvailabilityBlock.create!(
-    stylist: priya_s, location: priya_s_loc1,
-    start_time: (today + 3).beginning_of_day + 9.hours,
-    end_time:   (today + 3).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: priya_s, location: priya_s_loc2,
-    start_time: (today + 7).beginning_of_day + 10.hours,
-    end_time:   (today + 7).beginning_of_day + 18.hours,
-    available_for_all_services: false,
-    service_ids: [priya_s_tapein.id.to_s, priya_s_fusion.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: priya_s, location: priya_s_loc1,
-    start_time: (today + 12).beginning_of_day + 9.hours,
-    end_time:   (today + 12).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: priya_s, location: priya_s_loc2,
-    start_time: (today + 19).beginning_of_day + 10.hours,
-    end_time:   (today + 19).beginning_of_day + 18.hours,
-    available_for_all_services: false,
-    service_ids: [priya_s_sewin.id.to_s, priya_s_removal.id.to_s, priya_s_consult.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: priya_s, location: priya_s_loc1,
-    start_time: (today + 26).beginning_of_day + 9.hours,
-    end_time:   (today + 26).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
-
-  # --- Claire Osei — 5 blocks, single location ---
-  AvailabilityBlock.create!(
-    stylist: claire, location: claire_loc,
-    start_time: (today + 2).beginning_of_day + 9.hours,
-    end_time:   (today + 2).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: claire, location: claire_loc,
-    start_time: (today + 6).beginning_of_day + 10.hours,
-    end_time:   (today + 6).beginning_of_day + 16.hours,
-    available_for_all_services: false,
-    service_ids: [claire_starter.id.to_s, claire_retwist.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: claire, location: claire_loc,
-    start_time: (today + 11).beginning_of_day + 9.hours,
-    end_time:   (today + 11).beginning_of_day + 15.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: claire, location: claire_loc,
-    start_time: (today + 16).beginning_of_day + 10.hours,
-    end_time:   (today + 16).beginning_of_day + 18.hours,
-    available_for_all_services: false,
-    service_ids: [claire_retwist.id.to_s, claire_interlock.id.to_s, claire_detox.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: claire, location: claire_loc,
-    start_time: (today + 23).beginning_of_day + 9.hours,
-    end_time:   (today + 23).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
-
-  # --- Ben Nakamura — 5 blocks, single location ---
-  AvailabilityBlock.create!(
-    stylist: ben, location: ben_loc,
-    start_time: (today + 4).beginning_of_day + 10.hours,
-    end_time:   (today + 4).beginning_of_day + 17.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: ben, location: ben_loc,
-    start_time: (today + 8).beginning_of_day + 9.hours,
-    end_time:   (today + 8).beginning_of_day + 15.hours,
-    available_for_all_services: false,
-    service_ids: [ben_precision.id.to_s, ben_mens.id.to_s, ben_consult.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: ben, location: ben_loc,
-    start_time: (today + 13).beginning_of_day + 10.hours,
-    end_time:   (today + 13).beginning_of_day + 18.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: ben, location: ben_loc,
-    start_time: (today + 20).beginning_of_day + 9.hours,
-    end_time:   (today + 20).beginning_of_day + 17.hours,
-    available_for_all_services: false,
-    service_ids: [ben_lived_in.id.to_s, ben_japanese.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: ben, location: ben_loc,
-    start_time: (today + 27).beginning_of_day + 10.hours,
-    end_time:   (today + 27).beginning_of_day + 16.hours,
-    available_for_all_services: true
-  )
-
-  # --- Taylor West — 6 blocks, alternates between 2 locations ---
-  AvailabilityBlock.create!(
-    stylist: taylor, location: taylor_loc1,
-    start_time: (today + 2).beginning_of_day + 9.hours,
-    end_time:   (today + 2).beginning_of_day + 15.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: taylor, location: taylor_loc2,
-    start_time: (today + 5).beginning_of_day + 10.hours,
-    end_time:   (today + 5).beginning_of_day + 16.hours,
-    available_for_all_services: false,
-    service_ids: [taylor_analysis.id.to_s, taylor_detox.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: taylor, location: taylor_loc1,
-    start_time: (today + 9).beginning_of_day + 8.hours,
-    end_time:   (today + 9).beginning_of_day + 14.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: taylor, location: taylor_loc2,
-    start_time: (today + 13).beginning_of_day + 9.hours,
-    end_time:   (today + 13).beginning_of_day + 17.hours,
-    available_for_all_services: false,
-    service_ids: [taylor_growth.id.to_s, taylor_trichology.id.to_s, taylor_dht.id.to_s]
-  )
-  AvailabilityBlock.create!(
-    stylist: taylor, location: taylor_loc1,
-    start_time: (today + 17).beginning_of_day + 9.hours,
-    end_time:   (today + 17).beginning_of_day + 15.hours,
-    available_for_all_services: true
-  )
-  AvailabilityBlock.create!(
-    stylist: taylor, location: taylor_loc2,
-    start_time: (today + 24).beginning_of_day + 10.hours,
-    end_time:   (today + 24).beginning_of_day + 18.hours,
-    available_for_all_services: true
-  )
-
-  puts "  Created #{AvailabilityBlock.count} availability blocks."
+  puts "  Done."
 
   # ============================================================
   # APPOINTMENTS
-  # Note: before_save :set_end_time recalculates end_time from
-  # selected_service, so explicit end_time matches what the
-  # callback will write — no divergence.
-  # Overlap check (no_overlapping_appointments) is per stylist,
-  # so same customer can appear across different stylists.
+  #
+  # Rules enforced here:
+  #   - Every appointment references availability_block_id
+  #   - appointment.time falls within block's [start_time, end_time)
+  #   - No two pending/booked appointments for the same stylist overlap
+  #   - selected_service uses fmt_svc() so model parsing works correctly
+  #   - location_id is always set (required on create)
+  #   - payment_status uses valid inclusion values:
+  #       pending | deposit_paid | balance_due | paid | refunded | deposit_kept | failed
+  #
+  # The overlap validation only checks status: [:pending, :booked],
+  # so completed/cancelled appointments created here won't conflict.
   # ============================================================
-  puts "Creating appointments..."
+  puts "  Creating appointments..."
 
-  # ----------------------------------------------------------
-  # PENDING (10) — future, no payment collected yet
-  # ----------------------------------------------------------
+  # ------------------------------------------------------------------
+  # COMPLETED — past blocks
+  # ------------------------------------------------------------------
 
-  # Maya — silk press, day+6 10am (ends 11:15am)
-  Appointment.create!(
-    stylist:          maya,
-    customer:         emma,
-    location_id:      maya_loc1.id,
-    salon:            maya.name,
-    time:             (today + 6).beginning_of_day + 10.hours,
-    end_time:         (today + 6).beginning_of_day + 10.hours + maya_silk_press.duration_minutes.minutes,
-    selected_service: "#{maya_silk_press.name} - $#{sprintf('%.2f', maya_silk_press.price)}",
-    status:           :pending,
-    payment_status:   "pending",
-    payment_amount:   maya_silk_press.price,
-    content:          "Emma is getting ready for a family reunion and wants a sleek, heat-protected silk press with a light oil finish. Prefers medium heat."
+  # Maya — 2026-03-21 (maya_past_1: 09:00–17:00)
+  #   09:00  Silk Press (90 min → ends 10:30)  +scalp add-on
+  #   11:00  Braid Out  (60 min → ends 12:00)
+  #   13:00  Protective Consult (45 min → ends 13:45) [CANCELLED]
+
+  appt_maya_c1 = Appointment.create!(
+    stylist: maya, customer: emma,
+    location: maya_loc, availability_block: maya_past_1,
+    time: Time.zone.parse("2026-03-21 09:00"),
+    selected_service: fmt_svc(maya_silk_press),
+    payment_amount: maya_silk_press.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-21 10:30"),
+    content: "Emma wanted a full silk press before a work event."
   )
 
-  # Maya — consultation, day+10 9am (ends 9:45am) — no overlap
-  Appointment.create!(
-    stylist:          maya,
-    customer:         daniel,
-    location_id:      maya_loc2.id,
-    salon:            maya.name,
-    time:             (today + 10).beginning_of_day + 9.hours,
-    end_time:         (today + 10).beginning_of_day + 9.hours + maya_consultation.duration_minutes.minutes,
-    selected_service: "#{maya_consultation.name} - $#{sprintf('%.2f', maya_consultation.price)}",
-    status:           :pending,
-    payment_status:   "pending",
-    payment_amount:   maya_consultation.price,
-    content:          "Daniel is transitioning from relaxed to natural and wants guidance on building a routine for his texture and scalp type."
+  appt_maya_c2 = Appointment.create!(
+    stylist: maya, customer: nina,
+    location: maya_loc, availability_block: maya_past_1,
+    time: Time.zone.parse("2026-03-21 11:00"),
+    selected_service: fmt_svc(maya_braid_out),
+    payment_amount: maya_braid_out.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-21 12:00"),
+    content: "Nina is transitioning to natural hair and wanted a defined style."
   )
 
-  # Derek — men's fade, day+5 9am (ends 9:40am)
-  Appointment.create!(
-    stylist:          derek,
-    customer:         james,
-    location_id:      derek_loc.id,
-    salon:            derek.name,
-    time:             (today + 5).beginning_of_day + 9.hours,
-    end_time:         (today + 5).beginning_of_day + 9.hours + derek_fade.duration_minutes.minutes,
-    selected_service: "#{derek_fade.name} - $#{sprintf('%.2f', derek_fade.price)}",
-    status:           :pending,
-    payment_status:   "pending",
-    payment_amount:   derek_fade.price,
-    content:          "James wants a low skin fade with a sharp hairline and temple taper. Keeps the top long with a textured finish."
+  appt_maya_x1 = Appointment.create!(
+    stylist: maya, customer: simone,
+    location: maya_loc, availability_block: maya_past_1,
+    time: Time.zone.parse("2026-03-21 13:00"),
+    selected_service: fmt_svc(maya_protective),
+    payment_amount: maya_protective.price,
+    payment_status: "refunded",
+    status: :cancelled,
+    cancelled_at: Time.zone.parse("2026-03-20 18:00"),
+    cancelled_by: "customer",
+    cancelled_by_id: simone.id,
+    cancellation_reason: "Schedule conflict came up last minute."
   )
 
-  # Derek — classic cut, day+11 9am (ends 9:35am) — no overlap
-  Appointment.create!(
-    stylist:          derek,
-    customer:         ryan,
-    location_id:      derek_loc.id,
-    salon:            derek.name,
-    time:             (today + 11).beginning_of_day + 9.hours,
-    end_time:         (today + 11).beginning_of_day + 9.hours + derek_cut.duration_minutes.minutes,
-    selected_service: "#{derek_cut.name} - $#{sprintf('%.2f', derek_cut.price)}",
-    status:           :pending,
-    payment_status:   "pending",
-    payment_amount:   derek_cut.price,
-    content:          "Ryan wants a clean scissor cut, taking about an inch off the top and cleaning up the sides. No fade — prefers a natural taper."
+  # Maya — 2026-03-28 (maya_past_2: 09:00–17:00)
+  #   09:30  Deep Conditioning (45 min → ends 10:15)
+
+  appt_maya_c3 = Appointment.create!(
+    stylist: maya, customer: aisha,
+    location: maya_loc, availability_block: maya_past_2,
+    time: Time.zone.parse("2026-03-28 09:30"),
+    selected_service: fmt_svc(maya_deep_cond),
+    payment_amount: maya_deep_cond.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-28 10:15"),
+    content: "Aisha had heat damage from a previous appointment elsewhere."
   )
 
-  # Sofia — balayage, day+8 10am (ends 1pm)
-  Appointment.create!(
-    stylist:          sofia,
-    customer:         olivia,
-    location_id:      sofia_loc.id,
-    salon:            sofia.name,
-    time:             (today + 8).beginning_of_day + 10.hours,
-    end_time:         (today + 8).beginning_of_day + 10.hours + sofia_balayage.duration_minutes.minutes,
-    selected_service: "#{sofia_balayage.name} - $#{sprintf('%.2f', sofia_balayage.price)}",
-    status:           :pending,
-    payment_status:   "pending",
-    payment_amount:   sofia_balayage.price,
-    content:          "Olivia wants warm honey-brown balayage on a dark brown base. First time coloring — wants a subtle, sun-kissed effect that grows out naturally."
+  # Derek — 2026-03-20 (derek_past_1: 10:00–18:00)
+  #   10:00  Men's Fade (45 min → ends 10:45)
+  #   11:00  Beard Sculpt (30 min → ends 11:30)
+
+  appt_derek_c1 = Appointment.create!(
+    stylist: derek, customer: caleb,
+    location: derek_loc, availability_block: derek_past_1,
+    time: Time.zone.parse("2026-03-20 10:00"),
+    selected_service: fmt_svc(derek_fade),
+    payment_amount: derek_fade.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-20 10:45"),
+    content: "Caleb wanted a clean fade before a job interview."
   )
 
-  # Jordan — curly cut, day+6 9am (ends 10:15am)
-  Appointment.create!(
-    stylist:          jordan,
-    customer:         tyler,
-    location_id:      jordan_loc1.id,
-    salon:            jordan.name,
-    time:             (today + 6).beginning_of_day + 9.hours,
-    end_time:         (today + 6).beginning_of_day + 9.hours + jordan_curly_cut.duration_minutes.minutes,
-    selected_service: "#{jordan_curly_cut.name} - $#{sprintf('%.2f', jordan_curly_cut.price)}",
-    status:           :pending,
-    payment_status:   "pending",
-    payment_amount:   jordan_curly_cut.price,
-    content:          "Tyler has 3C curls and wants a shape-up dry cut to remove split ends and add definition. Wants to keep length — no more than half an inch off."
+  appt_derek_c2 = Appointment.create!(
+    stylist: derek, customer: james,
+    location: derek_loc, availability_block: derek_past_1,
+    time: Time.zone.parse("2026-03-20 11:00"),
+    selected_service: fmt_svc(derek_beard),
+    payment_amount: derek_beard.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-20 11:30"),
+    content: "James comes in monthly for beard maintenance."
   )
 
-  # Aaliyah — bridal updo, day+7 10am (ends 11:30am)
-  Appointment.create!(
-    stylist:          aaliyah,
-    customer:         priya_c,
-    location_id:      aaliyah_loc.id,
-    salon:            aaliyah.name,
-    time:             (today + 7).beginning_of_day + 10.hours,
-    end_time:         (today + 7).beginning_of_day + 10.hours + aaliyah_updo.duration_minutes.minutes,
-    selected_service: "#{aaliyah_updo.name} - $#{sprintf('%.2f', aaliyah_updo.price)}",
-    status:           :pending,
-    payment_status:   "pending",
-    payment_amount:   aaliyah_updo.price,
-    content:          "Priya is getting married in two weeks and wants a romantic, loose updo with face-framing tendrils. Hair is shoulder-length and naturally wavy."
+  # Derek — 2026-04-04 (derek_past_2: 10:00–18:00)
+  #   10:00  Hot Towel Shave (30 min) [CANCELLED — late cancellation]
+
+  appt_derek_x1 = Appointment.create!(
+    stylist: derek, customer: tyler,
+    location: derek_loc, availability_block: derek_past_2,
+    time: Time.zone.parse("2026-04-04 10:00"),
+    selected_service: fmt_svc(derek_hot_towel),
+    payment_amount: derek_hot_towel.price,
+    payment_status: "deposit_kept",
+    status: :cancelled,
+    cancelled_at: Time.zone.parse("2026-04-03 22:00"),
+    cancelled_by: "customer",
+    cancelled_by_id: tyler.id,
+    cancellation_reason: "Cancelled less than 24 hours before appointment — deposit kept per policy."
   )
 
-  # Marcus S — high-top fade, day+5 8am (ends 8:50am)
-  Appointment.create!(
-    stylist:          marcus_s,
-    customer:         marcus_c,
-    location_id:      marcus_s_loc.id,
-    salon:            marcus_s.name,
-    time:             (today + 5).beginning_of_day + 8.hours,
-    end_time:         (today + 5).beginning_of_day + 8.hours + marcus_s_hightop.duration_minutes.minutes,
-    selected_service: "#{marcus_s_hightop.name} - $#{sprintf('%.2f', marcus_s_hightop.price)}",
-    status:           :pending,
-    payment_status:   "pending",
-    payment_amount:   marcus_s_hightop.price,
-    content:          "Marcus wants a fresh high-top fade ahead of a birthday celebration. Likes a hard part on the left and a very crisp line-up."
+  # Sofia — 2026-03-21 (sofia_past_1: 08:00–18:00)
+  #   09:00  Balayage (180 min → ends 12:00)
+  #   13:00  Toner & Gloss (30 min → ends 13:30)
+
+  appt_sofia_c1 = Appointment.create!(
+    stylist: sofia, customer: olivia,
+    location: sofia_loc, availability_block: sofia_past_1,
+    time: Time.zone.parse("2026-03-21 09:00"),
+    selected_service: fmt_svc(sofia_balayage),
+    payment_amount: sofia_balayage.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-21 12:00"),
+    content: "Olivia wanted subtle, natural-looking highlights for spring."
   )
 
-  # Claire — loc retwist, day+7 9am (ends 10:30am)
-  Appointment.create!(
-    stylist:          claire,
-    customer:         leo,
-    location_id:      claire_loc.id,
-    salon:            claire.name,
-    time:             (today + 7).beginning_of_day + 9.hours,
-    end_time:         (today + 7).beginning_of_day + 9.hours + claire_retwist.duration_minutes.minutes,
-    selected_service: "#{claire_retwist.name} - $#{sprintf('%.2f', claire_retwist.price)}",
-    status:           :pending,
-    payment_status:   "pending",
-    payment_amount:   claire_retwist.price,
-    content:          "Leo's locs are about 8 months old and due for a retwist. He prefers a palm-roll method and wants the parts kept neat and even."
+  appt_sofia_c2 = Appointment.create!(
+    stylist: sofia, customer: zoe,
+    location: sofia_loc, availability_block: sofia_past_1,
+    time: Time.zone.parse("2026-03-21 13:00"),
+    selected_service: fmt_svc(sofia_toner),
+    payment_amount: sofia_toner.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-21 13:30"),
+    content: "Zoe had existing highlights and needed tone refreshed."
   )
 
-  # Taylor — scalp analysis, day+3 9am (ends 10:15am)
-  Appointment.create!(
-    stylist:          taylor,
-    customer:         nina,
-    location_id:      taylor_loc1.id,
-    salon:            taylor.name,
-    time:             (today + 3).beginning_of_day + 9.hours,
-    end_time:         (today + 3).beginning_of_day + 9.hours + taylor_analysis.duration_minutes.minutes,
-    selected_service: "#{taylor_analysis.name} - $#{sprintf('%.2f', taylor_analysis.price)}",
-    status:           :pending,
-    payment_status:   "pending",
-    payment_amount:   taylor_analysis.price,
-    content:          "Nina has been experiencing increased shedding for three months and wants a thorough scalp analysis before starting any treatment plan."
+  # Jordan — 2026-03-28 (jordan_past_1: 09:00–17:00)
+  #   09:00  DevaCut (90 min → ends 10:30)
+  #   11:00  Curl Co-Wash & Style (75 min → ends 12:15)
+
+  appt_jordan_c1 = Appointment.create!(
+    stylist: jordan, customer: simone,
+    location: jordan_loc, availability_block: jordan_past_1,
+    time: Time.zone.parse("2026-03-28 09:00"),
+    selected_service: fmt_svc(jordan_deva_cut),
+    payment_amount: jordan_deva_cut.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-28 10:30"),
+    content: "Simone wanted her curls shaped for summer."
   )
 
-  # ----------------------------------------------------------
-  # BOOKED (10) — future, deposit paid
-  # ----------------------------------------------------------
-
-  # Maya — wash & go, day+6 12pm (ends 1:30pm) — no overlap with Emma 10-11:15am
-  Appointment.create!(
-    stylist:          maya,
-    customer:         aisha,
-    location_id:      maya_loc1.id,
-    salon:            maya.name,
-    time:             (today + 6).beginning_of_day + 12.hours,
-    end_time:         (today + 6).beginning_of_day + 12.hours + maya_wash_go.duration_minutes.minutes,
-    selected_service: "#{maya_wash_go.name} - $#{sprintf('%.2f', maya_wash_go.price)}",
-    status:           :booked,
-    payment_status:   "paid",
-    payment_id:       "DEV_DEPOSIT_#{SecureRandom.hex(8)}",
-    payment_amount:   maya_wash_go.price,
-    content:          "Aisha has 4A coils and wants a full wash day with curl definition. Prefers Shea Moisture-compatible products and no silicones."
+  appt_jordan_c2 = Appointment.create!(
+    stylist: jordan, customer: emma,
+    location: jordan_loc, availability_block: jordan_past_1,
+    time: Time.zone.parse("2026-03-28 11:00"),
+    selected_service: fmt_svc(jordan_co_wash),
+    payment_amount: jordan_co_wash.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-28 12:15"),
+    content: "First appointment with Jordan — Emma is working on a curl care routine."
   )
 
-  # Maya — protective braids, day+14 10am (ends 1pm) — no overlap, different day
-  Appointment.create!(
-    stylist:          maya,
-    customer:         simone,
-    location_id:      maya_loc2.id,
-    salon:            maya.name,
-    time:             (today + 14).beginning_of_day + 10.hours,
-    end_time:         (today + 14).beginning_of_day + 10.hours + maya_braids.duration_minutes.minutes,
-    selected_service: "#{maya_braids.name} - $#{sprintf('%.2f', maya_braids.price)}",
-    status:           :booked,
-    payment_status:   "paid",
-    payment_id:       "DEV_DEPOSIT_#{SecureRandom.hex(8)}",
-    payment_amount:   maya_braids.price,
-    content:          "Simone wants medium knotless box braids, waist-length, with a side part. Hair is pre-washed and lightly stretched."
+  # Aaliyah — 2026-03-22 (aaliyah_past_1: 10:00–18:00)
+  #   10:00  Bridal Updo (120 min → ends 12:00)
+
+  appt_aaliyah_c1 = Appointment.create!(
+    stylist: aaliyah, customer: nina,
+    location: aaliyah_loc, availability_block: aaliyah_past_1,
+    time: Time.zone.parse("2026-03-22 10:00"),
+    selected_service: fmt_svc(aaliyah_updo),
+    payment_amount: aaliyah_updo.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-22 12:00"),
+    content: "Nina's bridal trial for her April wedding."
   )
 
-  # Derek — beard shape-up, day+5 10am (ends 10:25am) — no overlap with James 9-9:40am
-  Appointment.create!(
-    stylist:          derek,
-    customer:         evan,
-    location_id:      derek_loc.id,
-    salon:            derek.name,
-    time:             (today + 5).beginning_of_day + 10.hours,
-    end_time:         (today + 5).beginning_of_day + 10.hours + derek_beard.duration_minutes.minutes,
-    selected_service: "#{derek_beard.name} - $#{sprintf('%.2f', derek_beard.price)}",
-    status:           :booked,
-    payment_status:   "paid",
-    payment_id:       "DEV_DEPOSIT_#{SecureRandom.hex(8)}",
-    payment_amount:   derek_beard.price,
-    content:          "Evan wants his full beard sculpted down and shaped — angled at the cheeks, square at the chin. Prefers a clean finish with beard oil."
+  # Marcus — 2026-03-21 (marcus_past_1: 09:00–17:00)
+  #   09:00  High-Top Fade (60 min → ends 10:00)
+
+  appt_marcus_c1 = Appointment.create!(
+    stylist: marcus, customer: leo,
+    location: marcus_loc, availability_block: marcus_past_1,
+    time: Time.zone.parse("2026-03-21 09:00"),
+    selected_service: fmt_svc(marcus_fade),
+    payment_amount: marcus_fade.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-21 10:00"),
+    content: "Leo is a regular — comes in every three weeks."
   )
 
-  # Sofia — women's cut & style, day+8 2pm (ends 3pm) — no overlap with Olivia 10am-1pm
-  Appointment.create!(
-    stylist:          sofia,
-    customer:         hannah,
-    location_id:      sofia_loc.id,
-    salon:            sofia.name,
-    time:             (today + 8).beginning_of_day + 14.hours,
-    end_time:         (today + 8).beginning_of_day + 14.hours + sofia_cut.duration_minutes.minutes,
-    selected_service: "#{sofia_cut.name} - $#{sprintf('%.2f', sofia_cut.price)}",
-    status:           :booked,
-    payment_status:   "paid",
-    payment_id:       "DEV_DEPOSIT_#{SecureRandom.hex(8)}",
-    payment_amount:   sofia_cut.price,
-    content:          "Hannah wants a long-layer cut with a blowout. She's growing her hair out but wants shape and movement put back into it."
+  # Marcus — 2026-04-04 (marcus_past_2: 09:00–17:00)
+  #   09:00  Full Service Cut & Shave (75 min → ends 10:15)  +lining add-on
+
+  appt_marcus_c2 = Appointment.create!(
+    stylist: marcus, customer: james,
+    location: marcus_loc, availability_block: marcus_past_2,
+    time: Time.zone.parse("2026-04-04 09:00"),
+    selected_service: fmt_svc(marcus_full_svc),
+    payment_amount: marcus_full_svc.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-04-04 10:15"),
+    content: "James wanted a full treatment ahead of his anniversary dinner."
   )
 
-  # Jordan — co-wash & style, day+6 11am (ends 12:15pm) — no overlap with Tyler 9-10:15am
-  Appointment.create!(
-    stylist:          jordan,
-    customer:         zoe,
-    location_id:      jordan_loc1.id,
-    salon:            jordan.name,
-    time:             (today + 6).beginning_of_day + 11.hours,
-    end_time:         (today + 6).beginning_of_day + 11.hours + jordan_cowash.duration_minutes.minutes,
-    selected_service: "#{jordan_cowash.name} - $#{sprintf('%.2f', jordan_cowash.price)}",
-    status:           :booked,
-    payment_status:   "paid",
-    payment_id:       "DEV_DEPOSIT_#{SecureRandom.hex(8)}",
-    payment_amount:   jordan_cowash.price,
-    content:          "Zoe wants a co-wash refresh and a defined twist-out set. Her curls are 3B/3C and she's been dealing with frizz in the humidity."
+  # Priya — 2026-03-28 (priya_past_1: 09:00–18:00)
+  #   09:00  Tape-In Extensions (180 min → ends 12:00)  +toning gloss add-on
+
+  appt_priya_c1 = Appointment.create!(
+    stylist: priya, customer: zoe,
+    location: priya_loc, availability_block: priya_past_1,
+    time: Time.zone.parse("2026-03-28 09:00"),
+    selected_service: fmt_svc(priya_tape_in),
+    payment_amount: priya_tape_in.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-28 12:00"),
+    content: "Zoe wanted length and volume for an upcoming photoshoot."
   )
 
-  # Aaliyah — half-up style, day+7 12pm (ends 12:45pm) — no overlap with Priya 10-11:30am
-  Appointment.create!(
-    stylist:          aaliyah,
-    customer:         jasmine,
-    location_id:      aaliyah_loc.id,
-    salon:            aaliyah.name,
-    time:             (today + 7).beginning_of_day + 12.hours,
-    end_time:         (today + 7).beginning_of_day + 12.hours + aaliyah_halfup.duration_minutes.minutes,
-    selected_service: "#{aaliyah_halfup.name} - $#{sprintf('%.2f', aaliyah_halfup.price)}",
-    status:           :booked,
-    payment_status:   "paid",
-    payment_id:       "DEV_DEPOSIT_#{SecureRandom.hex(8)}",
-    payment_amount:   aaliyah_halfup.price,
-    content:          "Jasmine is a bridesmaid and needs a polished half-up style with soft waves. The wedding colors are blush and cream."
+  # Claire — 2026-03-21 (claire_past_1: 08:00–18:00)
+  #   08:00  Retwist & Style (90 min → ends 09:30)  +oil treatment add-on
+  #   10:00  Loc Repair (60 min → ends 11:00)        [CANCELLED — stylist emergency]
+
+  appt_claire_c1 = Appointment.create!(
+    stylist: claire, customer: aisha,
+    location: claire_loc, availability_block: claire_past_1,
+    time: Time.zone.parse("2026-03-21 08:00"),
+    selected_service: fmt_svc(claire_retwist),
+    payment_amount: claire_retwist.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :completed,
+    completed_at: Time.zone.parse("2026-03-21 09:30"),
+    content: "Aisha's regular retwist appointment every six weeks."
   )
 
-  # Marcus S — classic taper, day+5 9am (ends 9:40am) — no overlap with Marcus_c 8-8:50am
-  Appointment.create!(
-    stylist:          marcus_s,
-    customer:         andre,
-    location_id:      marcus_s_loc.id,
-    salon:            marcus_s.name,
-    time:             (today + 5).beginning_of_day + 9.hours,
-    end_time:         (today + 5).beginning_of_day + 9.hours + marcus_s_taper.duration_minutes.minutes,
-    selected_service: "#{marcus_s_taper.name} - $#{sprintf('%.2f', marcus_s_taper.price)}",
-    status:           :booked,
-    payment_status:   "paid",
-    payment_id:       "DEV_DEPOSIT_#{SecureRandom.hex(8)}",
-    payment_amount:   marcus_s_taper.price,
-    content:          "Andre wants a classic low taper with a clean natural finish — no skin fade. He likes a slightly rounded top and neat sideburns."
+  appt_claire_x1 = Appointment.create!(
+    stylist: claire, customer: caleb,
+    location: claire_loc, availability_block: claire_past_1,
+    time: Time.zone.parse("2026-03-21 10:00"),
+    selected_service: fmt_svc(claire_repair),
+    payment_amount: claire_repair.price,
+    payment_status: "refunded",
+    status: :cancelled,
+    cancelled_at: Time.zone.parse("2026-03-21 07:00"),
+    cancelled_by: "stylist",
+    cancelled_by_id: claire.id,
+    cancellation_reason: "Claire had a family emergency and cancelled day-of."
   )
 
-  # Priya S — tape-in extensions, day+4 9am (ends 12pm)
-  Appointment.create!(
-    stylist:          priya_s,
-    customer:         caleb,
-    location_id:      priya_s_loc1.id,
-    salon:            priya_s.name,
-    time:             (today + 4).beginning_of_day + 9.hours,
-    end_time:         (today + 4).beginning_of_day + 9.hours + priya_s_tapein.duration_minutes.minutes,
-    selected_service: "#{priya_s_tapein.name} - $#{sprintf('%.2f', priya_s_tapein.price)}",
-    status:           :booked,
-    payment_status:   "paid",
-    payment_id:       "DEV_DEPOSIT_#{SecureRandom.hex(8)}",
-    payment_amount:   priya_s_tapein.price,
-    content:          "Caleb's partner is getting tape-ins for added length — booking is in Caleb's name. Natural hair is fine and blonde, wants extensions to blend seamlessly."
+  # ------------------------------------------------------------------
+  # PENDING — future blocks
+  # overlap validation only checks status: [:pending, :booked],
+  # so these must not overlap with each other per stylist.
+  # ------------------------------------------------------------------
+
+  # Maya — 2026-04-17 (maya_future_1: 09:00–17:00)
+  #   09:00  Silk Press (90 min → ends 10:30)
+  #   11:00  Deep Conditioning (45 min → ends 11:45)
+
+  appt_maya_p1 = Appointment.create!(
+    stylist: maya, customer: olivia,
+    location: maya_loc, availability_block: maya_future_1,
+    time: Time.zone.parse("2026-04-17 09:00"),
+    selected_service: fmt_svc(maya_silk_press),
+    payment_amount: maya_silk_press.price,
+    payment_status: "pending",
+    status: :pending,
+    content: "Olivia is trying Maya for the first time."
   )
 
-  # Ben — men's cut & style, day+5 10am (ends 10:50am)
-  Appointment.create!(
-    stylist:          ben,
-    customer:         miguel,
-    location_id:      ben_loc.id,
-    salon:            ben.name,
-    time:             (today + 5).beginning_of_day + 10.hours,
-    end_time:         (today + 5).beginning_of_day + 10.hours + ben_mens.duration_minutes.minutes,
-    selected_service: "#{ben_mens.name} - $#{sprintf('%.2f', ben_mens.price)}",
-    status:           :booked,
-    payment_status:   "paid",
-    payment_id:       "DEV_DEPOSIT_#{SecureRandom.hex(8)}",
-    payment_amount:   ben_mens.price,
-    content:          "Miguel has thick, wavy 2B hair and wants a cut that works with the texture — not against it. Interested in a slightly longer top with clean sides."
+  appt_maya_p2 = Appointment.create!(
+    stylist: maya, customer: caleb,
+    location: maya_loc, availability_block: maya_future_1,
+    time: Time.zone.parse("2026-04-17 11:00"),
+    selected_service: fmt_svc(maya_deep_cond),
+    payment_amount: maya_deep_cond.price,
+    payment_status: "pending",
+    status: :pending,
+    content: "Caleb booked a conditioning treatment to restore dry hair."
   )
 
-  # Taylor — clarifying detox, day+9 10am (ends 11am) — no overlap with Nina day+3
-  Appointment.create!(
-    stylist:          taylor,
-    customer:         destiny,
-    location_id:      taylor_loc1.id,
-    salon:            taylor.name,
-    time:             (today + 9).beginning_of_day + 10.hours,
-    end_time:         (today + 9).beginning_of_day + 10.hours + taylor_detox.duration_minutes.minutes,
-    selected_service: "#{taylor_detox.name} - $#{sprintf('%.2f', taylor_detox.price)}",
-    status:           :booked,
-    payment_status:   "paid",
-    payment_id:       "DEV_DEPOSIT_#{SecureRandom.hex(8)}",
-    payment_amount:   taylor_detox.price,
-    content:          "Destiny has been using a lot of dry shampoo and product and feels her scalp is congested. Wants a full clarifying detox to reset before summer."
+  # Derek — 2026-04-18 (derek_future_1: 10:00–18:00)
+  #   10:00  Men's Fade (45 min → ends 10:45)
+
+  appt_derek_p1 = Appointment.create!(
+    stylist: derek, customer: leo,
+    location: derek_loc, availability_block: derek_future_1,
+    time: Time.zone.parse("2026-04-18 10:00"),
+    selected_service: fmt_svc(derek_fade),
+    payment_amount: derek_fade.price,
+    payment_status: "pending",
+    status: :pending,
+    content: "Leo's friend recommended Derek's shop."
   )
 
-  puts "  Pending:  #{Appointment.pending.count}"
-  puts "  Booked:   #{Appointment.booked.count}"
+  # Sofia — 2026-04-18 (sofia_future_1: 08:00–18:00)
+  #   09:00  Color Melt (165 min → ends 11:45)
 
-  # ----------------------------------------------------------
-  # COMPLETED (12) — past appointments, 1-8 weeks ago
-  #
-  # payment_status note: 'collected_in_person' is not a valid
-  # enum value (model allows: pending deposit_paid balance_due
-  # paid refunded deposit_kept failed). Using 'paid' throughout.
-  # Appointments where the balance was collected in person are
-  # marked with balance_collected = service.price * 0.5 and
-  # balance_payment_id set; fully-Square-paid ones leave those nil.
-  # ----------------------------------------------------------
-
-  # Maya — silk press — emma — 2 weeks ago (paid + in-person balance)
-  t = 2.weeks.ago.beginning_of_day + 10.hours
-  Appointment.create!(
-    stylist:            maya,
-    customer:           emma,
-    location_id:        maya_loc1.id,
-    salon:              maya.name,
-    time:               t,
-    end_time:           t + maya_silk_press.duration_minutes.minutes,
-    completed_at:       t + maya_silk_press.duration_minutes.minutes,
-    selected_service:   "#{maya_silk_press.name} - $#{sprintf('%.2f', maya_silk_press.price)}",
-    status:             :completed,
-    payment_status:     "paid",
-    payment_amount:     maya_silk_press.price,
-    payment_id:         "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    balance_payment_id: "DEV_BALANCE_#{SecureRandom.hex(8)}",
-    balance_collected:  (maya_silk_press.price * 0.5).round(2),
-    payment_method:     "square",
-    content:            "Emma wanted a sleek silk press for a work event. Medium heat, finished with a shine serum. Left very happy."
+  appt_sofia_p1 = Appointment.create!(
+    stylist: sofia, customer: nina,
+    location: sofia_loc, availability_block: sofia_future_1,
+    time: Time.zone.parse("2026-04-18 09:00"),
+    selected_service: fmt_svc(sofia_color_melt),
+    payment_amount: sofia_color_melt.price,
+    payment_status: "pending",
+    status: :pending,
+    content: "Nina wants a brown-to-copper color melt for spring."
   )
 
-  # Maya — big chop — caleb — 5 weeks ago (paid + in-person balance)
-  t = 5.weeks.ago.beginning_of_day + 9.hours
-  Appointment.create!(
-    stylist:            maya,
-    customer:           caleb,
-    location_id:        maya_loc1.id,
-    salon:              maya.name,
-    time:               t,
-    end_time:           t + maya_big_chop.duration_minutes.minutes,
-    completed_at:       t + maya_big_chop.duration_minutes.minutes,
-    selected_service:   "#{maya_big_chop.name} - $#{sprintf('%.2f', maya_big_chop.price)}",
-    status:             :completed,
-    payment_status:     "paid",
-    payment_amount:     maya_big_chop.price,
-    payment_id:         "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    balance_payment_id: "DEV_BALANCE_#{SecureRandom.hex(8)}",
-    balance_collected:  (maya_big_chop.price * 0.5).round(2),
-    payment_method:     "square",
-    content:            "Caleb was transitioning from a texturizer and ready to go fully natural. Emotional appointment — cut went great and he loved the result."
+  # Jordan — 2026-04-19 (jordan_future_1: 09:00–17:00)
+  #   09:00  DevaCut (90 min → ends 10:30)
+
+  appt_jordan_p1 = Appointment.create!(
+    stylist: jordan, customer: tyler,
+    location: jordan_loc, availability_block: jordan_future_1,
+    time: Time.zone.parse("2026-04-19 09:00"),
+    selected_service: fmt_svc(jordan_deva_cut),
+    payment_amount: jordan_deva_cut.price,
+    payment_status: "pending",
+    status: :pending,
+    content: "Tyler is trying a DevaCut for the first time after years of straight-cut methods."
   )
 
-  # Derek — men's fade — james — 3 weeks ago (paid + in-person balance)
-  t = 3.weeks.ago.beginning_of_day + 9.hours
-  Appointment.create!(
-    stylist:            derek,
-    customer:           james,
-    location_id:        derek_loc.id,
-    salon:              derek.name,
-    time:               t,
-    end_time:           t + derek_fade.duration_minutes.minutes,
-    completed_at:       t + derek_fade.duration_minutes.minutes,
-    selected_service:   "#{derek_fade.name} - $#{sprintf('%.2f', derek_fade.price)}",
-    status:             :completed,
-    payment_status:     "paid",
-    payment_amount:     derek_fade.price,
-    payment_id:         "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    balance_payment_id: "DEV_BALANCE_#{SecureRandom.hex(8)}",
-    balance_collected:  (derek_fade.price * 0.5).round(2),
-    payment_method:     "square",
-    content:            "James wanted a fresh low skin fade before a job interview. Sharp line-up and temple taper. Walked out confident."
+  # Aaliyah — 2026-04-19 (aaliyah_future_1: 10:00–18:00)
+  #   10:00  Bridal Trial (90 min → ends 11:30)
+
+  appt_aaliyah_p1 = Appointment.create!(
+    stylist: aaliyah, customer: simone,
+    location: aaliyah_loc, availability_block: aaliyah_future_1,
+    time: Time.zone.parse("2026-04-19 10:00"),
+    selected_service: fmt_svc(aaliyah_trial),
+    payment_amount: aaliyah_trial.price,
+    payment_status: "pending",
+    status: :pending,
+    content: "Simone is getting married in June and wants to preview her updo."
   )
 
-  # Derek — beard shape-up — ryan — 6 weeks ago (fully paid via Square)
-  t = 6.weeks.ago.beginning_of_day + 10.hours
-  Appointment.create!(
-    stylist:          derek,
-    customer:         ryan,
-    location_id:      derek_loc.id,
-    salon:            derek.name,
-    time:             t,
-    end_time:         t + derek_beard.duration_minutes.minutes,
-    completed_at:     t + derek_beard.duration_minutes.minutes,
-    selected_service: "#{derek_beard.name} - $#{sprintf('%.2f', derek_beard.price)}",
-    status:           :completed,
-    payment_status:   "paid",
-    payment_amount:   derek_beard.price,
-    payment_id:       "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    payment_method:   "square",
-    content:          "Ryan came in for a beard clean-up — angled cheeks, square chin, finished with beard balm. Quick and precise."
+  # Marcus — 2026-04-18 (marcus_future_1: 09:00–17:00)
+  #   09:00  High-Top Fade (60 min → ends 10:00)
+
+  appt_marcus_p1 = Appointment.create!(
+    stylist: marcus, customer: james,
+    location: marcus_loc, availability_block: marcus_future_1,
+    time: Time.zone.parse("2026-04-18 09:00"),
+    selected_service: fmt_svc(marcus_fade),
+    payment_amount: marcus_fade.price,
+    payment_status: "pending",
+    status: :pending,
+    content: "James's regular appointment with Marcus."
   )
 
-  # Sofia — full color — olivia — 4 weeks ago (paid + in-person balance)
-  t = 4.weeks.ago.beginning_of_day + 10.hours
-  Appointment.create!(
-    stylist:            sofia,
-    customer:           olivia,
-    location_id:        sofia_loc.id,
-    salon:              sofia.name,
-    time:               t,
-    end_time:           t + sofia_full_color.duration_minutes.minutes,
-    completed_at:       t + sofia_full_color.duration_minutes.minutes,
-    selected_service:   "#{sofia_full_color.name} - $#{sprintf('%.2f', sofia_full_color.price)}",
-    status:             :completed,
-    payment_status:     "paid",
-    payment_amount:     sofia_full_color.price,
-    payment_id:         "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    balance_payment_id: "DEV_BALANCE_#{SecureRandom.hex(8)}",
-    balance_collected:  (sofia_full_color.price * 0.5).round(2),
-    payment_method:     "square",
-    content:            "Olivia wanted to go from medium brown to a rich espresso. Full single-process color with a blowout finish. Came out beautifully dimensional."
+  # Priya — 2026-04-18 (priya_future_1: 09:00–18:00)
+  #   09:00  Sew-In Weave (180 min → ends 12:00)
+
+  appt_priya_p1 = Appointment.create!(
+    stylist: priya, customer: aisha,
+    location: priya_loc, availability_block: priya_future_1,
+    time: Time.zone.parse("2026-04-18 09:00"),
+    selected_service: fmt_svc(priya_sew_in),
+    payment_amount: priya_sew_in.price,
+    payment_status: "pending",
+    status: :pending,
+    content: "Aisha wants a full sew-in for protective styling this spring."
   )
 
-  # Jordan — DevaCut — zoe — 2 weeks ago (fully paid via Square)
-  t = 2.weeks.ago.beginning_of_day + 11.hours
-  Appointment.create!(
-    stylist:          jordan,
-    customer:         zoe,
-    location_id:      jordan_loc1.id,
-    salon:            jordan.name,
-    time:             t,
-    end_time:         t + jordan_deva.duration_minutes.minutes,
-    completed_at:     t + jordan_deva.duration_minutes.minutes,
-    selected_service: "#{jordan_deva.name} - $#{sprintf('%.2f', jordan_deva.price)}",
-    status:           :completed,
-    payment_status:   "paid",
-    payment_amount:   jordan_deva.price,
-    payment_id:       "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    payment_method:   "square",
-    content:          "Zoe's first DevaCut — she's been wanting to embrace her 3B curls. Curl-by-curl cut, finished with a diffuse. She couldn't believe the definition."
+  # Claire — 2026-04-19 (claire_future_1: 08:00–18:00)
+  #   08:00  Retwist & Style (90 min → ends 09:30)
+
+  appt_claire_p1 = Appointment.create!(
+    stylist: claire, customer: emma,
+    location: claire_loc, availability_block: claire_future_1,
+    time: Time.zone.parse("2026-04-19 08:00"),
+    selected_service: fmt_svc(claire_retwist),
+    payment_amount: claire_retwist.price,
+    payment_status: "pending",
+    status: :pending,
+    content: "Emma is exploring loc maintenance after eight months in."
   )
 
-  # Aaliyah — event blowout — destiny — 3 weeks ago (fully paid via Square)
-  t = 3.weeks.ago.beginning_of_day + 14.hours
-  Appointment.create!(
-    stylist:          aaliyah,
-    customer:         destiny,
-    location_id:      aaliyah_loc.id,
-    salon:            aaliyah.name,
-    time:             t,
-    end_time:         t + aaliyah_blowout.duration_minutes.minutes,
-    completed_at:     t + aaliyah_blowout.duration_minutes.minutes,
-    selected_service: "#{aaliyah_blowout.name} - $#{sprintf('%.2f', aaliyah_blowout.price)}",
-    status:           :completed,
-    payment_status:   "paid",
-    payment_amount:   aaliyah_blowout.price,
-    payment_id:       "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    payment_method:   "square",
-    content:          "Destiny needed a sleek blowout for her company's gala. Big, bouncy volume with a round-brush finish. She looked stunning."
+  # ------------------------------------------------------------------
+  # BOOKED — future blocks (deposit paid)
+  # ------------------------------------------------------------------
+
+  # Maya — 2026-04-25 (maya_future_2: 10:00–16:00)
+  #   10:00  Braid Out & Style (60 min → ends 11:00)
+
+  appt_maya_b1 = Appointment.create!(
+    stylist: maya, customer: simone,
+    location: maya_loc, availability_block: maya_future_2,
+    time: Time.zone.parse("2026-04-25 10:00"),
+    selected_service: fmt_svc(maya_braid_out),
+    payment_amount: maya_braid_out.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :booked,
+    content: "Simone wants a braid-out style for a weekend trip."
   )
 
-  # Marcus S — full groom package — marcus_c — 5 weeks ago (paid + in-person balance)
-  t = 5.weeks.ago.beginning_of_day + 9.hours
-  Appointment.create!(
-    stylist:            marcus_s,
-    customer:           marcus_c,
-    location_id:        marcus_s_loc.id,
-    salon:              marcus_s.name,
-    time:               t,
-    end_time:           t + marcus_s_groom.duration_minutes.minutes,
-    completed_at:       t + marcus_s_groom.duration_minutes.minutes,
-    selected_service:   "#{marcus_s_groom.name} - $#{sprintf('%.2f', marcus_s_groom.price)}",
-    status:             :completed,
-    payment_status:     "paid",
-    payment_amount:     marcus_s_groom.price,
-    payment_id:         "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    balance_payment_id: "DEV_BALANCE_#{SecureRandom.hex(8)}",
-    balance_collected:  (marcus_s_groom.price * 0.5).round(2),
-    payment_method:     "square",
-    content:            "Marcus came in for the full package before a friend's wedding — high-top, beard shape, hot towel. Said it was his best appointment yet."
+  # Derek — 2026-04-25 (derek_future_2: 10:00–18:00)
+  #   10:00  Beard Sculpt (30 min → ends 10:30)
+
+  appt_derek_b1 = Appointment.create!(
+    stylist: derek, customer: caleb,
+    location: derek_loc, availability_block: derek_future_2,
+    time: Time.zone.parse("2026-04-25 10:00"),
+    selected_service: fmt_svc(derek_beard),
+    payment_amount: derek_beard.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :booked,
+    content: "Caleb getting his beard shaped for a date."
   )
 
-  # Priya S — extension removal — aisha — 7 weeks ago (fully paid via Square)
-  t = 7.weeks.ago.beginning_of_day + 10.hours
-  Appointment.create!(
-    stylist:          priya_s,
-    customer:         aisha,
-    location_id:      priya_s_loc1.id,
-    salon:            priya_s.name,
-    time:             t,
-    end_time:         t + priya_s_removal.duration_minutes.minutes,
-    completed_at:     t + priya_s_removal.duration_minutes.minutes,
-    selected_service: "#{priya_s_removal.name} - $#{sprintf('%.2f', priya_s_removal.price)}",
-    status:           :completed,
-    payment_status:   "paid",
-    payment_amount:   priya_s_removal.price,
-    payment_id:       "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    payment_method:   "square",
-    content:          "Aisha had tape-in extensions from another stylist and needed them carefully removed before installing a fresh set. Natural hair was in good condition underneath."
+  # Sofia — 2026-05-02 (sofia_future_2: 08:00–18:00)
+  #   09:00  Full Highlights (150 min → ends 11:30)
+
+  appt_sofia_b1 = Appointment.create!(
+    stylist: sofia, customer: zoe,
+    location: sofia_loc, availability_block: sofia_future_2,
+    time: Time.zone.parse("2026-05-02 09:00"),
+    selected_service: fmt_svc(sofia_highlights),
+    payment_amount: sofia_highlights.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :booked,
+    content: "Zoe booked a full highlight refresh for summer."
   )
 
-  # Claire — loc retwist — leo — 4 weeks ago (paid + in-person balance)
-  t = 4.weeks.ago.beginning_of_day + 9.hours
-  Appointment.create!(
-    stylist:            claire,
-    customer:           leo,
-    location_id:        claire_loc.id,
-    salon:              claire.name,
-    time:               t,
-    end_time:           t + claire_retwist.duration_minutes.minutes,
-    completed_at:       t + claire_retwist.duration_minutes.minutes,
-    selected_service:   "#{claire_retwist.name} - $#{sprintf('%.2f', claire_retwist.price)}",
-    status:             :completed,
-    payment_status:     "paid",
-    payment_amount:     claire_retwist.price,
-    payment_id:         "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    balance_payment_id: "DEV_BALANCE_#{SecureRandom.hex(8)}",
-    balance_collected:  (claire_retwist.price * 0.5).round(2),
-    payment_method:     "square",
-    content:            "Leo's locs were 6 months in and needed their first real retwist. Palm-roll method, parting was clean and even. He left with healthy, defined roots."
+  # Jordan — 2026-05-03 (jordan_future_2: 09:00–17:00)
+  #   09:00  Curl Co-Wash & Style (75 min → ends 10:15)
+
+  appt_jordan_b1 = Appointment.create!(
+    stylist: jordan, customer: olivia,
+    location: jordan_loc, availability_block: jordan_future_2,
+    time: Time.zone.parse("2026-05-03 09:00"),
+    selected_service: fmt_svc(jordan_co_wash),
+    payment_amount: jordan_co_wash.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :booked,
+    content: "Olivia booked a co-wash and style ahead of a beach trip."
   )
 
-  # Ben — precision cut — miguel — 6 weeks ago (fully paid via Square)
-  t = 6.weeks.ago.beginning_of_day + 11.hours
-  Appointment.create!(
-    stylist:          ben,
-    customer:         miguel,
-    location_id:      ben_loc.id,
-    salon:            ben.name,
-    time:             t,
-    end_time:         t + ben_precision.duration_minutes.minutes,
-    completed_at:     t + ben_precision.duration_minutes.minutes,
-    selected_service: "#{ben_precision.name} - $#{sprintf('%.2f', ben_precision.price)}",
-    status:           :completed,
-    payment_status:   "paid",
-    payment_amount:   ben_precision.price,
-    payment_id:       "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    payment_method:   "square",
-    content:          "Miguel wanted his wavy hair cut to work with his texture. Removed bulk from the sides, left length on top. He's been wearing it natural since."
+  # Aaliyah — 2026-05-03 (aaliyah_future_2: 10:00–18:00)
+  #   10:00  Blowout & Style (60 min → ends 11:00)
+
+  appt_aaliyah_b1 = Appointment.create!(
+    stylist: aaliyah, customer: nina,
+    location: aaliyah_loc, availability_block: aaliyah_future_2,
+    time: Time.zone.parse("2026-05-03 10:00"),
+    selected_service: fmt_svc(aaliyah_blowout),
+    payment_amount: aaliyah_blowout.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :booked,
+    content: "Nina wants a sleek blowout for an event the following day."
   )
 
-  # Taylor — scalp analysis — hannah — 3 weeks ago (fully paid via Square)
-  t = 3.weeks.ago.beginning_of_day + 9.hours
-  Appointment.create!(
-    stylist:          taylor,
-    customer:         hannah,
-    location_id:      taylor_loc1.id,
-    salon:            taylor.name,
-    time:             t,
-    end_time:         t + taylor_analysis.duration_minutes.minutes,
-    completed_at:     t + taylor_analysis.duration_minutes.minutes,
-    selected_service: "#{taylor_analysis.name} - $#{sprintf('%.2f', taylor_analysis.price)}",
-    status:           :completed,
-    payment_status:   "paid",
-    payment_amount:   taylor_analysis.price,
-    payment_id:       "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    payment_method:   "square",
-    content:          "Hannah was concerned about thinning at her temples. Taylor did a full scalp analysis under magnification and prescribed a treatment protocol to start immediately."
+  # Priya — 2026-05-02 (priya_future_2: 09:00–18:00)
+  #   09:00  Extension Removal (60 min → ends 10:00)
+
+  appt_priya_b1 = Appointment.create!(
+    stylist: priya, customer: leo,
+    location: priya_loc, availability_block: priya_future_2,
+    time: Time.zone.parse("2026-05-02 09:00"),
+    selected_service: fmt_svc(priya_removal),
+    payment_amount: priya_removal.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :booked,
+    content: "Leo getting tape-in extensions removed."
   )
 
-  puts "  Completed: #{Appointment.completed.count}"
+  # Claire — 2026-05-03 (claire_future_2: 08:00–18:00)
+  #   08:00  Starter Locs (240 min → ends 12:00)
 
-  # ----------------------------------------------------------
-  # CANCELLED (5) — past appointments
-  # cancelled_at is always before appointment time.
-  # Overlap validator only checks pending/booked, so past
-  # cancelled records are exempt regardless of time proximity
-  # to completed ones.
-  # payment_amount = deposit (half of service price).
-  # ----------------------------------------------------------
-
-  # 1. Customer cancels in advance — sofia / priya_c / Highlights
-  #    Appointment: 3 weeks ago 10am. Cancelled 2 days before → full refund.
-  t = 3.weeks.ago.beginning_of_day + 10.hours
-  Appointment.create!(
-    stylist:             sofia,
-    customer:            priya_c,
-    location_id:         sofia_loc.id,
-    salon:               sofia.name,
-    time:                t,
-    end_time:            t + sofia_highlights.duration_minutes.minutes,
-    selected_service:    "#{sofia_highlights.name} - $#{sprintf('%.2f', sofia_highlights.price)}",
-    status:              :cancelled,
-    payment_status:      "refunded",
-    payment_amount:      (sofia_highlights.price * 0.5).round(2),
-    payment_id:          "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    payment_method:      "square",
-    cancelled_by:        "customer",
-    cancelled_by_id:     priya_c.id,
-    cancelled_at:        (3.weeks.ago - 2.days).beginning_of_day + 9.hours,
-    cancellation_reason: "I have a destination bachelorette trip that weekend and completely forgot I had this booked. So sorry for the inconvenience!",
-    content:             "Priya wanted partial foil highlights — warm caramel tones through the mid-lengths and ends on her dark brown base."
+  appt_claire_b1 = Appointment.create!(
+    stylist: claire, customer: tyler,
+    location: claire_loc, availability_block: claire_future_2,
+    time: Time.zone.parse("2026-05-03 08:00"),
+    selected_service: fmt_svc(claire_starter),
+    payment_amount: claire_starter.price,
+    payment_status: "paid",
+    payment_id: "DEV_#{SecureRandom.hex(8)}",
+    status: :booked,
+    content: "Tyler is starting his loc journey — first appointment with Claire."
   )
 
-  # 2. Customer cancels last-minute — jordan / james / Co-Wash & Style
-  #    Appointment: 2 weeks ago 9am. Cancelled 2 hours before → deposit kept (within 24h window).
-  t = 2.weeks.ago.beginning_of_day + 9.hours
-  Appointment.create!(
-    stylist:             jordan,
-    customer:            james,
-    location_id:         jordan_loc1.id,
-    salon:               jordan.name,
-    time:                t,
-    end_time:            t + jordan_cowash.duration_minutes.minutes,
-    selected_service:    "#{jordan_cowash.name} - $#{sprintf('%.2f', jordan_cowash.price)}",
-    status:              :cancelled,
-    payment_status:      "deposit_kept",
-    payment_amount:      (jordan_cowash.price * 0.5).round(2),
-    payment_id:          "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    payment_method:      "square",
-    cancelled_by:        "customer",
-    cancelled_by_id:     james.id,
-    cancelled_at:        2.weeks.ago.beginning_of_day + 7.hours,
-    cancellation_reason: "Car trouble this morning — I can't make it in. Really sorry, I know it's last minute.",
-    content:             "James wanted a full co-wash refresh and a defined wash-and-go set. First appointment with Jordan."
-  )
+  puts "  Done."
 
-  # 3. Stylist cancels — aaliyah / simone / Trial Run Style
-  #    Appointment: 6 weeks ago 11am. Cancelled the evening before → full refund (stylist initiated).
-  t = 6.weeks.ago.beginning_of_day + 11.hours
-  Appointment.create!(
-    stylist:             aaliyah,
-    customer:            simone,
-    location_id:         aaliyah_loc.id,
-    salon:               aaliyah.name,
-    time:                t,
-    end_time:            t + aaliyah_trial.duration_minutes.minutes,
-    selected_service:    "#{aaliyah_trial.name} - $#{sprintf('%.2f', aaliyah_trial.price)}",
-    status:              :cancelled,
-    payment_status:      "refunded",
-    payment_amount:      (aaliyah_trial.price * 0.5).round(2),
-    payment_id:          "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    payment_method:      "square",
-    cancelled_by:        "stylist",
-    cancelled_by_id:     aaliyah.id,
-    cancelled_at:        (6.weeks.ago - 1.day).beginning_of_day + 20.hours,
-    cancellation_reason: "I have a family emergency and need to cancel tomorrow's appointments. I'm so sorry, Simone — your deposit has been fully refunded and I'd love to reschedule.",
-    content:             "Simone's bridal trial — wants a low bun with baby hair laid and a few cascading curls framing her face."
-  )
+  # ============================================================
+  # ADD-ONS (on select completed & booked appointments)
+  # ============================================================
+  puts "  Creating add-ons..."
 
-  # 4. Customer cancels well in advance — ben / daniel / Japanese Straightening
-  #    Appointment: 4 weeks ago 10am. Cancelled 8 days before → full refund.
-  t = 4.weeks.ago.beginning_of_day + 10.hours
-  Appointment.create!(
-    stylist:             ben,
-    customer:            daniel,
-    location_id:         ben_loc.id,
-    salon:               ben.name,
-    time:                t,
-    end_time:            t + ben_japanese.duration_minutes.minutes,
-    selected_service:    "#{ben_japanese.name} - $#{sprintf('%.2f', ben_japanese.price)}",
-    status:              :cancelled,
-    payment_status:      "refunded",
-    payment_amount:      (ben_japanese.price * 0.5).round(2),
-    payment_id:          "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    payment_method:      "square",
-    cancelled_by:        "customer",
-    cancelled_by_id:     daniel.id,
-    cancelled_at:        5.weeks.ago.beginning_of_day + 14.hours,
-    cancellation_reason: "After thinking it over I've decided to stick with my natural texture for now and hold off on the straightening treatment.",
-    content:             "Daniel wanted a Japanese straightening treatment to eliminate frizz — his hair is coarse and high-density 2C."
-  )
+  AppointmentAddOn.create!(appointment: appt_maya_c1,   service: maya_scalp_treat, service_name: maya_scalp_treat.name, price: maya_scalp_treat.price)
+  AppointmentAddOn.create!(appointment: appt_marcus_c2, service: marcus_lining,    service_name: marcus_lining.name,    price: marcus_lining.price)
+  AppointmentAddOn.create!(appointment: appt_priya_c1,  service: priya_toning,     service_name: priya_toning.name,     price: priya_toning.price)
+  AppointmentAddOn.create!(appointment: appt_claire_c1, service: claire_oil_treat, service_name: claire_oil_treat.name, price: claire_oil_treat.price)
+  AppointmentAddOn.create!(appointment: appt_sofia_b1,  service: sofia_olaplex,    service_name: sofia_olaplex.name,    price: sofia_olaplex.price)
 
-  # 5. Stylist cancels same-day — taylor / evan / Growth Stimulation Treatment
-  #    Appointment: 5 weeks ago 9am. Cancelled 2 hours before → full refund (stylist initiated).
-  t = 5.weeks.ago.beginning_of_day + 9.hours
-  Appointment.create!(
-    stylist:             taylor,
-    customer:            evan,
-    location_id:         taylor_loc1.id,
-    salon:               taylor.name,
-    time:                t,
-    end_time:            t + taylor_growth.duration_minutes.minutes,
-    selected_service:    "#{taylor_growth.name} - $#{sprintf('%.2f', taylor_growth.price)}",
-    status:              :cancelled,
-    payment_status:      "refunded",
-    payment_amount:      (taylor_growth.price * 0.5).round(2),
-    payment_id:          "DEV_PAYMENT_#{SecureRandom.hex(8)}",
-    payment_method:      "square",
-    cancelled_by:        "stylist",
-    cancelled_by_id:     taylor.id,
-    cancelled_at:        5.weeks.ago.beginning_of_day + 7.hours,
-    cancellation_reason: "I woke up with a fever this morning and need to cancel today's appointments. Your deposit has been fully refunded — I'll reach out to reschedule as soon as I'm well.",
-    content:             "Evan has been experiencing diffuse thinning at the crown for about 6 months. Looking for a science-backed treatment protocol."
-  )
+  puts "  Done."
 
-  puts "  Cancelled: #{Appointment.cancelled.count}"
+  # ============================================================
+  # REVIEWS (for completed appointments)
+  # Saved with validate: false to bypass the within_review_window
+  # validation (3 days from completion).
+  # ============================================================
+  puts "  Creating reviews..."
 
-  # ----------------------------------------------------------
-  # APPOINTMENT ADD-ONS (~35% of all appointments)
-  # Appointments were not stored in variables, so we look them
-  # up by stylist + customer + status — each combo is unique.
-  # price: service.price returns price_cents / 100.0 (dollars),
-  # which maps correctly to the decimal(8,2) price column.
-  # ----------------------------------------------------------
-  puts "Creating appointment add-ons..."
+  Review.new(
+    appointment: appt_maya_c1, customer: emma, stylist: maya,
+    rating: 5,
+    content: "Maya is absolutely incredible. My silk press came out better than I've ever seen — so smooth and full of shine. She really listened to what I wanted and didn't use too much heat. The scalp treatment was the perfect addition. I left feeling genuinely pampered and have already booked my next appointment."
+  ).save(validate: false)
 
-  # Helper to fetch an add-on service by name for a given stylist
-  addon = ->(stylist_user, name) { stylist_user.services.find_by!(name: name, is_add_on: true) }
-  appt  = ->(stylist_user, customer_user, appt_status) {
-    Appointment.find_by!(stylist: stylist_user, customer: customer_user, status: appt_status)
-  }
+  Review.new(
+    appointment: appt_maya_c2, customer: nina, stylist: maya,
+    rating: 5,
+    content: "I've been nervous about going natural but Maya made the whole process feel exciting rather than daunting. My braid-out came out beautifully defined and she gave me so many tips for maintaining my hair at home. Her studio is calm and welcoming. I genuinely looked forward to coming back.",
+    stylist_response: "Nina, thank you so much! It was such a pleasure working with your hair. The texture you have is stunning — so glad we got to celebrate it together. See you soon!",
+    stylist_responded_at: Time.zone.parse("2026-03-22 10:00")
+  ).save(validate: false)
 
-  # ---- PENDING appointments with add-ons (4) ----
+  Review.new(
+    appointment: appt_derek_c1, customer: caleb, stylist: derek,
+    rating: 5,
+    content: "I came in for a clean fade before a big interview and Derek delivered beyond my expectations. The lineup was razor-sharp and the taper was perfectly blended. He worked quickly without rushing and I felt comfortable the whole time. Got the job too — this is my new go-to in Brooklyn."
+  ).save(validate: false)
 
-  # Maya / Emma — Silk Press → Deep Conditioning Treatment
-  svc = addon.(maya, "Deep Conditioning Treatment")
-  AppointmentAddOn.create!(appointment: appt.(maya, emma, :pending), service: svc,
-                            service_name: svc.name, price: svc.price)
+  Review.new(
+    appointment: appt_sofia_c1, customer: olivia, stylist: sofia,
+    rating: 5,
+    content: "Sofia gave me the most gorgeous balayage I've ever had. I've been to multiple colorists and none have nailed the look I described as well as she did. The tones are so natural-looking and the damage was minimal despite going lighter. She also walked me through the aftercare in detail. Worth every penny.",
+    stylist_response: "Olivia, this review made my day! I loved working with your hair — the dimension we got was stunning. Make sure you're using that purple shampoo! Can't wait to see you again.",
+    stylist_responded_at: Time.zone.parse("2026-03-22 16:00")
+  ).save(validate: false)
 
-  # Derek / James — Men's Fade → Razor Line-Up
-  svc = addon.(derek, "Razor Line-Up")
-  AppointmentAddOn.create!(appointment: appt.(derek, james, :pending), service: svc,
-                            service_name: svc.name, price: svc.price)
+  Review.new(
+    appointment: appt_jordan_c1, customer: simone, stylist: jordan,
+    rating: 5,
+    content: "I have been getting my hair cut the wrong way for years. Jordan explained the DevaCut method while she worked and completely changed how I understand my curls. My hair bounced in a way it never has before. She recommended products that actually work for my curl type. Absolute game changer."
+  ).save(validate: false)
 
-  # Sofia / Olivia — Balayage → Olaplex Treatment + Toning Gloss
-  svc = addon.(sofia, "Olaplex Treatment")
-  AppointmentAddOn.create!(appointment: appt.(sofia, olivia, :pending), service: svc,
-                            service_name: svc.name, price: svc.price)
-  svc = addon.(sofia, "Toning Gloss")
-  AppointmentAddOn.create!(appointment: appt.(sofia, olivia, :pending), service: svc,
-                            service_name: svc.name, price: svc.price)
+  Review.new(
+    appointment: appt_aaliyah_c1, customer: nina, stylist: aaliyah,
+    rating: 4,
+    content: "Aaliyah did a beautiful job on my bridal trial. The updo was elegant and held up all day. I had a couple of small tweaks I wanted for the actual wedding day and she was very open to the feedback. Communication before the appointment was prompt and professional. Really glad I went with her.",
+    stylist_response: "Nina, thank you for this lovely review! I took all your notes and I'm so excited to create your final look for the big day. You are going to be stunning.",
+    stylist_responded_at: Time.zone.parse("2026-03-23 09:00")
+  ).save(validate: false)
 
-  # Jordan / Tyler — Curly Cut → Curl Defining Treatment
-  svc = addon.(jordan, "Curl Defining Treatment")
-  AppointmentAddOn.create!(appointment: appt.(jordan, tyler, :pending), service: svc,
-                            service_name: svc.name, price: svc.price)
+  Review.new(
+    appointment: appt_marcus_c1, customer: leo, stylist: marcus,
+    rating: 5,
+    content: "Marcus is a true craftsman. The high-top fade he gave me was clean, precise, and exactly what I had in mind. His shop has great energy and he's the kind of barber who remembers your name and your usual. I've been going to him for over a year and genuinely look forward to every visit."
+  ).save(validate: false)
 
-  # ---- BOOKED appointments with add-ons (4) ----
+  Review.new(
+    appointment: appt_priya_c1, customer: zoe, stylist: priya,
+    rating: 4,
+    content: "Priya did an amazing job with my tape-in extensions — the blend is seamless and nobody can tell they aren't my natural hair. She was thorough in the consultation and helped me pick the right shade and length. The appointment ran a little over time but the results were absolutely worth it."
+  ).save(validate: false)
 
-  # Maya / Aisha — Wash & Go → Scalp Massage + Protein Treatment
-  svc = addon.(maya, "Scalp Massage")
-  AppointmentAddOn.create!(appointment: appt.(maya, aisha, :booked), service: svc,
-                            service_name: svc.name, price: svc.price)
-  svc = addon.(maya, "Protein Treatment")
-  AppointmentAddOn.create!(appointment: appt.(maya, aisha, :booked), service: svc,
-                            service_name: svc.name, price: svc.price)
+  Review.new(
+    appointment: appt_claire_c1, customer: aisha, stylist: claire,
+    rating: 5,
+    content: "Claire is so knowledgeable about locs it's almost hard to believe. She spotted an issue with one of my locs I hadn't even noticed and addressed it during the retwist at no extra charge. My locs look healthier than ever and the scalp oil treatment felt incredible. Best in DC without question."
+  ).save(validate: false)
 
-  # Derek / Evan — Beard Shape-Up → Hot Towel Treatment + Beard Conditioning
-  svc = addon.(derek, "Hot Towel Treatment")
-  AppointmentAddOn.create!(appointment: appt.(derek, evan, :booked), service: svc,
-                            service_name: svc.name, price: svc.price)
-  svc = addon.(derek, "Beard Conditioning")
-  AppointmentAddOn.create!(appointment: appt.(derek, evan, :booked), service: svc,
-                            service_name: svc.name, price: svc.price)
+  puts "  Done."
 
-  # Sofia / Hannah — Cut & Style → Deep Conditioning
-  svc = addon.(sofia, "Deep Conditioning")
-  AppointmentAddOn.create!(appointment: appt.(sofia, hannah, :booked), service: svc,
-                            service_name: svc.name, price: svc.price)
-
-  # Aaliyah / Jasmine — Half-Up Style → Hair Accessory Placement
-  svc = addon.(aaliyah, "Hair Accessory Placement")
-  AppointmentAddOn.create!(appointment: appt.(aaliyah, jasmine, :booked), service: svc,
-                            service_name: svc.name, price: svc.price)
-
-  # ---- COMPLETED appointments with add-ons (5) ----
-
-  # Maya / Emma — Silk Press (completed) → Deep Conditioning Treatment
-  svc = addon.(maya, "Deep Conditioning Treatment")
-  AppointmentAddOn.create!(appointment: appt.(maya, emma, :completed), service: svc,
-                            service_name: svc.name, price: svc.price)
-
-  # Derek / James — Men's Fade (completed) → Hot Towel Treatment
-  svc = addon.(derek, "Hot Towel Treatment")
-  AppointmentAddOn.create!(appointment: appt.(derek, james, :completed), service: svc,
-                            service_name: svc.name, price: svc.price)
-
-  # Sofia / Olivia — Full Color (completed) → Olaplex Treatment
-  svc = addon.(sofia, "Olaplex Treatment")
-  AppointmentAddOn.create!(appointment: appt.(sofia, olivia, :completed), service: svc,
-                            service_name: svc.name, price: svc.price)
-
-  # Ben / Miguel — Precision Cut (completed) → Gloss Treatment
-  svc = addon.(ben, "Gloss Treatment")
-  AppointmentAddOn.create!(appointment: appt.(ben, miguel, :completed), service: svc,
-                            service_name: svc.name, price: svc.price)
-
-  # Taylor / Hannah — Scalp Analysis (completed) → Scalp Oil Infusion + Biotin Scalp Mask
-  svc = addon.(taylor, "Scalp Oil Infusion")
-  AppointmentAddOn.create!(appointment: appt.(taylor, hannah, :completed), service: svc,
-                            service_name: svc.name, price: svc.price)
-  svc = addon.(taylor, "Biotin Scalp Mask")
-  AppointmentAddOn.create!(appointment: appt.(taylor, hannah, :completed), service: svc,
-                            service_name: svc.name, price: svc.price)
-
-  puts "  Created #{AppointmentAddOn.count} add-ons across #{Appointment.joins(:appointment_add_ons).distinct.count} appointments."
-
-  # ----------------------------------------------------------
-  # REVIEWS (~75% of completed appointments = 9 of 12)
-  # Skipped: Derek/Ryan, Priya S/Aisha, Ben/Miguel
-  #
-  # Uses save!(validate: false) to bypass within_review_window
-  # (which would reject all seed reviews since completed_at is
-  # weeks ago). The DB unique index on appointment_id still
-  # enforces one-review-per-appointment at the database level.
-  # stylist_responded_at is set alongside stylist_response.
-  # ----------------------------------------------------------
-  puts "Creating reviews..."
-
-  # Helper: look up completed appointment, build and save review
-  make_review = ->(attrs) {
-    r = Review.new(attrs)
-    r.save!(validate: false)
-    r
-  }
-
-  # 1. Maya / Emma — Silk Press — 5★
-  a = Appointment.find_by!(stylist: maya, customer: emma, status: :completed)
-  make_review.(
-    appointment: a, customer: emma, stylist: maya,
-    rating:      5,
-    content:     "Maya's silk press was absolutely flawless — my hair had so much shine and movement without a trace of heat damage. She took her time on every section and made sure I was happy before I left. I'll be booking with her every month.",
-    created_at:  a.completed_at + 1.day
-  )
-
-  # 2. Maya / Caleb — Big Chop — 5★
-  a = Appointment.find_by!(stylist: maya, customer: caleb, status: :completed)
-  make_review.(
-    appointment: a, customer: caleb, stylist: maya,
-    rating:      5,
-    content:     "I was honestly terrified about the big chop, but Maya made me feel completely at ease from the moment I sat down. She shaped my natural coils beautifully and gave me a whole new appreciation for my texture. Best hair decision I've ever made.",
-    created_at:  a.completed_at + 2.days
-  )
-
-  # 3. Derek / James — Men's Fade — 5★
-  a = Appointment.find_by!(stylist: derek, customer: james, status: :completed)
-  make_review.(
-    appointment: a, customer: james, stylist: derek,
-    rating:      5,
-    content:     "Derek's fades are surgical — the skin blend was seamless and the line-up was razor sharp. Quick, efficient, and the result speaks for itself. He's the only barber I'll trust with my hair in this city.",
-    created_at:  a.completed_at + 1.day
-  )
-
-  # 4. Sofia / Olivia — Full Color — 4★
-  a = Appointment.find_by!(stylist: sofia, customer: olivia, status: :completed)
-  make_review.(
-    appointment: a, customer: olivia, stylist: sofia,
-    rating:      4,
-    content:     "Sofia did a gorgeous job transforming my hair — the rich espresso color has incredible shine and depth, exactly what I envisioned. The appointment ran about 30 minutes longer than quoted, but the quality of the result made it worth the wait.",
-    created_at:  a.completed_at + 1.day
-  )
-
-  # 5. Jordan / Zoe — DevaCut — 5★
-  a = Appointment.find_by!(stylist: jordan, customer: zoe, status: :completed)
-  make_review.(
-    appointment: a, customer: zoe, stylist: jordan,
-    rating:      5,
-    content:     "I've been trying to embrace my curls for years and Jordan's DevaCut completely changed everything. She cut curl-by-curl and the shape she gave my 3B hair is something I've never been able to achieve before. Already booked my next appointment.",
-    created_at:  a.completed_at + 2.days
-  )
-
-  # 6. Aaliyah / Destiny — Event Blowout — 4★
-  a = Appointment.find_by!(stylist: aaliyah, customer: destiny, status: :completed)
-  make_review.(
-    appointment: a, customer: destiny, stylist: aaliyah,
-    rating:      4,
-    content:     "Aaliyah gave me a stunning blowout that held all night at the gala — big, bouncy volume that I got compliments on all evening. She was warm and professional throughout. Would definitely book her again for my next event.",
-    created_at:  a.completed_at + 1.day
-  )
-
-  # 7. Marcus S / Marcus C — Full Groom — 5★  + stylist response
-  a = Appointment.find_by!(stylist: marcus_s, customer: marcus_c, status: :completed)
-  make_review.(
-    appointment:        a, customer: marcus_c, stylist: marcus_s,
-    rating:             5,
-    content:            "Marcus is a true master of his craft. The high-top was perfectly sculpted, the beard shape-up was impossibly clean, and the hot towel finish was the touch that tied it all together. Walked out feeling like a completely different person.",
-    stylist_response:   "Really appreciate that, brother — that's what we're here for. Come back anytime and we'll keep you looking right.",
-    stylist_responded_at: a.completed_at + 4.days,
-    created_at:         a.completed_at + 3.days
-  )
-
-  # 8. Claire / Leo — Loc Retwist — 3★
-  a = Appointment.find_by!(stylist: claire, customer: leo, status: :completed)
-  make_review.(
-    appointment: a, customer: leo, stylist: claire,
-    rating:      3,
-    content:     "Claire's retwist work is solid — the parting is even and my roots are looking clean. I did have to wait about 20 minutes past my start time with no heads-up, which threw off my afternoon. The quality is there, I just wish the scheduling communication was tighter.",
-    created_at:  a.completed_at + 2.days
-  )
-
-  # 9. Taylor / Hannah — Scalp Analysis — 4★  + stylist response
-  a = Appointment.find_by!(stylist: taylor, customer: hannah, status: :completed)
-  make_review.(
-    appointment:         a, customer: hannah, stylist: taylor,
-    rating:              4,
-    content:             "Taylor's scalp analysis was the most thorough hair appointment I've ever had — she identified issues I didn't even know I had and gave me a clear, science-backed protocol to follow at home. I felt genuinely heard. Excited to see the results over the next few months.",
-    stylist_response:    "Thank you so much, Hannah! Consistency with the protocol will make all the difference — I can't wait to see your progress at our next session.",
-    stylist_responded_at: a.completed_at + 3.days,
-    created_at:          a.completed_at + 1.day
-  )
-
-  puts "  Created #{Review.count} reviews (#{Review.where.not(stylist_response: nil).count} with stylist responses)."
-
+  # ============================================================
+  # SUMMARY
+  # ============================================================
+  puts ""
+  puts "Seeding complete!"
+  puts ""
+  puts "  Stylists:            #{User.stylist.count}"
+  puts "  Customers:           #{User.customer.count}"
+  puts "  Locations:           #{Location.count}"
+  puts "  Services:            #{Service.main_services.count} main, #{Service.add_ons.count} add-ons"
+  puts "  Availability blocks: #{AvailabilityBlock.count}"
+  puts "  Appointments:        #{Appointment.count} total"
+  puts "    Pending:           #{Appointment.pending.count}"
+  puts "    Booked:            #{Appointment.booked.count}"
+  puts "    Completed:         #{Appointment.completed.count}"
+  puts "    Cancelled:         #{Appointment.cancelled.count}"
+  puts "  Add-ons:             #{AppointmentAddOn.count}"
+  puts "  Reviews:             #{Review.count}"
 end
-
-puts "Done."
