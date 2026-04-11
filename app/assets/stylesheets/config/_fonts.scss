@@ -1,7 +1,7 @@
 // ─── Fonts ───────────────────────────────────────
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,100..1000;1,100..1000&family=Ultra&display=swap');
 
-
-$font-display:  'Playfair Display', serif;
-$body-font:     'DM Sans', sans-serif;
-$headers-font:  $font-display;
+// Font variables
+$font-display: 'Ultra', serif;   // for "ChairHop" logo
+$body-font: 'DM Sans', sans-serif;
+$headers-font: $font-display;

@@ -1,22 +1,23 @@
 // ================================================
 // ChairHop Design Tokens
 // ================================================
+@import "config/fonts";
+@import "config/color";
 
-
-$font-family-sans-serif: $body-font;
+$font-family-serif: $body-font;
 $headings-font-family:   $headers-font;
-$body-bg:                $color-soft-gray;
+$body-bg: $color-soft-gray;
 $font-size-base:         1rem;
 // color palette
-$color-dark:  #2b2b2b;
+$color-dark:  hsla(29.47, 47.9%, 23.33%, 1);
 $color-brown-deep: #4a2c1a;
 $color-soft-gray: #B7B7A4;
 $color-beige: #BFA28C;
-$color-cream:      #F4EDE4;;
+$color-cream:      #E5E0DA;
 $color-dark-text: #333;
 // color maping
-$primary: $color-dark-green;   // primary buttons, links, etc.
-$secondary: $color-muted-olive;
+$primary: $color-dark;   // primary buttons, links, etc.
+$secondary: $color-brown-deep;
 $success: #28A745;             // can keep default-we can change in future
 $info: $color-beige;           // info alerts, badges
 $warning: #FD7E14;             // default warning color
