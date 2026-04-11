@@ -1,6 +1,10 @@
 Hi <%= @customer.name %>,
 
 Your appointment with <%= @stylist.name %> is complete. Here's your receipt.
+<% if @balance_payment_id.present? %>
+Balance charged: <%= number_to_currency(@balance_paid) %> was automatically charged to your card on file.
+Transaction ID: <%= @balance_payment_id %>
+<% end %>
 
 Appointment Details:
 Stylist: <%= @stylist.name %>

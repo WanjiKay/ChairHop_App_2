@@ -15,7 +15,8 @@ class Appointment < ApplicationRecord
   validates :time, presence: true
   validate :no_overlapping_appointments, on: [:create, :update]
   validates :location_id, presence: true, on: :create
-  validates :payment_status, inclusion: { in: %w[pending deposit_paid balance_due paid refunded deposit_kept failed] }, allow_nil: true
+  encrypts :square_card_id, deterministic: false
+  validates :payment_status, inclusion: { in: %w[pending deposit_paid balance_due paid refunded deposit_kept failed collected_in_person balance_waived] }, allow_nil: true
 
   enum status: {
     pending: 0,
@@ -124,8 +125,11 @@ class Appointment < ApplicationRecord
 
     conflicts = Appointment
       .where(stylist_id: stylist_id)
-      .where(status: [:pending, :booked])
       .where.not(id: id)
+      .where(
+        "(status = ? AND (hold_expires_at IS NULL OR hold_expires_at >= ?)) OR status = ?",
+        Appointment.statuses[:pending], Time.current, Appointment.statuses[:booked]
+      )
       .where(
         '(appointments.time < ? AND appointments.end_time > ?) OR
          (appointments.time >= ? AND appointments.time < ?)',

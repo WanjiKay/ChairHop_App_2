@@ -1,5 +1,5 @@
 <% content_for :head do %>
-  <script type="text/javascript" src="https://web.squarecdn.com/v1/square.js"></script>
+  <script type="text/javascript" src="https://web.squarecdn.com/v1/square.js" data-turbo-track="reload"></script>
 <% end %>
 
 <div class="container py-5 mt-5">
@@ -144,7 +144,7 @@
                 square_payment_application_id_value: ENV['SQUARE_APPLICATION_ID'],
                 square_payment_location_id_value: @appointment.stylist.square_location_id,
                 square_payment_deposit_label_value: "Request Appointment & Pay Deposit ($#{number_with_precision(@deposit, precision: 2)})",
-                square_payment_bypass_mode_value: Rails.env.development? && ENV['BYPASS_SQUARE_PAYMENTS'] == 'true'
+                square_payment_bypass_mode_value: ENV['BYPASS_SQUARE_PAYMENTS'] == 'true'
               } do |f| %>
           <div class="card mb-4 shadow-sm">
             <div class="card-body p-4">
@@ -179,6 +179,25 @@
 
               <div id="card-container" class="mb-4"
                    data-square-payment-target="cardContainer"></div>
+
+              <!-- Card Save Consent — required before booking can proceed -->
+              <div class="form-check mt-3 mb-2">
+                <input class="form-check-input"
+                       type="checkbox"
+                       id="card-save-consent"
+                       name="card_save_consent"
+                       value="1"
+                       data-square-payment-target="consentCheckbox">
+                <label class="form-check-label small text-muted" for="card-save-consent">
+                  Save my card for the remaining balance when my appointment is completed.
+                  The remaining 50% ($<%= number_with_precision(@total - @deposit, precision: 2) %>) will be
+                  charged automatically when the stylist marks the appointment complete.
+                </label>
+              </div>
+              <div class="alert alert-danger mt-1 mb-3" style="display: none;"
+                   data-square-payment-target="consentError">
+                You must agree to save your card before continuing.
+              </div>
 
               <%= hidden_field_tag :payment_nonce, '', id: 'payment-nonce-field',
                     data: { square_payment_target: 'nonceField' } %>

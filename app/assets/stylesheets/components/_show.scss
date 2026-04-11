@@ -9,42 +9,44 @@
   letter-spacing: 1.5px;
 }
 
-.list-group {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-
-  .appointment-item {
-    flex: 1 1 300px;
-    max-width: 350px;
+.appointment-show-page {
+  .list-group {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
 
-    padding: 1.75rem 1.5rem;
-    background: linear-gradient(145deg, lighten($color-brown-deep, 10%), $color-brown-deep);
-    border: 1px solid rgba($color-soft-gray, 0.5);
-    border-radius: 16px;
+    .appointment-item {
+      flex: 1 1 300px;
+      max-width: 350px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
 
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+      padding: 1.75rem 1.5rem;
+      background: linear-gradient(145deg, lighten($color-brown-deep, 10%), $color-brown-deep);
+      border: 1px solid rgba($color-soft-gray, 0.5);
+      border-radius: 16px;
 
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
 
-    &:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
-      background: linear-gradient(145deg, $color-cream, lighten($color-cream, 5%));
-    }
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-    strong {
-      color: $primary;
-      font-weight: 700;
-    }
+      &:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+        background: linear-gradient(145deg, $color-cream, lighten($color-cream, 5%));
+      }
 
-    small {
-      color: darken($color-brown-deep, 15%);
-      font-weight: 600;
+      strong {
+        color: $primary;
+        font-weight: 700;
+      }
+
+      small {
+        color: darken($color-brown-deep, 15%);
+        font-weight: 600;
+      }
     }
   }
 }
@@ -55,29 +57,31 @@
     margin-bottom: 2rem;
   }
 
-  .list-group {
-    gap: 1.25rem;
-  }
-
-  .appointment-item {
-    flex: 1 1 100% !important;
-    max-width: 100% !important;
-
-    padding: 1.25rem 1rem;
-
-    strong {
-      font-size: 1rem;
+  .appointment-show-page {
+    .list-group {
+      gap: 1.25rem;
     }
 
-    small {
-      font-size: 0.85rem;
-    }
+    .appointment-item {
+      flex: 1 1 100% !important;
+      max-width: 100% !important;
 
-    /* Disable hover shift on mobile (prevents jump) */
-    &:hover {
-      transform: none;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
-      background: linear-gradient(145deg, lighten($color-brown-deep, 10%), $color-brown-deep);
+      padding: 1.25rem 1rem;
+
+      strong {
+        font-size: 1rem;
+      }
+
+      small {
+        font-size: 0.85rem;
+      }
+
+      /* Disable hover shift on mobile (prevents jump) */
+      &:hover {
+        transform: none;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+        background: linear-gradient(145deg, lighten($color-brown-deep, 10%), $color-brown-deep);
+      }
     }
   }
 }

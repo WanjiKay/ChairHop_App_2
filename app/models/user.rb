@@ -23,6 +23,8 @@ class User < ApplicationRecord
   has_many :services, foreign_key: :stylist_id, dependent: :destroy
   has_many :locations, dependent: :destroy
   has_many :availability_blocks, foreign_key: :stylist_id, dependent: :destroy
+  has_many :square_customer_records, class_name: 'UserSquareCustomer', foreign_key: :user_id,    dependent: :destroy
+  has_many :client_square_records,   class_name: 'UserSquareCustomer', foreign_key: :stylist_id, dependent: :destroy
   has_one_attached :avatar
   has_many_attached :portfolio_photos
 

@@ -99,19 +99,12 @@
                         <i class="fas fa-times me-1"></i> Decline
                       <% end %>
                     <% elsif appointment.booked? %>
-                      <%# Trigger: Collected In Person modal %>
-                      <button type="button" class="btn btn-success btn-sm w-100 mb-1"
-                              data-bs-toggle="modal"
-                              data-bs-target="#collectInPersonModal<%= appointment.id %>">
-                        <i class="fas fa-hand-holding-usd me-1"></i> Collected In Person
-                      </button>
-
-                      <%# Send Payment Link %>
-                      <%= button_to send_payment_link_stylist_appointment_path(appointment),
+                      <%# Complete — auto-charges remaining balance via vaulted card %>
+                      <%= button_to complete_stylist_appointment_path(appointment),
                             method: :patch,
-                            class: "btn btn-primary btn-sm w-100 mb-1",
-                            form: { data: { turbo_confirm: "Send a payment link to #{appointment.customer&.name}? They will receive an email with a link to pay the remaining balance." } } do %>
-                        <i class="fas fa-link me-1"></i> Send Payment Link
+                            class: "btn btn-success btn-sm w-100 mb-1",
+                            form: { data: { turbo_confirm: "Mark as complete? The remaining balance will be charged automatically to the client's card on file." } } do %>
+                        <i class="fas fa-check me-1"></i> Complete
                       <% end %>
 
                       <%# Complete without collecting balance %>
@@ -128,61 +121,6 @@
                           class: "btn btn-sm btn-outline-danger w-100" do %>
                         <i class="fas fa-ban me-1"></i> Cancel
                       <% end %>
-
-                      <%# In-Person Collection Modal %>
-                      <div class="modal fade" id="collectInPersonModal<%= appointment.id %>"
-                           tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title fw-bold">
-                                <i class="fas fa-hand-holding-usd me-2"></i>Record In-Person Collection
-                              </h5>
-                              <button type="button" class="btn-close"
-                                      data-bs-dismiss="modal"></button>
-                            </div>
-                            <%= form_with url: complete_stylist_appointment_path(appointment),
-                                  method: :patch, local: true do |f| %>
-                              <div class="modal-body">
-                                <div class="alert alert-light border mb-3">
-                                  <div class="d-flex justify-content-between">
-                                    <span class="text-muted small">Deposit paid:</span>
-                                    <strong>$<%= number_with_precision(
-                                      appointment.payment_amount.to_f * 0.5,
-                                      precision: 2) %></strong>
-                                  </div>
-                                  <div class="d-flex justify-content-between mt-1">
-                                    <span class="text-muted small">Balance remaining:</span>
-                                    <strong class="text-success">$<%= number_with_precision(
-                                      appointment.payment_amount.to_f * 0.5,
-                                      precision: 2) %></strong>
-                                  </div>
-                                </div>
-                                <div class="mb-3">
-                                  <%= f.label :balance_collected,
-                                        "Amount Collected ($)",
-                                        class: "form-label fw-semibold" %>
-                                  <%= f.number_field :balance_collected,
-                                        value: (appointment.payment_amount.to_f * 0.5).round(2),
-                                        step: 0.01,
-                                        min: 0,
-                                        class: "form-control form-control-lg",
-                                        placeholder: "0.00" %>
-                                  <small class="text-muted">
-                                    Enter the amount actually collected (cash, Square app, etc.)
-                                  </small>
-                                </div>
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-outline-secondary"
-                                        data-bs-dismiss="modal">Cancel</button>
-                                <%= f.submit "Mark as Complete",
-                                      class: "btn btn-success px-4" %>
-                              </div>
-                            <% end %>
-                          </div>
-                        </div>
-                      </div>
                     <% elsif appointment.pending? && appointment.customer_id.blank? %>
                       <%= button_to cancel_stylist_appointment_path(appointment), method: :patch,
                           data: { turbo_confirm: "Remove this availability slot?" },

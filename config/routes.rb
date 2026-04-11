@@ -80,6 +80,8 @@ Rails.application.routes.draw do
       get :review
       post :review
       get :confirmation
+      get :balance_receipt
+      get :invoice
       post :book
       get :booked
       get :payment_failed

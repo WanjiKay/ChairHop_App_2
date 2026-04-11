@@ -13,13 +13,18 @@ class Stylist::AppointmentsController < ApplicationController
 
     case @filter
     when "requests"
-      @appointments = @appointments.pending.where.not(customer_id: nil)
+      # Show only deposit-paid bookings awaiting stylist acceptance
+      @appointments = @appointments.where(status: :pending, payment_status: 'deposit_paid')
     when "available"
       @appointments = @appointments.pending.where(customer_id: nil)
     when "confirmed"
       @appointments = @appointments.booked
     when "past"
       @appointments = @appointments.where(status: [:completed, :cancelled])
+    else
+      # Default "all" — exclude ghost pending slots (no deposit), show everything else
+      @appointments = @appointments.where.not(status: :pending)
+                                   .or(@appointments.where(status: :pending, payment_status: 'deposit_paid'))
     end
   end
 
@@ -171,30 +176,28 @@ class Stylist::AppointmentsController < ApplicationController
       return
     end
 
-    # If a deposit was already charged, attempt to collect the remaining 50% balance.
-    # If no payment on record (legacy/test appointments) skip straight to completing.
     if @appointment.payment_id.present? && @appointment.payment_amount.present?
-      payment_nonce = params[:payment_nonce]
 
-      if payment_nonce.present?
-        # Nonce supplied (e.g. stylist collected card in-person or via future UI)
+      if @appointment.square_card_id.present?
+        # ── NEW PATH: Automatic charge via vaulted card ──────────────────────
         payment_service = PaymentService.new(current_user)
-        result = payment_service.charge_balance(@appointment, payment_nonce)
+        result = payment_service.charge_balance(@appointment)
 
         if result[:success]
           @appointment.assign_attributes(
             status:             :completed,
             balance_payment_id: result[:payment_id],
-            payment_status:     'paid'
+            payment_status:     'paid',
+            completed_at:       Time.current
           )
-
-          @appointment.completed_at = Time.current
           if @appointment.save
             AppointmentMailer.appointment_completed(@appointment).deliver_later
             AppointmentMailer.balance_payment_received(@appointment).deliver_later
+            AppointmentMailer.balance_receipt(@appointment).deliver_later
             AppointmentMailer.review_request(@appointment).deliver_later
-            Rails.logger.info "Appointment ##{@appointment.id} completed. Balance charged: $#{sprintf('%.2f', result[:amount_charged])}"
-            redirect_to stylist_appointments_path, notice: "Appointment completed! Balance of $#{sprintf('%.2f', result[:amount_charged])} collected."
+            Rails.logger.info "Appointment ##{@appointment.id} completed. Balance charged from card on file: $#{sprintf('%.2f', result[:amount_charged])}"
+            redirect_to stylist_appointments_path,
+                        notice: "Appointment completed! Balance of $#{sprintf('%.2f', result[:amount_charged])} collected automatically."
           else
             Rails.logger.error "BALANCE CAPTURED but save failed! Payment ID: #{result[:payment_id]}, Appointment: #{@appointment.id}"
             redirect_to stylist_appointments_path,
@@ -203,24 +206,22 @@ class Stylist::AppointmentsController < ApplicationController
         else
           AppointmentMailer.balance_payment_failed(@appointment).deliver_later
           redirect_to stylist_appointments_path,
-                      alert: "Payment failed: #{result[:error]}. The customer has been notified."
+                      alert: "Automatic balance charge failed: #{result[:error]}. The customer has been notified."
         end
+
       else
-        # No nonce — stylist chose one of two in-person completion modes.
+        # ── LEGACY/FALLBACK PATH: No vaulted card (booked before card-on-file was enabled) ──
         if params[:balance_waived] == '1'
           @appointment.update(status: :completed, completed_at: Time.current, payment_status: 'balance_waived')
           AppointmentMailer.appointment_completed(@appointment).deliver_later
           AppointmentMailer.review_request(@appointment).deliver_later
-          redirect_to stylist_appointments_path,
-                      notice: "Appointment marked as complete. Balance recorded as outstanding."
+          redirect_to stylist_appointments_path, notice: "Appointment marked as complete. Balance waived."
         else
-          # Collected in person (cash, Square app, etc.)
           @appointment.update(
-            status: :completed,
-            completed_at: Time.current,
-            payment_status: 'collected_in_person',
-            balance_collected: params[:balance_collected].present? ?
-              params[:balance_collected].to_f : nil
+            status:            :completed,
+            completed_at:      Time.current,
+            payment_status:    'collected_in_person',
+            balance_collected: params[:balance_collected].present? ? params[:balance_collected].to_f : nil
           )
           AppointmentMailer.appointment_completed(@appointment).deliver_later
           AppointmentMailer.balance_collected_notification(@appointment).deliver_later
@@ -228,10 +229,10 @@ class Stylist::AppointmentsController < ApplicationController
           collected_msg = @appointment.balance_collected.present? ?
             "$#{sprintf('%.2f', @appointment.balance_collected)} collected in person." :
             "Balance recorded as collected in person."
-          redirect_to stylist_appointments_path,
-                      notice: "Appointment marked as complete. #{collected_msg}"
+          redirect_to stylist_appointments_path, notice: "Appointment marked as complete. #{collected_msg}"
         end
       end
+
     else
       # No deposit on file — complete without payment processing
       @appointment.update(status: :completed, completed_at: Time.current, payment_status: 'paid')
