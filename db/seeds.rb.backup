@@ -1,0 +1,508 @@
+require "open-uri"
+
+puts "Seeding ChairHop database..."
+
+SEED_PASSWORD = ENV['SEED_PASSWORD'] || 'password'
+puts "Using seed password: #{SEED_PASSWORD == 'password' ? 'password (default)' : '[custom/secure password]'}"
+
+# ============================================
+# CLEAR EXISTING DATA
+# ============================================
+puts "Clearing existing data..."
+ConversationMessage.destroy_all
+Conversation.destroy_all
+Message.destroy_all
+Chat.destroy_all
+Review.destroy_all
+AppointmentAddOn.destroy_all
+Appointment.destroy_all
+Service.destroy_all
+Location.destroy_all
+User.destroy_all
+puts "Data cleared."
+
+# ============================================
+# SALON-SPECIFIC DESCRIPTIONS (appointment.content)
+# ============================================
+salon_descriptions = {
+  "Brows and Locks Salon" => <<~TEXT,
+    Brows and Locks Salon specializes in precision cuts, glossy blowouts,
+    hair coloring, and brow shaping. We combine modern techniques with
+    luxury hair treatments to give clients a polished, camera-ready look.
+    Choose from the available services listed below.
+  TEXT
+  "Chic Studio" => <<~TEXT,
+    Chic Studio is known for high-end coloring, balayage, and modern
+    layered cuts. Our stylists are trained in runway-inspired styling
+    and soft glam finishing. Select a service from our menu below.
+  TEXT
+  "Glow Lounge" => <<~TEXT,
+    Glow Lounge focuses on protective styles, natural hair treatments,
+    silk presses, and scalp health. Our team specializes in textured hair
+    and long-lasting styles. Pick your desired service from our offerings.
+  TEXT
+  "Downtown Cuts" => <<~TEXT,
+    Downtown Cuts offers sharp fades, beard detailing, clipper precision,
+    and classic barbering with a modern twist. Choose from the services
+    listed below to complete your appointment.
+  TEXT
+}
+
+# ============================================
+# SERVICE LIST (stored in appointments.services text field)
+# ============================================
+service_list = {
+  braids:        { name: "Protective Braids",  price: 80 },
+  silk_press:    { name: "Silk Press",          price: 60 },
+  wash_and_go:   { name: "Wash & Go",           price: 80 },
+  loc_maint:     { name: "Loc Maintenance",     price: 75 },
+  womens_cut:    { name: "Women's Cut",          price: 45 },
+  mens_fade:     { name: "Men's Cut / Fade",    price: 30 },
+  wash_blow:     { name: "Wash & Blowout",      price: 35 },
+  kids_cut:      { name: "Kids Cut",            price: 20 },
+  color:         { name: "Color Treatment",     price: 90 },
+  highlights:    { name: "Highlights",          price: 120 }
+}
+
+salon_services = {
+  "Glow Lounge"           => [service_list[:braids], service_list[:wash_and_go], service_list[:silk_press], service_list[:loc_maint], service_list[:womens_cut]],
+  "Brows and Locks Salon" => [service_list[:wash_blow], service_list[:color], service_list[:highlights], service_list[:womens_cut]],
+  "Chic Studio"           => [service_list[:color], service_list[:highlights], service_list[:womens_cut], service_list[:wash_blow]],
+  "Downtown Cuts"         => [service_list[:mens_fade], service_list[:kids_cut], service_list[:wash_blow]]
+}
+
+def service_text(list)
+  list.map { |s| "#{s[:name]} - $#{s[:price]}" }.join("\n")
+end
+
+# ============================================
+# SALON ADDRESSES
+# ============================================
+salon_addresses = {
+  "Brows and Locks Salon" => { street_address: "1450 St-Catherine St W", city: "Montreal", state: "QC", zip_code: "H3G 1R8" },
+  "Chic Studio"           => { street_address: "210 Boulevard des Laurentides", city: "Laval",    state: "QC", zip_code: "H7G 2H5" },
+  "Glow Lounge"           => { street_address: "980 Sherbrooke St W",     city: "Montreal", state: "QC", zip_code: "H3A 1G5" },
+  "Downtown Cuts"         => { street_address: "75 Rue Saint-Paul O",     city: "Montreal", state: "QC", zip_code: "H2Y 1Z3" }
+}
+
+# ============================================
+# STYLIST USERS
+# ============================================
+puts "Creating stylist users..."
+
+stylist_data = [
+  { name: "Tilly",  username: "tilly_browslocks", location: "Montreal", about: "Cut, color, brows, and glossy blowout specialist.",                                                                                 email: "tilly@example.com",  salon: "Brows and Locks Salon" },
+  { name: "Chico",  username: "chico_styles",      location: "Montreal", about: "Luxury coloring and precision cutting expert.",                                                                                    email: "chico@example.com",  salon: "Chic Studio" },
+  { name: "Lana",   username: "lana_braids",        location: "Laval",    about: "Specialist in protective styles with 10+ years focusing on knotless braids, twist variations, natural hair care, and gentle tension techniques.", email: "lana@example.com",   salon: "Glow Lounge" },
+  { name: "Marco",  username: "marco_fades",        location: "Montreal", about: "Professional barber with 12 years of experience in fades, barber designs, beard sculpting, and precision clipper work.",          email: "marco@example.com",  salon: "Downtown Cuts" }
+]
+
+stylist_salon_map = {}
+stylist_users = stylist_data.map do |s|
+  user = User.create!(
+    email: s[:email],
+    password: SEED_PASSWORD,
+    name: s[:name],
+    username: s[:username],
+    location: s[:location],
+    about: s[:about],
+    role: :stylist
+  )
+  stylist_salon_map[user.id] = s[:salon]
+  user
+end
+
+puts "Created #{stylist_users.count} stylists."
+
+# ============================================
+# CUSTOMER USERS
+# ============================================
+puts "Creating customer users..."
+
+customer_names = ["Emma Wilson", "Lucas Dubois", "Sophie Martin", "Noah Tremblay", "Olivia Patel",
+                  "James Okafor", "Mia Tran", "Ethan Bergeron", "Chloe Nguyen", "Liam Santos"]
+
+customer_users = customer_names.each_with_index.map do |full_name, i|
+  User.create!(
+    email: "customer#{i + 1}@example.com",
+    password: SEED_PASSWORD,
+    name: full_name,
+    username: "customer#{i + 1}",
+    location: ["Montreal", "Laval", "Longueuil"].sample,
+    role: :customer
+  )
+end
+
+puts "Created #{customer_users.count} customers."
+
+# ============================================
+# ADMIN USER
+# ============================================
+admin = User.create!(
+  email: "admin@chairhop.com",
+  password: SEED_PASSWORD,
+  name: "Admin User",
+  username: "admin",
+  role: :admin
+)
+puts "Created admin user."
+
+# ============================================
+# LOCATIONS (one per stylist)
+# ============================================
+puts "Creating locations..."
+
+stylist_location_map = {}
+stylist_users.each do |stylist|
+  salon = stylist_salon_map[stylist.id]
+  addr  = salon_addresses[salon]
+
+  loc = Location.create!(
+    user: stylist,
+    name: salon,
+    street_address: addr[:street_address],
+    city: addr[:city],
+    state: addr[:state],
+    zip_code: addr[:zip_code]
+  )
+  stylist_location_map[stylist.id] = loc
+end
+
+puts "Created #{Location.count} locations."
+
+# ============================================
+# SERVICES (Service model records per stylist)
+# ============================================
+puts "Creating services..."
+
+stylist_users.each do |stylist|
+  salon = stylist_salon_map[stylist.id]
+
+  # Core menu services
+  (salon_services[salon] || []).each do |svc|
+    Service.create!(
+      name: svc[:name],
+      price_cents: (svc[:price] * 100).to_i,
+      stylist: stylist,
+      active: true,
+      description: "#{svc[:name]} at #{salon}"
+    )
+  end
+
+  # Add-on services from SALON_ADD_ONS constant
+  (Appointment::SALON_ADD_ONS[salon] || []).each do |add_on_string|
+    name  = add_on_string.split(" - $").first
+    price = add_on_string.split(" - $").last.to_f
+    Service.create!(
+      name: name,
+      price_cents: (price * 100).to_i,
+      stylist: stylist,
+      active: true,
+      description: "Add-on: #{name}"
+    )
+  end
+end
+
+puts "Created #{Service.count} services."
+
+# ============================================
+# AVAILABLE APPOINTMENT SLOTS (pending, no customer)
+# ============================================
+puts "Creating available appointment slots..."
+
+schedule = [
+  { day: Time.zone.today,    hour_range: (19..22) },
+  { day: Time.zone.tomorrow, hour_range: (7..10)  },
+  { day: Time.zone.tomorrow, hour_range: (12..18) }
+]
+
+salon_descriptions.keys.each do |salon|
+  stylist = stylist_users.find { |u| stylist_salon_map[u.id] == salon }
+  loc     = stylist_location_map[stylist.id]
+
+  schedule.each do |slot|
+    hour = rand(slot[:hour_range])
+    appt_time = Time.zone.local(slot[:day].year, slot[:day].month, slot[:day].day, hour, 0)
+
+    Appointment.create!(
+      stylist: stylist,
+      location: loc,
+      time: appt_time,
+      salon: salon,
+      booked: false,
+      status: :pending,
+      content: salon_descriptions[salon],
+      services: service_text(salon_services[salon])
+    )
+  end
+end
+
+puts "Created #{Appointment.pending.where(customer_id: nil).count} available slots."
+
+# ============================================
+# PENDING BOOKING REQUESTS (customer submitted, awaiting stylist acceptance)
+# ============================================
+puts "Creating pending booking requests..."
+
+3.times do |i|
+  stylist  = stylist_users.sample
+  customer = customer_users.sample
+  salon    = stylist_salon_map[stylist.id]
+  svc_list = salon_services[salon]
+  selected = svc_list.sample
+
+  Appointment.create!(
+    stylist: stylist,
+    customer: customer,
+    location: stylist_location_map[stylist.id],
+    time: (i + 2).days.from_now + rand(9..16).hours,
+    salon: salon,
+    booked: false,
+    status: :pending,
+    content: salon_descriptions[salon],
+    services: service_text(svc_list),
+    selected_service: "#{selected[:name]} - $#{selected[:price]}"
+  )
+end
+
+puts "Created #{Appointment.pending.where.not(customer_id: nil).count} pending requests."
+
+# ============================================
+# BOOKED (CONFIRMED) UPCOMING APPOINTMENTS
+# ============================================
+puts "Creating booked appointments..."
+
+booked_appointments = []
+4.times do |i|
+  stylist  = stylist_users.sample
+  customer = customer_users.sample
+  salon    = stylist_salon_map[stylist.id]
+  svc_list = salon_services[salon]
+  selected = svc_list.sample
+
+  appt = Appointment.create!(
+    stylist: stylist,
+    customer: customer,
+    location: stylist_location_map[stylist.id],
+    time: (i + 3).days.from_now + rand(9..17).hours,
+    salon: salon,
+    booked: true,
+    status: :booked,
+    content: salon_descriptions[salon],
+    services: service_text(svc_list),
+    selected_service: "#{selected[:name]} - $#{selected[:price]}",
+    payment_status: "paid",
+    payment_id: "sq_test_#{SecureRandom.hex(10)}"
+  )
+
+  # Add an add-on to some booked appointments
+  if i.even?
+    add_on_str = (Appointment::SALON_ADD_ONS[salon] || []).sample
+    if add_on_str
+      AppointmentAddOn.create!(
+        appointment: appt,
+        service_name: add_on_str.split(" - $").first,
+        price: add_on_str.split(" - $").last.to_f
+      )
+    end
+  end
+
+  booked_appointments << appt
+end
+
+puts "Created #{Appointment.booked.count} booked appointments."
+
+# ============================================
+# COMPLETED PAST APPOINTMENTS
+# ============================================
+puts "Creating completed appointments..."
+
+completed_appointments = []
+5.times do |i|
+  stylist  = stylist_users.sample
+  customer = customer_users.sample
+  salon    = stylist_salon_map[stylist.id]
+  svc_list = salon_services[salon]
+  selected = svc_list.sample
+
+  appt = Appointment.create!(
+    stylist: stylist,
+    customer: customer,
+    location: stylist_location_map[stylist.id],
+    time: (i + 1).days.ago - rand(1..4).hours,
+    salon: salon,
+    booked: true,
+    status: :completed,
+    content: salon_descriptions[salon],
+    services: service_text(svc_list),
+    selected_service: "#{selected[:name]} - $#{selected[:price]}",
+    payment_status: "paid",
+    payment_id: "sq_test_#{SecureRandom.hex(10)}"
+  )
+  completed_appointments << appt
+end
+
+puts "Created #{Appointment.completed.count} completed appointments."
+
+# ============================================
+# CANCELLED APPOINTMENTS
+# ============================================
+puts "Creating cancelled appointments..."
+
+2.times do |i|
+  stylist  = stylist_users.sample
+  customer = customer_users.sample
+  salon    = stylist_salon_map[stylist.id]
+  svc_list = salon_services[salon]
+  selected = svc_list.sample
+
+  Appointment.create!(
+    stylist: stylist,
+    customer: customer,
+    location: stylist_location_map[stylist.id],
+    time: (i + 5).days.from_now + rand(10..15).hours,
+    salon: salon,
+    booked: false,
+    status: :cancelled,
+    content: salon_descriptions[salon],
+    services: service_text(svc_list),
+    selected_service: "#{selected[:name]} - $#{selected[:price]}"
+  )
+end
+
+puts "Created #{Appointment.cancelled.count} cancelled appointments."
+
+# ============================================
+# REVIEWS (completed appointments only)
+# ============================================
+puts "Creating reviews..."
+
+review_texts = [
+  "Amazing experience from start to finish! Totally worth it.",
+  "Best haircut I have had in years. Will definitely come back.",
+  "Very professional and talented stylist. Highly recommend.",
+  "Loved my new look! The stylist listened to exactly what I wanted.",
+  "Great service and a relaxing atmosphere. Five stars all the way.",
+  "Exceeded my expectations. The results were absolutely stunning.",
+  "Super friendly and skilled. My hair has never looked this good.",
+  "Incredible attention to detail. I felt like a completely new person."
+]
+
+completed_appointments.each do |appt|
+  Review.create!(
+    appointment: appt,
+    customer: appt.customer,
+    stylist: appt.stylist,
+    rating: rand(4..5),
+    content: review_texts.sample
+  )
+end
+
+puts "Created #{Review.count} reviews."
+
+# ============================================
+# CONVERSATIONS & MESSAGES (booked and completed appointments)
+# ============================================
+puts "Creating conversations and messages..."
+
+conversation_pairs = (booked_appointments + completed_appointments).first(6)
+
+opener_templates = [
+  ["Hi! Just confirming my appointment for %s.", "Great, we have you booked for %s. See you then!"],
+  ["Quick question — should I come with dry or wet hair?", "Dry is perfect. We will wash here. Looking forward to it!"],
+  ["Is parking available nearby?", "Yes, there is street parking right out front. No problem at all."],
+  ["Can I add a treatment to my appointment?", "Absolutely! We can go over the options when you arrive."]
+]
+
+conversation_pairs.each do |appt|
+  convo = Conversation.create!(
+    appointment: appt,
+    customer: appt.customer,
+    stylist: appt.stylist
+  )
+
+  pair = opener_templates.sample
+  appt_label = appt.time.strftime("%A at %-I:%M %p")
+
+  ConversationMessage.create!(
+    conversation: convo,
+    role: "customer",
+    content: format(pair[0], appt_label),
+    created_at: 2.hours.ago
+  )
+
+  ConversationMessage.create!(
+    conversation: convo,
+    role: "stylist",
+    content: format(pair[1], appt_label),
+    created_at: 1.hour.ago
+  )
+end
+
+puts "Created #{Conversation.count} conversations with #{ConversationMessage.count} messages."
+
+# ============================================
+# SUMMARY
+# ============================================
+# ============================================
+# AVAILABILITY BLOCKS (next 7 days per stylist)
+# ============================================
+puts "Creating availability blocks..."
+
+stylist_users.each do |stylist|
+  location = stylist_location_map[stylist.id]
+  next unless location
+
+  7.times do |day|
+    date = Date.today + day.days
+
+    # Morning block: 9am-12pm
+    AvailabilityBlock.create!(
+      stylist: stylist,
+      location: location,
+      start_time: date.beginning_of_day + 9.hours,
+      end_time: date.beginning_of_day + 12.hours,
+      available_for_all_services: true
+    )
+
+    # Afternoon block: 1pm-5pm
+    AvailabilityBlock.create!(
+      stylist: stylist,
+      location: location,
+      start_time: date.beginning_of_day + 13.hours,
+      end_time: date.beginning_of_day + 17.hours,
+      available_for_all_services: true
+    )
+  end
+end
+
+puts "Created #{AvailabilityBlock.count} availability blocks."
+
+puts ""
+puts "=" * 52
+puts " ChairHop Seed Complete"
+puts "=" * 52
+puts " Users:         #{User.count}  (#{User.stylist.count} stylists, #{User.customer.count} customers, #{User.admin.count} admin)"
+puts " Locations:     #{Location.count}"
+puts " Services:      #{Service.count}"
+puts " Appointments:  #{Appointment.count}"
+puts "   Available:   #{Appointment.pending.where(customer_id: nil).count}  (open slots)"
+puts "   Requests:    #{Appointment.pending.where.not(customer_id: nil).count}  (awaiting acceptance)"
+puts "   Booked:      #{Appointment.booked.count}  (confirmed)"
+puts "   Completed:   #{Appointment.completed.count}"
+puts "   Cancelled:   #{Appointment.cancelled.count}"
+puts " Add-ons:       #{AppointmentAddOn.count}"
+puts " Reviews:       #{Review.count}"
+puts " Conversations: #{Conversation.count}  (#{ConversationMessage.count} messages)"
+puts " Avail. Blocks: #{AvailabilityBlock.count}"
+puts "=" * 52
+puts ""
+puts " Test Accounts (password: #{SEED_PASSWORD}):"
+puts "   admin@chairhop.com     (admin)"
+puts "   tilly@example.com      (stylist - Brows and Locks Salon)"
+puts "   chico@example.com      (stylist - Chic Studio)"
+puts "   lana@example.com       (stylist - Glow Lounge)"
+puts "   marco@example.com      (stylist - Downtown Cuts)"
+puts "   customer1@example.com  through  customer10@example.com"
+puts "=" * 52
+puts ""

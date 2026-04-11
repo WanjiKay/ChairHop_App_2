@@ -1,6 +1,9 @@
-.alert {
+// Flash toast alerts (rendered from shared/_flashes) float in the bottom-right corner.
+// Scoped to dismissible alerts only to avoid breaking inline alerts (payment summary, etc.)
+body > .alert.alert-dismissible {
   position: fixed;
   bottom: 16px;
   right: 16px;
   z-index: 1000;
+  max-width: 420px;
 }

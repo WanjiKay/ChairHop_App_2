@@ -1,0 +1,14 @@
+Hi <%= @customer.name %>,
+
+Your deposit refund of <%= number_to_currency(@refund_amount) %> has been processed.
+
+Booking #: #<%= @appointment.id.to_s.rjust(6, "0") %>
+Service: <%= @appointment.selected_service %>
+Original Date: <%= format_datetime(@appointment.time) %>
+<% if @appointment.payment_id.present? %>Transaction ID: <%= @appointment.payment_id %>
+<% end %>
+Please allow 5-10 business days for the refund to appear on your statement.
+
+Book again: <%= stylists_url %>
+
+The ChairHop Team

@@ -1,0 +1,104 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+
+      <!-- Progress -->
+      <div class="mb-4">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="badge bg-primary">Step 3 of 4</span>
+          <span class="text-muted">Your Location</span>
+        </div>
+        <div class="progress" style="height: 5px;">
+          <div class="progress-bar" role="progressbar" style="width: 75%"></div>
+        </div>
+      </div>
+
+      <div class="card shadow">
+        <div class="card-body p-5">
+          <h2 class="card-title mb-1">Add Your Location</h2>
+          <p class="text-muted mb-4">Where do you provide services? You can add more later.</p>
+
+          <%= form_with model: @location, url: complete_step3_stylist_onboarding_path, local: true do |f| %>
+
+            <% if @location.errors.any? %>
+              <div class="alert alert-danger">
+                <ul class="mb-0">
+                  <% @location.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <!-- Location Name -->
+            <div class="mb-3">
+              <%= f.label :name, "Location Name *", class: 'form-label fw-bold' %>
+              <%= f.text_field :name,
+                    class: 'form-control',
+                    placeholder: "e.g., Downtown Studio, Mobile Service",
+                    required: true %>
+            </div>
+
+            <!-- Street Address -->
+            <div class="mb-3">
+              <%= f.label :street_address, "Street Address *", class: 'form-label fw-bold' %>
+              <%= f.text_field :street_address,
+                    class: 'form-control',
+                    placeholder: "123 Main Street",
+                    required: true %>
+            </div>
+
+            <!-- City -->
+            <div class="mb-3">
+              <%= f.label :city, "City *", class: 'form-label fw-bold' %>
+              <%= f.text_field :city,
+                    class: 'form-control',
+                    placeholder: "Montreal",
+                    required: true %>
+            </div>
+
+            <div class="row">
+              <!-- Province / State -->
+              <div class="col-md-6 mb-3">
+                <%= f.label :state, "Province *", class: 'form-label fw-bold' %>
+                <%= f.select :state,
+                      [
+                        ['Quebec',                    'QC'],
+                        ['Ontario',                   'ON'],
+                        ['British Columbia',          'BC'],
+                        ['Alberta',                   'AB'],
+                        ['Manitoba',                  'MB'],
+                        ['Saskatchewan',              'SK'],
+                        ['Nova Scotia',               'NS'],
+                        ['New Brunswick',             'NB'],
+                        ['Newfoundland and Labrador', 'NL'],
+                        ['Prince Edward Island',      'PE']
+                      ],
+                      { selected: 'QC' },
+                      { class: 'form-select', required: true } %>
+              </div>
+
+              <!-- Postal Code -->
+              <div class="col-md-6 mb-3">
+                <%= f.label :zip_code, "Postal Code *", class: 'form-label fw-bold' %>
+                <%= f.text_field :zip_code,
+                      class: 'form-control',
+                      placeholder: "A1B 2C3",
+                      required: true %>
+              </div>
+            </div>
+
+            <div class="d-grid">
+              <%= f.submit "Continue to Availability →", class: "btn btn-primary btn-lg" %>
+            </div>
+          <% end %>
+
+          <div class="text-center mt-3">
+            <small class="text-muted">You can add more locations from your dashboard later</small>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

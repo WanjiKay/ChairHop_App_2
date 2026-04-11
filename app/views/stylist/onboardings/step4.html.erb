@@ -1,0 +1,88 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+
+      <!-- Progress -->
+      <div class="mb-4">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="badge bg-primary">Step 4 of 4</span>
+          <span class="text-muted">Set Availability (Optional)</span>
+        </div>
+        <div class="progress" style="height: 5px;">
+          <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <div class="card shadow">
+        <div class="card-body p-5">
+          <h2 class="card-title mb-1">Set Your Availability</h2>
+          <p class="text-muted mb-4">When are you available to accept bookings? You can always add more from your calendar.</p>
+
+          <%= form_with model: @availability_block, url: complete_step4_stylist_onboarding_path, local: true do |f| %>
+
+            <% if @availability_block.errors.any? %>
+              <div class="alert alert-danger">
+                <ul class="mb-0">
+                  <% @availability_block.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
+
+            <!-- Start Time -->
+            <div class="mb-3">
+              <%= f.label :start_time, "Start Date & Time *", class: 'form-label fw-bold' %>
+              <%= f.datetime_local_field :start_time,
+                    class: 'form-control',
+                    min: Time.current.strftime('%Y-%m-%dT%H:%M') %>
+            </div>
+
+            <!-- End Time -->
+            <div class="mb-3">
+              <%= f.label :end_time, "End Date & Time *", class: 'form-label fw-bold' %>
+              <%= f.datetime_local_field :end_time,
+                    class: 'form-control',
+                    min: Time.current.strftime('%Y-%m-%dT%H:%M') %>
+            </div>
+
+            <!-- Location -->
+            <div class="mb-4">
+              <%= f.label :location_id, "Location *", class: 'form-label fw-bold' %>
+              <%= f.select :location_id,
+                    options_from_collection_for_select(@locations, :id, :name),
+                    {},
+                    { class: 'form-select', required: true } %>
+            </div>
+
+            <!-- Services -->
+            <div class="mb-4">
+              <div class="form-check">
+                <%= f.check_box :available_for_all_services,
+                      class: 'form-check-input',
+                      checked: true,
+                      id: 'all_services' %>
+                <%= f.label :available_for_all_services,
+                      "Available for all my services",
+                      class: 'form-check-label fw-bold',
+                      for: 'all_services' %>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <%= f.submit "Create Availability & Finish →", class: "btn btn-success btn-lg" %>
+            </div>
+          <% end %>
+
+          <div class="d-grid mt-3">
+            <%= button_to "Skip — I'll set availability later",
+                  skip_step4_stylist_onboarding_path,
+                  method: :post,
+                  class: "btn btn-outline-secondary" %>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

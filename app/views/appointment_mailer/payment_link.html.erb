@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; }
+    .header { background: #0d6efd; color: white; padding: 24px; text-align: center; }
+    .header h2 { margin: 0; }
+    .body { padding: 24px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    .detail-row:last-child { border-bottom: none; }
+    .card { border: 1px solid #dee2e6; border-radius: 6px; padding: 16px; margin: 16px 0; }
+    .amount-box { background: #f0f7ff; border: 2px solid #0d6efd; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0; }
+    .amount-box .amount { font-size: 36px; font-weight: bold; color: #0d6efd; }
+    .btn { display: inline-block; background: #0d6efd; color: white; padding: 16px 36px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 18px; }
+    .note { background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 12px 16px; margin: 16px 0; font-size: 13px; }
+    .footer { background: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d; margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Your Appointment Is Almost Done!</h2>
+    <p style="margin:8px 0 0; opacity:0.9;">One last step — pay your remaining balance</p>
+  </div>
+  <div class="body">
+    <p>Hi <%= @customer.name %>,</p>
+    <p>Your appointment with <strong><%= @stylist.name %></strong> is complete. You paid a deposit when you booked — there's just a remaining balance to settle.</p>
+
+    <div class="amount-box">
+      <p style="margin:0 0 4px; color:#6c757d; font-size:14px;">Remaining balance due</p>
+      <div class="amount"><%= number_to_currency(@amount) %></div>
+    </div>
+
+    <div style="text-align:center; margin: 24px 0;">
+      <a href="<%= @payment_url %>" class="btn">Pay Now</a>
+    </div>
+
+    <div class="note">
+      <strong>Note:</strong> This payment link expires in 24 hours. If you have trouble completing payment, please contact <%= @stylist.name %> directly.
+    </div>
+
+    <div class="card">
+      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.name %></strong></div>
+      <% if @appointment.selected_service.present? %>
+        <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
+      <% end %>
+      <div class="detail-row"><span>Date &amp; Time</span><strong><%= format_datetime(@appointment.time) %></strong></div>
+      <% if @appointment.payment_amount.present? %>
+        <div class="detail-row"><span>Deposit Paid</span><strong><%= number_to_currency(@appointment.payment_amount.to_f * 0.5) %></strong></div>
+        <div class="detail-row"><span>Balance Due</span><strong><%= number_to_currency(@amount) %></strong></div>
+      <% end %>
+      <div class="detail-row"><span>Booking #</span><strong>#<%= @appointment.id.to_s.rjust(6, "0") %></strong></div>
+    </div>
+
+    <p style="font-size:13px; color:#6c757d;">
+      If you believe you already paid or have any questions, please reach out to <%= @stylist.name %> or contact ChairHop support.
+    </p>
+  </div>
+  <div class="footer">&copy; ChairHop &middot; You're receiving this because you have an account with us.</div>
+</body>
+</html>

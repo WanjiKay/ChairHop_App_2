@@ -21,8 +21,8 @@
   <div class="search-section p-4 rounded position-relative mt-3 mb-4">
     <div class="d-flex flex-column gap-2">
 
-      <%= form_with url: appointments_path, method: :get, local: true, class: "d-flex flex-column gap-2" do |f| %>
-        <%= f.text_field :query, class: "form-control", placeholder: "Search for service or stylist" %>
+      <%= form_with url: stylists_path, method: :get, local: true, class: "d-flex flex-column gap-2" do |f| %>
+        <%= f.text_field :search, class: "form-control", placeholder: "Search by stylist name or location" %>
         <%= f.submit "Search", class: "btn btn-primary px-4" %>
       <% end %>
 
@@ -39,36 +39,38 @@
 
   <% end %>
 
-  <!-- APPOINTMENTS SECTION -->
-  <% if @upcoming_appointments.any? %>
-    <h2 class="section-title text-center mb-3">Available Appointments</h2>
+  <!-- AVAILABLE STYLISTS SECTION -->
+  <% if @available_stylists.any? %>
+    <h2 class="section-title text-center mb-3">Stylists Available Now</h2>
 
-    <div class="appointments-list row g-3 justify-content-center">
-      <% @upcoming_appointments.each do |appointment| %>
-        <div class="col-md-6">
-          <%= link_to appointment_path(appointment), class: "text-decoration-none" do %>
-            <div class="card appointment-card">
-              <% if appointment.image.attached? %>
-                <%= cl_image_tag appointment.image.key, class: "card-img-top", alt: appointment.stylist.name %>
+    <div class="row g-3 justify-content-center">
+      <% @available_stylists.each do |stylist| %>
+        <div class="col-md-4 col-sm-6">
+          <%= link_to stylist_path(stylist), class: "text-decoration-none" do %>
+            <div class="card appointment-card text-center p-3">
+              <% if stylist.avatar.attached? %>
+                <%= image_tag url_for(stylist.avatar), class: "rounded-circle mx-auto mb-2", style: "width:80px;height:80px;object-fit:cover;border:3px solid #4A5D4F;" %>
               <% else %>
-                <%= image_tag "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400", class: "card-img-top", alt: "Salon" %>
+                <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center mx-auto mb-2"
+                     style="width:80px;height:80px;color:white;font-size:1.5rem;">
+                  <%= stylist.name&.first&.upcase || "S" %>
+                </div>
               <% end %>
-              <div class="card-body">
-                <h5 class="card-title"><%= appointment.salon %></h5>
-                <p class="card-text">
-                  <%= appointment.location_display %>
-                  <% if appointment.time.present? %>
-                    <br><small><%= appointment.time.strftime("%b %d, %Y at %I:%M %p") %></small>
-                  <% end %>
-                </p>
-              </div>
+              <h6 class="fw-bold mb-1"><%= stylist.name %></h6>
+              <p class="text-muted small mb-2"><%= stylist.location_display.presence || short_address(stylist) %></p>
+              <span class="badge bg-success"><i class="fas fa-circle me-1" style="font-size:0.6em;"></i>Available</span>
             </div>
           <% end %>
         </div>
       <% end %>
     </div>
+
+    <div class="text-center mt-4 d-flex gap-2 justify-content-center">
+      <%= link_to "Browse All Stylists", stylists_path, class: "btn btn-primary" %>
+      <%= link_to "Browse Availability", appointments_path, class: "btn btn-outline-primary" %>
+    </div>
   <% else %>
-    <p class="text-center mt-4">No upcoming appointments available.</p>
+    <p class="text-center mt-4 text-muted">No stylists available right now — check back soon.</p>
   <% end %>
 
 </div>

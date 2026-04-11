@@ -9,52 +9,110 @@
     <% end %>
   </div>
 
+  <% standard_services = @services.main_services %>
+  <% add_on_services = @services.add_ons %>
+
   <% if @services.any? %>
-    <div class="dashboard-section">
-      <div class="table-responsive">
-        <table class="table dashboard-table align-middle mb-0">
-          <thead>
-            <tr>
-              <th>Service Name</th>
-              <th>Description</th>
-              <th>Price</th>
-              <th>Duration</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @services.each do |service| %>
-              <tr class="<%= 'opacity-50' unless service.active? %>">
-                <td><strong><%= service.name %></strong></td>
-                <td><%= truncate(service.description, length: 60) %></td>
-                <td>$<%= number_with_precision(service.price, precision: 2) %></td>
-                <td><%= service.duration_minutes ? "#{service.duration_minutes} min" : "—" %></td>
-                <td>
-                  <% if service.active? %>
-                    <span class="badge bg-success">Active</span>
-                  <% else %>
-                    <span class="badge bg-secondary">Inactive</span>
-                  <% end %>
-                </td>
-                <td>
-                  <div class="d-flex gap-1">
-                    <%= link_to edit_stylist_service_path(service), class: "btn btn-sm btn-outline-primary" do %>
-                      <i class="fas fa-edit"></i>
-                    <% end %>
-                    <%= button_to stylist_service_path(service), method: :delete,
-                        data: { turbo_confirm: "Are you sure you want to delete '#{service.name}'?" },
-                        class: "btn btn-sm btn-outline-danger" do %>
-                      <i class="fas fa-trash"></i>
-                    <% end %>
-                  </div>
-                </td>
+    <% if standard_services.any? %>
+      <div class="dashboard-section mb-4">
+        <h5 class="fw-bold text-secondary mb-3">Standard Services</h5>
+        <div class="table-responsive">
+          <table class="table dashboard-table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Service Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Duration</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-            <% end %>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <% standard_services.each do |service| %>
+                <tr class="<%= 'opacity-50' unless service.active? %>">
+                  <td><strong><%= service.name %></strong></td>
+                  <td><%= truncate(service.description, length: 60) %></td>
+                  <td>$<%= number_with_precision(service.price, precision: 2) %></td>
+                  <td><%= service.duration_minutes ? "#{service.duration_minutes} min" : "—" %></td>
+                  <td>
+                    <% if service.active? %>
+                      <span class="badge bg-success">Active</span>
+                    <% else %>
+                      <span class="badge bg-secondary">Inactive</span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <div class="d-flex gap-1">
+                      <%= link_to edit_stylist_service_path(service), class: "btn btn-sm btn-outline-primary" do %>
+                        <i class="fas fa-edit"></i>
+                      <% end %>
+                      <%= button_to stylist_service_path(service), method: :delete,
+                          data: { turbo_confirm: "Are you sure you want to delete '#{service.name}'?" },
+                          class: "btn btn-sm btn-outline-danger" do %>
+                        <i class="fas fa-trash"></i>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    <% end %>
+
+    <% if add_on_services.any? %>
+      <div class="dashboard-section mb-4">
+        <h5 class="fw-bold text-secondary mb-3">Add-On Services</h5>
+        <div class="table-responsive">
+          <table class="table dashboard-table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Service Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Duration</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% add_on_services.each do |service| %>
+                <tr class="<%= 'opacity-50' unless service.active? %>">
+                  <td>
+                    <strong><%= service.name %></strong>
+                    <span class="badge bg-secondary ms-2" style="font-size: 0.7em;">Add-on</span>
+                  </td>
+                  <td><%= truncate(service.description, length: 60) %></td>
+                  <td>$<%= number_with_precision(service.price, precision: 2) %></td>
+                  <td><%= service.duration_minutes ? "#{service.duration_minutes} min" : "—" %></td>
+                  <td>
+                    <% if service.active? %>
+                      <span class="badge bg-success">Active</span>
+                    <% else %>
+                      <span class="badge bg-secondary">Inactive</span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <div class="d-flex gap-1">
+                      <%= link_to edit_stylist_service_path(service), class: "btn btn-sm btn-outline-primary" do %>
+                        <i class="fas fa-edit"></i>
+                      <% end %>
+                      <%= button_to stylist_service_path(service), method: :delete,
+                          data: { turbo_confirm: "Are you sure you want to delete '#{service.name}'?" },
+                          class: "btn btn-sm btn-outline-danger" do %>
+                        <i class="fas fa-trash"></i>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% end %>
   <% else %>
     <div class="dashboard-section text-center py-5">
       <i class="fas fa-concierge-bell fa-3x text-muted mb-3" style="opacity: 0.3;"></i>

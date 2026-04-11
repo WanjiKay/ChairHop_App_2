@@ -1,6 +1,7 @@
 class Location < ApplicationRecord
   belongs_to :user
   has_many :appointments
+  has_many :availability_blocks, dependent: :restrict_with_error
 
   validates :name, presence: true
   validates :street_address, presence: true

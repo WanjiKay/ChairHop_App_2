@@ -2,6 +2,7 @@ class ConversationsController < ApplicationController
   before_action :authenticate_user!
 
   def index
+    authorize Conversation
     if params[:appointment_id].present?
       @appointment = Appointment.find(params[:appointment_id])
       @conversations = Conversation.where(appointment: @appointment)
@@ -25,11 +26,12 @@ class ConversationsController < ApplicationController
 
   def show
     @conversation = Conversation.includes(:conversation_messages).find(params[:id])
-    authorize_conversation_access!
+    authorize @conversation
     @conversation_message = ConversationMessage.new
   end
 
   def new
+    skip_authorization
     @conversation = Conversation.new
     if params[:appointment_id].present?
       @appointment = Appointment.find(params[:appointment_id])
@@ -52,6 +54,7 @@ class ConversationsController < ApplicationController
     @conversation = Conversation.find_by(appointment: @appointment)
 
     if @conversation
+      skip_authorization
       redirect_to conversation_path(@conversation)
     else
       @conversation = Conversation.new
@@ -59,6 +62,7 @@ class ConversationsController < ApplicationController
       # Customer is the current user who wants to message the stylist
       @conversation.customer = current_user
       @conversation.stylist = @appointment.stylist
+      authorize @conversation
 
       if @conversation.save
         redirect_to conversation_path(@conversation)
@@ -66,14 +70,6 @@ class ConversationsController < ApplicationController
         flash.now[:alert] = "Failed to create conversation."
         render :new, status: :unprocessable_entity
       end
-    end
-  end
-
-  private
-
-  def authorize_conversation_access!
-    unless @conversation.customer_id == current_user.id || @conversation.stylist_id == current_user.id
-      redirect_to root_path, alert: "You don't have access to this conversation."
     end
   end
 end

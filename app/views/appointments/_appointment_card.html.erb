@@ -1,0 +1,183 @@
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+
+    <%# Header row: stylist + booking ref + status badge %>
+    <div class="d-flex justify-content-between align-items-start mb-3">
+      <div class="d-flex align-items-center gap-2">
+        <% if appointment.stylist.avatar.attached? %>
+          <%= image_tag url_for(appointment.stylist.avatar),
+                class: "rounded-circle", style: "width:44px;height:44px;object-fit:cover;" %>
+        <% else %>
+          <div class="rounded-circle bg-secondary d-flex align-items-center
+                      justify-content-center text-white fw-bold"
+               style="width:44px;height:44px;font-size:1rem;flex-shrink:0;">
+            <%= appointment.stylist.name.first.upcase %>
+          </div>
+        <% end %>
+        <div>
+          <div class="fw-semibold"><%= appointment.stylist.name %></div>
+          <small class="text-muted">#<%= appointment.id.to_s.rjust(6, "0") %></small>
+        </div>
+      </div>
+
+      <%# Status badge %>
+      <% case card_type
+         when :upcoming %>
+        <span class="badge bg-success">Confirmed</span>
+      <% when :pending %>
+        <span class="badge bg-warning text-dark">Awaiting Confirmation</span>
+      <% when :completed %>
+        <span class="badge bg-secondary">Completed</span>
+      <% when :cancelled %>
+        <span class="badge bg-danger">Cancelled</span>
+      <% end %>
+    </div>
+
+    <%# Appointment details %>
+    <div class="row g-2 mb-3">
+      <div class="col-6">
+        <small class="text-muted d-block">Date & Time</small>
+        <span class="fw-semibold small">
+          <%= appointment.time.strftime("%a, %b %-d at %-I:%M %p") %>
+        </span>
+      </div>
+      <div class="col-6">
+        <small class="text-muted d-block">Service</small>
+        <span class="fw-semibold small">
+          <%= appointment.selected_service&.split(" - $")&.first || "Not selected" %>
+        </span>
+      </div>
+      <% if appointment.location.present? %>
+        <div class="col-12">
+          <small class="text-muted d-block">Location</small>
+          <span class="small"><%= appointment.location.name %></span>
+        </div>
+      <% end %>
+      <% if appointment.appointment_add_ons.any? %>
+        <div class="col-12">
+          <small class="text-muted d-block">Add-ons</small>
+          <span class="small">
+            <%= appointment.appointment_add_ons.map(&:service_name).join(", ") %>
+          </span>
+        </div>
+      <% end %>
+      <% if appointment.payment_amount.present? %>
+        <div class="col-6">
+          <small class="text-muted d-block">Deposit Paid</small>
+          <span class="small fw-semibold text-success">
+            <%= number_to_currency(appointment.payment_amount.to_f * 0.5) %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Cancellation info (cancelled tab only) %>
+    <% if card_type == :cancelled %>
+      <div class="bg-light rounded p-2 mb-3 small">
+        <% if appointment.cancelled_by.present? %>
+          <span class="text-muted">Cancelled by
+            <strong><%= appointment.cancelled_by.capitalize %></strong>
+          </span>
+          <% if appointment.cancelled_at.present? %>
+            <span class="text-muted"> on
+              <%= appointment.cancelled_at.strftime("%b %-d, %Y") %>
+            </span>
+          <% end %>
+        <% end %>
+        <% if appointment.payment_status == "refunded" %>
+          <div class="text-success mt-1">
+            <i class="bi bi-check-circle me-1"></i>Deposit refunded
+          </div>
+        <% elsif appointment.payment_status == "deposit_kept" %>
+          <div class="text-warning mt-1">
+            <i class="bi bi-info-circle me-1"></i>Deposit kept (late cancellation)
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# Action buttons %>
+    <div class="d-flex flex-wrap gap-2">
+      <%= link_to appointment_path(appointment),
+                  class: "btn btn-outline-secondary btn-sm" do %>
+        <i class="bi bi-eye me-1"></i>View Details
+      <% end %>
+
+      <% if card_type == :completed %>
+        <%= link_to confirmation_appointment_path(appointment),
+                    class: "btn btn-outline-secondary btn-sm" do %>
+          <i class="bi bi-receipt me-1"></i>Receipt
+        <% end %>
+        <% unless appointment.review.present? %>
+          <%= link_to new_appointment_review_path(appointment),
+                      class: "btn btn-outline-primary btn-sm" do %>
+            <i class="bi bi-star me-1"></i>Leave a Review
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <% if card_type == :upcoming || card_type == :pending %>
+        <% if appointment.cancellable_by_customer? %>
+          <button type="button"
+                  class="btn btn-outline-danger btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#cancelModal-<%= appointment.id %>">
+            <i class="bi bi-x-circle me-1"></i>Cancel
+          </button>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%# Cancel modal (unique per appointment) %>
+<% if (card_type == :upcoming || card_type == :pending) &&
+      appointment.cancellable_by_customer? %>
+  <div class="modal fade" id="cancelModal-<%= appointment.id %>" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title text-danger">
+            <i class="bi bi-exclamation-triangle me-2"></i>Cancel Appointment?
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <% if appointment.full_refund_eligible? %>
+            <div class="alert alert-success">
+              <i class="bi bi-check-circle me-1"></i>
+              <strong>Full refund eligible.</strong>
+              Your deposit of
+              <%= number_to_currency(appointment.payment_amount.to_f * 0.5) %>
+              will be returned within 5–10 business days.
+            </div>
+          <% elsif appointment.payment_id.present? %>
+            <div class="alert alert-warning">
+              <i class="bi bi-exclamation-triangle me-1"></i>
+              <strong>No refund available.</strong>
+              This appointment is within 24 hours. Your deposit will not
+              be returned per our cancellation policy.
+            </div>
+          <% end %>
+          <%= form_with url: cancel_appointment_path(appointment),
+                        method: :patch, local: true do |f| %>
+            <div class="mb-3">
+              <%= f.label :cancellation_reason,
+                          "Reason for cancelling (optional)",
+                          class: "form-label text-muted small" %>
+              <%= f.text_area :cancellation_reason, rows: 3,
+                              class: "form-control",
+                              placeholder: "Let the stylist know why..." %>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-secondary flex-fill"
+                      data-bs-dismiss="modal">Keep Appointment</button>
+              <%= f.submit "Yes, Cancel",
+                           class: "btn btn-danger flex-fill" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

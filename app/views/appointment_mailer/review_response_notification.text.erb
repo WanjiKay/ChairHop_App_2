@@ -1,0 +1,22 @@
+<%= @stylist.name %> responded to your review
+==========================================
+
+Hi <%= @customer.name %>,
+
+<%= @stylist.name %> has responded to the review you left for your
+appointment on <%= @appointment.time.strftime("%B %-d, %Y") %>.
+
+YOUR REVIEW (<%= @review.rating %>/5 stars):
+"<%= @review.content %>"
+
+<%= @stylist.name.upcase %>'S RESPONSE:
+"<%= @review.stylist_response %>"
+
+---
+Appointment: <%= @appointment.time.strftime("%B %-d, %Y at %I:%M %p") %>
+<% if @appointment.selected_service.present? %>Service: <%= @appointment.selected_service %>
+<% end %>
+View your appointment: <%= appointment_url(@appointment) %>
+
+---
+© ChairHop · You're receiving this because you have an account with us.

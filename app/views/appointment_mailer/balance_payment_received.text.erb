@@ -1,0 +1,21 @@
+Balance Payment Received
+========================
+
+Hi <%= @stylist.name %>,
+
+The remaining balance for <%= @customer.name %>'s appointment has been
+successfully charged. The appointment is now marked as complete.
+
+Appointment Details:
+  Customer:  <%= @customer.name %>
+<% if @appointment.selected_service.present? %>  Service:   <%= @appointment.selected_service %>
+<% end %>  Date:      <%= format_datetime(@appointment.time) %>
+<% if @appointment.payment_amount.present? %>  Deposit:   <%= number_to_currency(@appointment.payment_amount.to_f * 0.5) %>
+  Balance:   <%= number_to_currency(@appointment.payment_amount.to_f * 0.5) %>
+  Total:     <%= number_to_currency(@appointment.payment_amount.to_f) %>
+<% end %>  Booking #: #<%= @appointment.id.to_s.rjust(6, "0") %>
+
+View appointment: <%= appointment_url(@appointment) %>
+
+---
+© ChairHop · You're receiving this because you have a stylist account with us.

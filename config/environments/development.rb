@@ -1,7 +1,6 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
-  config.action_mailer.default_url_options = { host: "http://localhost:3000" }
   config.action_controller.default_url_options = { host: "localhost:3000" }
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -38,10 +37,16 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :cloudinary
 
-  # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  # Surface mail delivery errors in development
+  config.action_mailer.raise_delivery_errors = true
+
+  # Run jobs inline so deliver_later opens letter_opener immediately
+  config.active_job.queue_adapter = :inline
 
   config.action_mailer.perform_caching = false
+  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -70,17 +75,10 @@ Rails.application.configure do
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
 
-  # Allow Action Cable connections from mobile app and local network
   config.action_cable.allowed_request_origins = [
-    'http://localhost:8081',  # Expo web
-    'http://localhost:8082',  # React Native web
-    'http://localhost:19006', # Expo web alternative
     /http:\/\/localhost:.*/,  # Any localhost port
     /http:\/\/192\.168\..*/   # Local network
   ]
-
-  # Allow ngrok hosts for QuickBooks OAuth testing
-  config.hosts << /[a-z0-9-]+\.ngrok-free\.dev/
 
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true

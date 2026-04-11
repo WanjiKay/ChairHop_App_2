@@ -1,0 +1,20 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <%= link_to stylist_availability_blocks_path, class: "btn btn-outline-secondary btn-sm" do %>
+          <i class="fas fa-arrow-left me-1"></i> Back
+        <% end %>
+        <h1 class="fw-bold text-primary mb-0">Edit Availability Block</h1>
+      </div>
+
+      <%= render "form",
+            availability_block: @availability_block,
+            locations: @locations,
+            services: @services,
+            form_url: stylist_availability_block_path(@availability_block),
+            form_method: :patch,
+            submit_label: "Update Availability Block" %>
+    </div>
+  </div>
+</div>

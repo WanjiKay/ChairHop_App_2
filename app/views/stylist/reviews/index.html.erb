@@ -1,0 +1,137 @@
+<div class="container py-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <%= link_to stylist_dashboard_path, class: "btn btn-outline-secondary btn-sm me-3" do %>
+        <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+      <% end %>
+      <span class="h3 fw-bold text-primary mb-0">My Reviews</span>
+    </div>
+  </div>
+
+  <% if @reviews.any? %>
+    <!-- Summary -->
+    <% avg = (@reviews.sum(&:rating).to_f / @reviews.size).round(1) %>
+    <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-light rounded">
+      <div>
+        <span class="fs-4 fw-bold text-warning"><%= avg %></span>
+        <span class="text-muted ms-1">/ 5</span>
+      </div>
+      <div>
+        <% avg.floor.times do %>
+          <i class="fas fa-star text-warning"></i>
+        <% end %>
+        <% if avg % 1 >= 0.5 %>
+          <i class="fas fa-star-half-alt text-warning"></i>
+          <% (4 - avg.floor).times do %>
+            <i class="far fa-star text-warning"></i>
+          <% end %>
+        <% else %>
+          <% (5 - avg.floor).times do %>
+            <i class="far fa-star text-warning"></i>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="text-muted">
+        <%= pluralize(@reviews.size, "review") %>
+      </div>
+    </div>
+
+    <!-- Review cards -->
+    <% @reviews.each do |review| %>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body p-4">
+
+          <!-- Customer + date row -->
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <% if review.customer&.avatar&.attached? %>
+                <%= image_tag url_for(review.customer.avatar),
+                      class: "rounded-circle",
+                      style: "width: 40px; height: 40px; object-fit: cover;" %>
+              <% else %>
+                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
+                     style="width: 40px; height: 40px; flex-shrink: 0;">
+                  <i class="fas fa-user text-white" style="font-size: 16px;"></i>
+                </div>
+              <% end %>
+              <div>
+                <div class="fw-semibold"><%= review.customer.name %></div>
+                <% if review.appointment&.selected_service.present? %>
+                  <small class="text-muted"><%= review.appointment.selected_service.split(' - $').first %></small>
+                <% end %>
+              </div>
+            </div>
+            <div class="text-end">
+              <div>
+                <% review.rating.times do %>
+                  <i class="fas fa-star text-warning"></i>
+                <% end %>
+                <% (5 - review.rating).times do %>
+                  <i class="far fa-star text-warning"></i>
+                <% end %>
+              </div>
+              <small class="text-muted"><%= review.created_at.strftime("%b %-d, %Y") %></small>
+            </div>
+          </div>
+
+          <!-- Review content -->
+          <p class="mb-3"><%= review.content %></p>
+
+          <!-- Photos -->
+          <% if review.photos.attached? %>
+            <div class="d-flex gap-2 mb-3">
+              <% review.photos.each do |photo| %>
+                <%= image_tag url_for(photo), class: "rounded", style: "max-height: 100px; object-fit: cover;" %>
+              <% end %>
+            </div>
+          <% end %>
+
+          <!-- Stylist response -->
+          <% if review.stylist_response.present? %>
+            <div class="p-3 bg-light rounded border-start border-primary border-3">
+              <div class="fw-semibold text-primary small mb-1">Your response
+                <% if review.stylist_responded_at.present? %>
+                  <span class="text-muted fw-normal">· <%= review.stylist_responded_at.strftime("%b %-d, %Y") %></span>
+                <% end %>
+              </div>
+              <p class="mb-2 small"><%= review.stylist_response %></p>
+              <details>
+                <summary class="text-muted" style="font-size: 12px; cursor: pointer;">Edit response</summary>
+                <%= form_with url: stylist_review_response_path(review_id: review.id),
+                              method: :patch, local: true, class: "mt-2" do |f| %>
+                  <textarea name="stylist_response" class="form-control form-control-sm mb-2"
+                            rows="3"><%= review.stylist_response %></textarea>
+                  <%= f.submit "Update", class: "btn btn-sm btn-outline-primary" %>
+                <% end %>
+              </details>
+            </div>
+          <% else %>
+            <details>
+              <summary class="text-primary" style="font-size: 13px; cursor: pointer;">
+                <i class="fas fa-reply me-1"></i>Respond to this review
+              </summary>
+              <%= form_with url: stylist_review_responses_path,
+                            method: :post, local: true, class: "mt-2" do |f| %>
+                <input type="hidden" name="review_id" value="<%= review.id %>">
+                <textarea name="stylist_response" class="form-control form-control-sm mb-2"
+                          rows="3" placeholder="Write a public response..."></textarea>
+                <%= f.submit "Post Response", class: "btn btn-sm btn-primary" %>
+              <% end %>
+            </details>
+          <% end %>
+
+        </div>
+      </div>
+    <% end %>
+
+  <% else %>
+    <div class="text-center py-5">
+      <i class="fas fa-star fa-4x text-muted mb-4" style="opacity: 0.25;"></i>
+      <h5 class="text-muted">No reviews yet</h5>
+      <p class="text-muted mb-0">Complete appointments to start receiving reviews.</p>
+    </div>
+  <% end %>
+
+</div>

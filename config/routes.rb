@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   root to: "pages#home"
 
-  devise_for :users
+  devise_for :users, controllers: {
+    registrations: 'users/registrations'
+  }
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -17,42 +19,78 @@ Rails.application.routes.draw do
     get "/", to: "dashboard#index", as: :dashboard
     resources :services, except: [:show]
     resources :locations
+    resources :availability_blocks, path: 'calendar', only: [:index, :new, :create, :edit, :update, :destroy]
+
+    resource :onboarding, only: [] do
+      get  :step1,          on: :collection
+      post :complete_step1, on: :collection
+      get  :step2,          on: :collection
+      post :complete_step2, on: :collection
+      get  :step3,          on: :collection
+      post :complete_step3, on: :collection
+      get  :step4,          on: :collection
+      post :complete_step4, on: :collection
+      post :skip_step4,     on: :collection
+    end
+
     resources :appointments, only: [:index, :new, :create] do
       member do
         patch :accept
         patch :decline
         patch :cancel
         patch :complete
+        patch :send_payment_link
       end
     end
+
+    resources :review_responses, only: [:create, :update], param: :review_id
+    resources :reviews, only: [:index]
+    get 'analytics', to: 'analytics#index', as: :analytics
   end
 
-  # QuickBooks integration
-  get '/quickbooks/connect', to: 'quickbooks#connect', as: :connect_quickbooks
-  get '/quickbooks/callback', to: 'quickbooks#callback'
-  delete '/quickbooks/disconnect', to: 'quickbooks#disconnect', as: :disconnect_quickbooks
-  namespace :quickbooks do
-    resource :manual_setup, only: [:new, :create], controller: 'manual_setup'
+  # Square webhooks
+  namespace :webhooks do
+    post 'square', to: 'square#receive'
   end
+
+  # Square OAuth
+  get    '/square/connect',    to: 'square#connect',    as: :connect_square
+  get    '/square/callback',   to: 'square#callback',   as: :square_callback
+  delete '/square/disconnect', to: 'square#disconnect', as: :disconnect_square
+
+  get 'bookings/slots', to: 'bookings#slots', as: :booking_slots
+  resources :bookings, only: [:new, :create]
+
+  delete 'profile/portfolio_photos/:photo_id',
+    to: 'profiles#destroy_portfolio_photo',
+    as: :destroy_portfolio_photo
+
+  post 'profile/portfolio_photos/upload',
+    to: 'profiles#upload_portfolio_photos',
+    as: :upload_portfolio_photos
 
   resource :profile, only: [:show, :edit, :update]
 
   resources :appointments do
     resources :chats, only: [:index, :show, :new, :create]
     resources :conversations, only: [:index, :show, :new, :create]
-    resources :reviews, only: [:new, :create]
+    resources :reviews, only: [:new, :create, :edit, :update]
 
     member do
-      get :check_in
-      post :check_in
+      get :review
+      post :review
       get :confirmation
       post :book
       get :booked
+      get :payment_failed
       patch :complete
+      patch :cancel
     end
   end
 
   get "my_appointments", to: "appointments#my_appointments", as: :my_appointments
+
+  get '/book/:slug', to: 'stylists#booking_page', as: :stylist_booking_page
 
   resources :stylists, only: [:index, :show]
 
@@ -65,69 +103,4 @@ Rails.application.routes.draw do
   end
 
   resources :messages, only: [:index, :create]
-
-  # API routes for mobile apps
-  namespace :api do
-    namespace :v1 do
-      # Wrap authentication routes in devise_scope
-      devise_scope :user do
-        post 'login', to: 'sessions#create'
-        delete 'logout', to: 'sessions#destroy'
-        post 'signup', to: 'registrations#create'
-      end
-
-      # Profile endpoints (requires authentication)
-      get 'profile', to: 'profiles#show'
-      patch 'profile', to: 'profiles#update'
-
-      # Appointments endpoints
-      resources :appointments, only: [:index, :show] do
-        member do
-          post :book
-          delete :cancel
-        end
-        collection do
-          get :my_appointments
-        end
-      end
-
-      # Push token registration
-      post 'users/push_token', to: 'users#update_push_token'
-
-      # Reviews endpoints
-      resources :reviews, only: [:index]
-      post 'appointments/:appointment_id/review', to: 'reviews#create'
-      get 'appointments/:appointment_id/reviews', to: 'reviews#show'
-
-      # Conversations endpoints (in-app messaging)
-      resources :conversations, only: [:index, :show] do
-        resources :messages, controller: 'conversation_messages', only: [:create]
-      end
-      post 'appointments/:appointment_id/conversations', to: 'conversations#create'
-
-      # Photo uploads
-      post 'uploads/avatar', to: 'uploads#upload_avatar'
-      post 'appointments/:appointment_id/upload_image', to: 'uploads#upload_appointment_image'
-      post 'conversations/:conversation_id/upload_photo', to: 'uploads#upload_message_photo'
-
-      # Payment endpoints
-      post 'appointments/:appointment_id/payment', to: 'payments#create_payment'
-      get 'appointments/:appointment_id/payment/status', to: 'payments#payment_status'
-      post 'appointments/:appointment_id/payment/refund', to: 'payments#refund_payment'
-
-      # Services endpoints (public browsing)
-      resources :services, only: [:index, :show]
-
-      # Stylist namespace - endpoints for stylists only
-      namespace :stylist do
-        resources :appointments do
-          member do
-            patch :accept
-            patch :complete
-          end
-        end
-        resources :services
-      end
-    end
-  end
 end

@@ -2,6 +2,7 @@ import "@hotwired/turbo-rails"
 import * as bootstrap from "bootstrap"
 import "controllers"
 
+
 function initNavbar() {
   // Prevent double-initialization on Turbo navigation
   if (document.body.dataset.navbarInitialized === "true") return;

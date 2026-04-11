@@ -1,0 +1,16 @@
+Hi <%= @customer.name %>,
+
+Your booking request has been sent to <%= @stylist.name %>.
+You'll receive an email once they accept or decline.
+
+Booking Details:
+Stylist: <%= @stylist.name %>
+Service: <%= @appointment.selected_service %>
+Date & Time: <%= format_datetime(@appointment.time) %>
+<% if @appointment.location.present? %>Location: <%= @appointment.location.name %>
+<% end %><% if @appointment.payment_amount.present? %>Deposit Paid: <%= number_to_currency(@appointment.payment_amount.to_f * 0.5) %>
+<% end %>Booking #: #<%= @appointment.id.to_s.rjust(6, "0") %>
+
+View your booking: <%= appointment_url(@appointment) %>
+
+The ChairHop Team

@@ -1,0 +1,65 @@
+<div class="container my-4">
+  <h1>Edit Your Review</h1>
+
+  <p>
+    You're editing your review for
+    <strong><%= @appointment.stylist.name %></strong>
+    about your appointment on
+    <%= @appointment.time.strftime("%b %e, %Y") %>
+    at
+    <%= @appointment.location_display %>.
+  </p>
+
+  <%= form_with model: @review,
+                url: appointment_review_path(@appointment, @review),
+                method: :patch,
+                local: true,
+                multipart: true do |f| %>
+
+    <% if @review.errors.any? %>
+      <div class="alert alert-danger">
+        <ul class="mb-0">
+          <% @review.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- Rating -->
+    <div class="mb-3">
+      <%= f.label :rating, "Rating (1–5)" %><br>
+      <%= f.select :rating, options_for_select(1..5, @review.rating), {}, class: "form-select" %>
+    </div>
+
+    <!-- Content -->
+    <div class="mb-3">
+      <%= f.label :content, "Tell us about your experience" %><br>
+      <%= f.text_area :content, rows: 4, class: "form-control" %>
+    </div>
+
+    <!-- Photos -->
+    <div class="mb-3">
+      <%= f.label :photos, "Add Photos (optional, max 2)" %>
+      <% if @review.photos.attached? %>
+        <div class="d-flex gap-2 mb-2">
+          <% @review.photos.each do |photo| %>
+            <%= image_tag url_for(photo), class: "rounded", style: "max-height: 80px;" %>
+          <% end %>
+        </div>
+        <small class="text-muted d-block mb-2">Uploading new photos will replace the existing ones.</small>
+      <% end %>
+      <%= f.file_field :photos, multiple: true, accept: "image/jpeg,image/jpg",
+          class: "form-control",
+          data: { max_files: 2 } %>
+      <small class="text-muted">You can attach up to 2 photos (JPG only)</small>
+    </div>
+
+    <!-- Buttons -->
+    <div class="d-flex gap-2">
+      <%= link_to "Cancel", my_appointments_path, class: "btn btn-outline-secondary" %>
+      <%= f.submit "Update review", class: "btn btn-primary" %>
+    </div>
+
+  <% end %>
+</div>
