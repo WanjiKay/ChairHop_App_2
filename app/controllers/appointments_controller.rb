@@ -1,6 +1,6 @@
 class AppointmentsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
-  before_action :set_appointment, only: [:show, :review, :confirmation, :book, :booked, :destroy, :complete, :cancel]
+  before_action :set_appointment, only: [:show, :review, :confirmation, :balance_receipt, :invoice, :book, :booked, :destroy, :complete, :cancel]
 
   def index
     authorize Appointment
@@ -16,7 +16,7 @@ class AppointmentsController < ApplicationController
     if params[:query].present?
       query_term = "%#{params[:query].downcase}%"
       @availability_blocks = @availability_blocks.where(
-        "LOWER(users.name) ILIKE :q OR LOWER(users.about) ILIKE :q OR " \
+        "LOWER(CONCAT(users.first_name, ' ', users.last_name)) ILIKE :q OR LOWER(users.about) ILIKE :q OR " \
         "EXISTS (SELECT 1 FROM services s2 WHERE s2.stylist_id = users.id AND LOWER(s2.name) ILIKE :q) OR " \
         "EXISTS (SELECT 1 FROM locations l2 WHERE l2.user_id = users.id AND " \
         "(LOWER(l2.city) ILIKE :q OR LOWER(l2.name) ILIKE :q))",
@@ -124,6 +124,16 @@ def review
     return
   end
 
+  # Enforce hold expiry
+  if @appointment.hold_expires_at.present? && @appointment.hold_expires_at < Time.current
+    stylist = @appointment.stylist
+    session.delete("appointment_#{@appointment.id}_selections")
+    @appointment.destroy
+    redirect_to stylist_path(stylist),
+      alert: "Your hold on this time slot has expired. Please select a new time."
+    return
+  end
+
   # Handle GET requests - try to restore from session
   if request.get?
     session_key = "appointment_#{@appointment.id}_selections"
@@ -183,6 +193,39 @@ end
     @balance_due      = @deposit_paid
   end
 
+  def balance_receipt
+    authorize @appointment
+
+    unless @appointment.customer_id == current_user&.id
+      redirect_to appointments_path, alert: "You don't have access to that receipt."
+      return
+    end
+
+    unless @appointment.balance_payment_id.present?
+      redirect_to confirmation_appointment_path(@appointment)
+      return
+    end
+
+    @selected_service = @appointment.selected_service&.split(' - $')&.first
+    @service_price    = @appointment.total_price
+    @balance_paid     = (@service_price * 0.5).round(2)
+  end
+
+  def invoice
+    authorize @appointment
+
+    unless @appointment.customer_id == current_user&.id
+      redirect_to appointments_path, alert: "You don't have access to that invoice."
+      return
+    end
+
+    @selected_service = @appointment.selected_service&.split(' - $')&.first
+    @add_ons_total    = @appointment.total_add_ons_price
+    @service_price    = @appointment.total_price
+    @deposit_paid     = (@service_price * 0.5).round(2)
+    @balance_paid     = @deposit_paid
+  end
+
   def book
     authorize @appointment
 
@@ -191,10 +234,26 @@ end
       return
     end
 
+    # Enforce hold expiry
+    if @appointment.hold_expires_at.present? && @appointment.hold_expires_at < Time.current
+      stylist = @appointment.stylist
+      session.delete("appointment_#{@appointment.id}_selections")
+      @appointment.destroy
+      redirect_to stylist_path(stylist),
+        alert: "Your hold on this time slot has expired. Please select a new time."
+      return
+    end
+
     payment_nonce = params[:payment_nonce]
 
     unless payment_nonce.present?
       flash[:alert] = "Payment information is required to book an appointment."
+      redirect_to review_appointment_path(@appointment)
+      return
+    end
+
+    unless params[:card_save_consent] == '1'
+      flash[:alert] = "You must agree to save your card to complete the booking."
       redirect_to review_appointment_path(@appointment)
       return
     end
@@ -212,24 +271,47 @@ end
     end
     @appointment.reload
 
+    # Set payment_amount before calling any service method (total_amount_cents depends on it)
     add_ons = @appointment.stylist.services.add_ons.where(id: params[:add_on_ids] || [])
     @appointment.payment_amount = calculate_total(selected_service, add_ons)
 
     payment_service = PaymentService.new(@appointment.stylist)
-    result = payment_service.charge_deposit(@appointment, payment_nonce)
 
+    # Step 1 — Ensure customer record exists in stylist's Square account
+    begin
+      customer_id = payment_service.create_or_find_customer(current_user)
+    rescue => e
+      flash[:alert] = "Booking setup failed: #{e.message}"
+      redirect_to review_appointment_path(@appointment)
+      return
+    end
+
+    # Step 2 — Vault the card (nonce → stored card on file)
+    card_result = payment_service.create_card(current_user, payment_nonce, @appointment)
+    unless card_result[:success]
+      flash[:alert] = "Could not save your card: #{card_result[:error]}"
+      redirect_to review_appointment_path(@appointment)
+      return
+    end
+    card_id = card_result[:card_id]
+
+    # Step 3 — Charge deposit using the vaulted card
+    result = payment_service.charge_deposit(@appointment, card_id, customer_id)
     unless result[:success]
+      payment_service.disable_card(card_id)  # best-effort cleanup of orphaned card
       flash[:alert] = "Payment failed: #{result[:error]}"
       redirect_to review_appointment_path(@appointment)
       return
     end
 
+    # Step 4 — Persist appointment with card_id
     @appointment.assign_attributes(
       customer:         current_user,
       selected_service: selected_service,
       payment_id:       result[:payment_id],
       payment_status:   'deposit_paid',
-      payment_method:   'square'
+      payment_method:   'square',
+      square_card_id:   card_id
     )
 
     add_ons.each do |svc|
@@ -248,8 +330,8 @@ end
       redirect_to booked_appointment_path(@appointment),
                   notice: "Appointment requested! Deposit of $#{sprintf('%.2f', result[:amount_charged])} charged."
     else
-      # Payment was captured but DB save failed — log for manual reconciliation
-      Rails.logger.error "PAYMENT CAPTURED but save failed! Payment ID: #{result[:payment_id]}, Appointment: #{@appointment.id}, Errors: #{@appointment.errors.full_messages}"
+      # Deposit captured + card vaulted but DB save failed — do NOT disable card (needed for refund)
+      Rails.logger.error "PAYMENT CAPTURED but save failed! Payment ID: #{result[:payment_id]}, Card ID: #{card_id}, Appointment: #{@appointment.id}, Errors: #{@appointment.errors.full_messages}"
       redirect_to payment_failed_appointment_path(@appointment),
                   alert: "Payment was processed but your booking couldn't be saved. Reference: #{result[:payment_id]}"
     end

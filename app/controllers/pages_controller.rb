@@ -1,10 +1,14 @@
 class PagesController < ApplicationController
-  skip_before_action :authenticate_user!, only: [ :home ]
+  skip_before_action :authenticate_user!, only: [:home, :for_stylists]
 
   # def home
   #   @time_range = Time.current..(Time.current + 4.hours)
   #   @upcoming_appointments = Appointment.where(time: @time_range, booked: false).order(:time)
   # end
+
+  def for_stylists
+    skip_authorization
+  end
 
   def home
     skip_authorization

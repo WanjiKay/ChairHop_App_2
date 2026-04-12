@@ -1,9 +1,9 @@
-Hi <%= @recipient.name %>,
+Hi <%= @recipient.full_name %>,
 
 <% if @cancelled_by == 'customer' %>
-The customer <%= @appointment.customer.name %> has cancelled their appointment with you.
+The customer <%= @appointment.customer.full_name %> has cancelled their appointment with you.
 <% else %>
-Unfortunately, <%= @appointment.stylist.name %> has cancelled your upcoming appointment.
+Unfortunately, <%= @appointment.stylist.full_name %> has cancelled your upcoming appointment.
 <% end %>
 
 Appointment Details:

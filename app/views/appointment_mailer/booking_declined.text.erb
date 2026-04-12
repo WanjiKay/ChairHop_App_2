@@ -1,11 +1,11 @@
-Hi <%= @customer.name %>,
+Hi <%= @customer.full_name %>,
 
-Unfortunately, <%= @stylist.name %> is unable to accept your booking request.
+Unfortunately, <%= @stylist.full_name %> is unable to accept your booking request.
 
 <% if @appointment.payment_amount.present? %>Your deposit of <%= number_to_currency(@appointment.payment_amount.to_f * 0.5) %> will be refunded within 5-10 business days.
 
 <% end %>Booking Details:
-Stylist: <%= @stylist.name %>
+Stylist: <%= @stylist.full_name %>
 Service: <%= @appointment.selected_service %>
 Date & Time: <%= format_datetime(@appointment.time) %>
 Booking #: #<%= @appointment.id.to_s.rjust(6, "0") %>

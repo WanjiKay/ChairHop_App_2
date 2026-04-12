@@ -1,50 +1,33 @@
-<div id="success-animation" class="text-center py-4">
-  <div class="checkmark-circle mx-auto mb-3">
-    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-      <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
-      <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-    </svg>
-  </div>
-  <h2 class="fw-bold text-success mb-1">Request Sent!</h2>
-  <p class="text-muted">A summary is shown below.</p>
-</div>
-
-<style>
-  .checkmark-circle { width: 80px; height: 80px; }
-  .checkmark { width: 80px; height: 80px; border-radius: 50%; display: block; stroke-width: 3; stroke: #28a745; stroke-miterlimit: 10; box-shadow: inset 0px 0px 0px #28a745; animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both; }
-  .checkmark__circle { stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 3; stroke: #28a745; fill: none; animation: stroke 0.6s cubic-bezier(0.65,0,0.45,1) forwards; }
-  .checkmark__check { transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48; animation: stroke 0.3s cubic-bezier(0.65,0,0.45,1) 0.8s forwards; }
-  @keyframes stroke { 100% { stroke-dashoffset: 0; } }
-  @keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1,1.1,1); } }
-  @keyframes fill { 100% { box-shadow: inset 0px 0px 0px 40px rgba(40,167,69,0.1); } }
-</style>
 
 <div class="container py-5 mt-5">
   <div class="row justify-content-center">
     <div class="col-lg-8">
       <div class="booked-confirmation-page">
         <!-- Header -->
-        <div class="text-center mb-5">
-          <div class="success-icon-wrapper mb-4">
-            <% if @appointment.booked? %>
-              <i class="fas fa-check-circle success-icon-large"></i>
-            <% else %>
-              <i class="fas fa-hourglass-half success-icon-large" style="color: #FD7E14;"></i>
-            <% end %>
+        <style>
+          .checkmark-circle { width: 80px; height: 80px; }
+          .checkmark { width: 80px; height: 80px; border-radius: 50%; display: block; stroke-width: 3; stroke: #FD7E14; stroke-miterlimit: 10; box-shadow: inset 0px 0px 0px #FD7E14; animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both; }
+          .checkmark__circle { stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 3; stroke: #FD7E14; fill: none; animation: stroke 0.6s cubic-bezier(0.65,0,0.45,1) forwards; }
+          .checkmark__check { transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48; animation: stroke 0.3s cubic-bezier(0.65,0,0.45,1) 0.8s forwards; }
+          @keyframes stroke { 100% { stroke-dashoffset: 0; } }
+          @keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1,1.1,1); } }
+          @keyframes fill { 100% { box-shadow: inset 0px 0px 0px 40px rgba(253,126,20,0.1); } }
+        </style>
+        <div id="success-animation" class="text-center py-4">
+          <div class="checkmark-circle mx-auto mb-3">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+              <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
           </div>
-          <% if @appointment.booked? %>
-            <h1 class="success-title fw-bold mb-3">You May Now Take Your Seat!</h1>
-            <p class="success-subtitle">Your appointment has been confirmed by the stylist</p>
-          <% else %>
-            <h1 class="success-title fw-bold mb-3">Request Sent!</h1>
-            <p class="success-subtitle">Your stylist will review and confirm your booking shortly</p>
-          <% end %>
+          <h2 class="fw-bold mb-1" style="color: #FD7E14;">Request Sent!</h2>
+          <p class="text-muted">Your stylist will review and confirm your booking shortly</p>
         </div>
 
         <div class="alert alert-info mb-4">
           <h6 class="fw-bold">What happens next?</h6>
           <ol class="mb-0">
-            <li><%= @appointment.stylist.name %> will review and confirm your appointment</li>
+            <li><%= @appointment.stylist.full_name %> will review and confirm your appointment</li>
             <li>You'll receive a confirmation notification</li>
             <li>The remaining balance will be charged when your service is completed</li>
           </ol>
@@ -59,10 +42,10 @@
                 <% if current_user.avatar.attached? %>
                   <%= image_tag url_for(current_user.avatar), class: "profile-picture rounded-circle mb-3" %>
                 <% else %>
-                  <%= image_tag "profile.png", class: "profile-picture rounded-circle mb-3", alt: "User profile" %>
+                  <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "profile-picture rounded-circle mb-3", alt: "User profile" %>
                 <% end %>
                 <h5 class="text-primary fw-bold">You</h5>
-                <p class="text-muted mb-0"><%= current_user.name %></p>
+                <p class="text-muted mb-0"><%= current_user.full_name %></p>
               </div>
             </div>
 
@@ -73,10 +56,10 @@
                   <% if @appointment.stylist.avatar.attached? %>
                     <%= image_tag url_for(@appointment.stylist.avatar), class: "profile-picture rounded-circle mb-3" %>
                   <% else %>
-                    <%= image_tag "profile.png", class: "profile-picture rounded-circle mb-3", alt: "Stylist profile" %>
+                    <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "profile-picture rounded-circle mb-3", alt: "Stylist profile" %>
                   <% end %>
                   <h5 class="text-primary fw-bold">Your Stylist</h5>
-                  <p class="text-muted mb-0"><%= @appointment.stylist.name %></p>
+                  <p class="text-muted mb-0"><%= @appointment.stylist.full_name %></p>
                 </div>
               <% end %>
             </div>

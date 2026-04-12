@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_04_01_071523) do
+ActiveRecord::Schema[7.1].define(version: 2026_04_11_232826) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "vector"
@@ -80,6 +80,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_01_071523) do
     t.datetime "completed_at"
     t.string "square_checkout_id"
     t.decimal "balance_collected", precision: 10, scale: 2
+    t.text "square_card_id"
+    t.datetime "hold_expires_at"
     t.index ["availability_block_id", "time"], name: "index_appointments_on_availability_block_id_and_time"
     t.index ["availability_block_id"], name: "index_appointments_on_availability_block_id"
     t.index ["cancelled_by_id"], name: "index_appointments_on_cancelled_by_id"
@@ -319,6 +321,17 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_01_071523) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "user_square_customers", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "stylist_id", null: false
+    t.text "square_customer_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stylist_id"], name: "index_user_square_customers_on_stylist_id"
+    t.index ["user_id", "stylist_id"], name: "index_user_square_customers_on_user_id_and_stylist_id", unique: true
+    t.index ["user_id"], name: "index_user_square_customers_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -342,6 +355,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_01_071523) do
     t.datetime "square_connected_at"
     t.string "square_location_id"
     t.string "booking_slug"
+    t.string "first_name", default: "", null: false
+    t.string "last_name", default: "", null: false
+    t.datetime "tos_accepted_at"
     t.index ["booking_slug"], name: "index_users_on_booking_slug", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -378,4 +394,6 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_01_071523) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "user_square_customers", "users"
+  add_foreign_key "user_square_customers", "users", column: "stylist_id"
 end

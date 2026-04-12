@@ -21,14 +21,14 @@
     <p style="margin:8px 0 0; opacity:0.9;">We'd love to hear about your experience</p>
   </div>
   <div class="body">
-    <p>Hi <%= @customer.name %>,</p>
+    <p>Hi <%= @customer.full_name %>,</p>
 
-    <p>Your appointment with <strong><%= @stylist.name %></strong> has been marked as complete. We hope it was a great experience!</p>
+    <p>Your appointment with <strong><%= @stylist.full_name %></strong> has been marked as complete. We hope it was a great experience!</p>
 
     <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
 
     <div class="card">
-      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.name %></strong></div>
+      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.full_name %></strong></div>
       <% if @appointment.selected_service.present? %>
         <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service.split(' - $').first %></strong></div>
       <% end %>

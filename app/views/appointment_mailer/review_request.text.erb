@@ -1,11 +1,11 @@
-How was your appointment with <%= @stylist.name %>?
+How was your appointment with <%= @stylist.full_name %>?
 
-Hi <%= @customer.name %>,
+Hi <%= @customer.full_name %>,
 
-Your appointment with <%= @stylist.name %> has been marked as complete. We hope it was a great experience!
+Your appointment with <%= @stylist.full_name %> has been marked as complete. We hope it was a great experience!
 
 Appointment details:
-  Stylist:  <%= @stylist.name %>
+  Stylist:  <%= @stylist.full_name %>
 <% if @appointment.selected_service.present? %>
   Service:  <%= @appointment.selected_service.split(' - $').first %>
 <% end %>

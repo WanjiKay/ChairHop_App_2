@@ -8,13 +8,34 @@ body{
 .appointment-details-page {
   background-color: #f0efeb;
   min-height: 100vh;
+  padding: 0 1.5rem 1.5rem;
+
+  > section,
+  > div {
+    margin-bottom: 2rem;
+  }
 }
 
 //Hero Section
 .hero-section {
   position: relative;
-  height: 150px;
+  height: 320px;
   overflow: hidden;
+  padding-top: 1.5rem;
+  background-color: $color-cream;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  .hero-image-wrapper {
+    position: absolute;
+    top: 1.5rem;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 1.5rem);
+  }
 
   .hero-image {
     width: 100%;
@@ -37,10 +58,6 @@ body{
   }
 
   .hero-title {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     font-family: $headers-font;
     font-size: 1.5rem;
     text-align: center;
@@ -51,6 +68,32 @@ body{
     color: $color-brown-deep;
     font-weight: 500;
     z-index: 2;
+  }
+
+  .hero-cta {
+    z-index: 2;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-cta-primary {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .hero-cta-sub {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    text-align: center;
+
+    a {
+      color: #fff;
+      text-decoration: underline;
+    }
   }
 }
 
@@ -207,6 +250,14 @@ h3 {
 }
 
 @media (max-width: 768px) {
+  .hero-section {
+    height: 300px;
+  }
+
+  .hero-cta-primary {
+    max-width: 100%;
+  }
+
   .home-page,
   .results-page,
   .appointment-details-page {
@@ -273,4 +324,104 @@ h3 {
   color: $color-dark-text;
   opacity: 0.8;
   font-size: 1.1rem;
+}
+
+.stylist-pitch-section {
+  background-color: $color-brown-deep;
+  border-radius: $border-radius-xxl;
+  padding: 3rem 2rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    padding: 2.5rem 1.25rem;
+  }
+}
+
+.stylist-pitch-title {
+  color: $color-cream;
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.stylist-pitch-subtitle {
+  color: $color-soft-gray;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.stylist-pitch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  min-width: 0;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    width: 100%;
+
+    .stylist-pitch-card {
+      text-align: center;
+      box-sizing: border-box;
+      width: 100%;
+      min-width: 0;
+    }
+  }
+}
+
+.stylist-pitch-card {
+  background-color: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: $border-radius-xl;
+  padding: 1.5rem;
+  min-width: 0;
+}
+
+.stylist-pitch-icon {
+  color: $color-soft-gray;
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.stylist-pitch-card-title {
+  color: $color-cream;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.stylist-pitch-card-body {
+  color: $color-soft-gray;
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.stylist-pitch-cta {
+  background-color: $color-cream;
+  border-color: $color-cream;
+  color: $color-brown-deep;
+  padding: 0.75rem 2rem;
+
+  &:hover {
+    background-color: $color-soft-gray;
+    border-color: $color-soft-gray;
+    color: $color-brown-deep;
+  }
+}
+
+.stylist-pitch-learn-more {
+  margin: 0;
+  a {
+    color: $color-soft-gray;
+    font-size: 0.85rem;
+    text-decoration: none;
+
+    &:hover {
+      color: $color-cream;
+    }
+  }
 }

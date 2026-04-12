@@ -23,23 +23,32 @@ class User < ApplicationRecord
   has_many :services, foreign_key: :stylist_id, dependent: :destroy
   has_many :locations, dependent: :destroy
   has_many :availability_blocks, foreign_key: :stylist_id, dependent: :destroy
+  has_many :square_customer_records, class_name: 'UserSquareCustomer', foreign_key: :user_id,    dependent: :destroy
+  has_many :client_square_records,   class_name: 'UserSquareCustomer', foreign_key: :stylist_id, dependent: :destroy
   has_one_attached :avatar
   has_many_attached :portfolio_photos
 
   before_create :default_role
   before_create :generate_booking_slug
 
-  validates :name, presence: true
+  validates :first_name, presence: true
+  validates :last_name, presence: true
+  validates :tos_accepted_at, presence: { message: "You must accept the terms of service" }
   validates :booking_slug, uniqueness: true, allow_nil: true
 
   # Validate avatar file upload
   validate :avatar_validation
+  validate :password_complexity, if: -> { password.present? }
   validate :portfolio_photo_limit
 
   def portfolio_photo_limit
     if portfolio_photos.length > 12
       errors.add(:portfolio_photos, "You can attach a maximum of 12 portfolio photos.")
     end
+  end
+
+  def full_name
+    "#{first_name} #{last_name}".strip
   end
 
   # Build full address for geocoding
@@ -115,7 +124,7 @@ class User < ApplicationRecord
 
   def generate_booking_slug
     return if booking_slug.present?
-    base = name.to_s.downcase.gsub(/[^a-z0-9\s]/, '').gsub(/\s+/, '-').strip
+    base = "#{first_name} #{last_name}".strip.downcase.gsub(/[^a-z0-9\s]/, '').gsub(/\s+/, '-')
     base = 'stylist' if base.blank?
     slug = base
     counter = 1
@@ -124,6 +133,16 @@ class User < ApplicationRecord
       counter += 1
     end
     self.booking_slug = slug
+  end
+
+  def password_complexity
+    return if password.blank?
+    unless password.match?(/[0-9]/)
+      errors.add :password, "must contain at least one number"
+    end
+    unless password.match?(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/)
+      errors.add :password, "must contain at least one special character"
+    end
   end
 
   def avatar_validation

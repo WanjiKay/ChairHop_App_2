@@ -33,9 +33,78 @@ class PaymentService
     )
   end
 
+  # Find or create a Square Customer in this stylist's account for the given client.
+  # Looks up by (user, stylist) pair in user_square_customers.
+  # Returns the Square customer_id string. Raises on unrecoverable failure.
+  def create_or_find_customer(user)
+    if PaymentService.bypass_payments?
+      dev_id = "DEV_CUSTOMER_#{@stylist.id}_#{user.id}"
+      UserSquareCustomer.find_or_create_by!(user: user, stylist: @stylist) do |r|
+        r.square_customer_id = dev_id
+      end
+      return dev_id
+    end
+
+    # Trust the DB record — Square Customer records persist unless explicitly deleted.
+    existing = UserSquareCustomer.find_by(user: user, stylist: @stylist)
+    return existing.square_customer_id if existing
+
+    result = @client.customers.create(
+      idempotency_key: "customer-#{@stylist.id}-#{user.id}",
+      given_name:      user.first_name,
+      family_name:     user.last_name,
+      email_address:   user.email,
+      reference_id:    user.id.to_s
+    )
+
+    customer_id = result.customer.id
+    UserSquareCustomer.create!(user: user, stylist: @stylist, square_customer_id: customer_id)
+    customer_id
+  rescue => e
+    Rails.logger.error "create_or_find_customer failed for user #{user.id}, stylist #{@stylist.id}: #{e.class}: #{e.message}"
+    raise "Could not create Square customer: #{e.message}"
+  end
+
+  # Vault a payment nonce as a Card on File in the stylist's Square account.
+  # Returns { success: true, card_id: "ccof_..." } or { success: false, error: "..." }.
+  def create_card(user, payment_nonce, appointment)
+    if PaymentService.bypass_payments?
+      Rails.logger.info "⚠️  DEVELOPMENT MODE: Bypassing Square create_card"
+      return { success: true, card_id: "DEV_CARD_#{SecureRandom.hex(8)}" }
+    end
+
+    customer_record = UserSquareCustomer.find_by(user: user, stylist: @stylist)
+    raise "No Square customer record for user #{user.id} / stylist #{@stylist.id} — call create_or_find_customer first" unless customer_record
+
+    result = @client.cards.create(
+      idempotency_key: "card-#{appointment.id}",
+      source_id:       payment_nonce,
+      card: {
+        customer_id: customer_record.square_customer_id
+      }
+    )
+
+    { success: true, card_id: result.card.id }
+  rescue => e
+    Rails.logger.error "create_card failed for user #{user.id}, appointment #{appointment.id}: #{e.class}: #{e.message}"
+    { success: false, error: "Could not save card: #{e.message}" }
+  end
+
+  # Deactivate a stored card. Best-effort cleanup when deposit charge fails
+  # after card creation but before appointment save.
+  def disable_card(card_id)
+    return if PaymentService.bypass_payments?
+    return if card_id.blank? || card_id.start_with?('DEV_')
+
+    @client.cards.disable(card_id: card_id)
+  rescue => e
+    Rails.logger.error "disable_card best-effort failed for #{card_id}: #{e.class}: #{e.message}"
+    # Do not re-raise — cleanup failure should not surface to user
+  end
+
   # Charge 50% deposit with platform fee applied to the total.
   # v45 gem raises Square::ApiException on any API error — no .success? needed.
-  def charge_deposit(appointment, payment_nonce)
+  def charge_deposit(appointment, card_id, customer_id)
     # DEVELOPMENT BYPASS: Skip Square API in development
     if PaymentService.bypass_payments?
       Rails.logger.info "⚠️  DEVELOPMENT MODE: Bypassing Square deposit charge"
@@ -57,11 +126,12 @@ class PaymentService
 
     begin
       result = @client.payments.create(
-        source_id:       payment_nonce,
-        idempotency_key: SecureRandom.uuid,
+        source_id:       card_id,
+        idempotency_key: "deposit-#{appointment.id}",
         amount_money:    { amount: deposit_cents, currency: 'USD' },
         # app_fee_money: { amount: fee_cents, currency: 'USD' }, # Requires Square Platform approval
         autocomplete:    true,
+        customer_id:     customer_id,
         location_id:     @stylist.square_location_id,
         note:            "Deposit for appointment ##{appointment.id}"
       )
@@ -82,11 +152,12 @@ class PaymentService
   end
 
   # Charge remaining 50% balance when appointment is completed.
-  def charge_balance(appointment, payment_nonce)
+  # Card and customer IDs are read from the appointment and its customer record.
+  def charge_balance(appointment)
     # DEVELOPMENT BYPASS: Skip Square API in development
     if PaymentService.bypass_payments?
       Rails.logger.info "⚠️  DEVELOPMENT MODE: Bypassing Square balance charge"
-      balance_amount = (appointment.payment_amount.to_f * 100 * 0.5).round
+      balance_amount = (appointment.payment_amount.to_f * 0.5).round(2)
       return {
         success:        true,
         payment_id:     "DEV_BALANCE_#{SecureRandom.hex(8)}",
@@ -94,6 +165,14 @@ class PaymentService
         platform_fee:   0
       }
     end
+
+    card_id = appointment.square_card_id
+    unless card_id.present?
+      return { success: false, error: "No vaulted card on file for appointment ##{appointment.id}" }
+    end
+
+    customer_record = UserSquareCustomer.find_by(user: appointment.customer, stylist: @stylist)
+    customer_id = customer_record&.square_customer_id
 
     # Original Square API logic continues below...
     total_cents   = total_amount_cents(appointment)
@@ -104,11 +183,12 @@ class PaymentService
 
     begin
       result = @client.payments.create(
-        source_id:       payment_nonce,
-        idempotency_key: SecureRandom.uuid,
+        source_id:       card_id,
+        idempotency_key: "completion-#{appointment.id}",
         amount_money:    { amount: balance_cents, currency: 'USD' },
         # app_fee_money: { amount: fee_cents, currency: 'USD' }, # Requires Square Platform approval
         autocomplete:    true,
+        customer_id:     customer_id,
         location_id:     @stylist.square_location_id,
         note:            "Balance payment for appointment ##{appointment.id}"
       )

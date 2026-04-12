@@ -4,14 +4,14 @@
       <div class="stylist-profile-page">
         <!-- Profile Header -->
         <div class="text-center mb-5">
-          <h1 class="text-primary fw-bold mb-3"><%= current_user.name || "My Profile" %></h1>
+          <h1 class="text-primary fw-bold mb-3"><%= current_user.full_name.presence || "My Profile" %></h1>
 
           <!-- Circular Profile Picture -->
           <div class="profile-picture-wrapper mb-4">
             <% if current_user.avatar.attached? %>
-              <%= image_tag current_user.avatar, class: "profile-picture rounded-circle", alt: current_user.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" %>
+              <%= image_tag current_user.avatar, class: "profile-picture rounded-circle", alt: current_user.full_name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" %>
             <% else %>
-              <%= image_tag "profile.png", class: "profile-picture rounded-circle", alt: "Profile", style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F;" %>
+              <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "profile-picture rounded-circle", alt: "Profile", style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F;" %>
             <% end %>
           </div>
 
@@ -112,7 +112,7 @@
 
           <div class="detail-row mb-3">
             <span class="detail-label"><i class="fas fa-user me-2"></i>Name:</span>
-            <span class="detail-value"><%= current_user.name || "Not set" %></span>
+            <span class="detail-value"><%= current_user.full_name.presence || "Not set" %></span>
           </div>
 
           <div class="detail-row mb-3">

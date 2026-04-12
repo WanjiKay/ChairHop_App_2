@@ -215,10 +215,10 @@
                           <div class="rounded-circle bg-secondary d-flex align-items-center
                                       justify-content-center text-white"
                                style="width:32px;height:32px;font-size:0.85rem;flex-shrink:0;">
-                            <%= apt.customer&.name&.first&.upcase || "?" %>
+                            <%= apt.customer&.full_name&.first&.upcase || "?" %>
                           </div>
                         <% end %>
-                        <span class="fw-semibold"><%= apt.customer&.name || "—" %></span>
+                        <span class="fw-semibold"><%= apt.customer&.full_name || "—" %></span>
                       </div>
                     </td>
                     <td>

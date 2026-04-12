@@ -1,0 +1,113 @@
+.devise-card {
+  h2 {
+    color: $color-brown-deep;
+  }
+
+  label {
+    color: $color-brown-deep;
+  }
+
+  input {
+    color: $color-dark-text;
+  }
+
+  .card-footer,
+  .hint,
+  .form-text {
+    color: $color-soft-gray;
+  }
+
+  a {
+    color: $color-dark;
+  }
+
+  .form-control {
+    border: 1px solid $color-brown-deep;
+    border-radius: $border-radius-xl;
+  }
+
+  .btn-primary {
+    color: $color-soft-gray !important;
+    background-color: $color-brown-deep;
+    border-color: $color-brown-deep;
+  }
+
+  .btn-primary:hover {
+    background-color: $color-dark;
+    border-color: $color-dark;
+  }
+
+  .card {
+    padding: 2rem !important;
+  }
+}
+
+.form-check-input[type="checkbox"] {
+  border: 1px solid $color-brown-deep;
+  border-radius: 3px;
+}
+
+.form-check-input[type="checkbox"]:checked {
+  background-color: $color-brown-deep;
+  border-color: $color-brown-deep;
+}
+
+.form-check-input[type="checkbox"]:focus {
+  border-color: $color-brown-deep;
+  box-shadow: 0 0 0 2px rgba(74, 44, 26, 0.2);
+}
+
+.devise-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 1rem;
+  border-top: 1px solid $color-cream;
+  padding-top: 1rem;
+
+  a {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    border-radius: $border-radius-xl;
+    border: 1px solid $color-brown-deep;
+    color: $color-brown-deep;
+    text-decoration: none;
+    font-size: 0.9rem;
+
+    &:hover {
+      background-color: $color-brown-deep;
+      color: $color-soft-gray;
+    }
+  }
+}
+
+.password-requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.req-item {
+  font-size: 0.78rem;
+  color: $color-soft-gray;
+  margin: 0;
+  padding-left: 18px;
+  position: relative;
+
+  &::before {
+    content: '✗';
+    position: absolute;
+    left: 0;
+    color: $color-soft-gray;
+  }
+
+  &.req-met {
+    color: $color-dark;
+
+    &::before {
+      content: '✓';
+      color: $color-dark;
+    }
+  }
+}

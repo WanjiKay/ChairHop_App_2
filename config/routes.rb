@@ -1,9 +1,14 @@
 Rails.application.routes.draw do
   root to: "pages#home"
+  get '/for-stylists', to: 'pages#for_stylists'
 
   devise_for :users, controllers: {
     registrations: 'users/registrations'
   }
+
+  devise_scope :user do
+    get 'users/check_email', to: 'users/registrations#check_email', as: :check_email_users
+  end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -30,6 +35,7 @@ Rails.application.routes.draw do
       post :complete_step3, on: :collection
       get  :step4,          on: :collection
       post :complete_step4, on: :collection
+      post :skip_step2,     on: :collection
       post :skip_step4,     on: :collection
     end
 
@@ -80,6 +86,8 @@ Rails.application.routes.draw do
       get :review
       post :review
       get :confirmation
+      get :balance_receipt
+      get :invoice
       post :book
       get :booked
       get :payment_failed

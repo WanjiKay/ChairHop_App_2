@@ -20,15 +20,15 @@
     <p style="margin:8px 0 0; opacity:0.9;">Your appointment has been accepted</p>
   </div>
   <div class="body">
-    <p>Hi <%= @customer.name %>,</p>
-    <p>Great news! <strong><%= @stylist.name %></strong> has confirmed your appointment.</p>
+    <p>Hi <%= @customer.full_name %>,</p>
+    <p>Great news! <strong><%= @stylist.full_name %></strong> has confirmed your appointment.</p>
 
     <div class="alert-success">
       <strong>Confirmed</strong> &mdash; See you on <%= @appointment.time.strftime("%A, %B %-d") %>!
     </div>
 
     <div class="card">
-      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.name %></strong></div>
+      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.full_name %></strong></div>
       <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
       <div class="detail-row"><span>Date &amp; Time</span><strong><%= format_datetime(@appointment.time) %></strong></div>
       <% if @appointment.location.present? %>

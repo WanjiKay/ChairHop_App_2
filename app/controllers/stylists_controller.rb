@@ -16,7 +16,7 @@ class StylistsController < ApplicationController
     if params[:search].present?
       term = "%#{params[:search]}%"
       @stylists = @stylists.where(
-        "users.name ILIKE :t OR users.city ILIKE :t OR users.state ILIKE :t OR users.zip_code ILIKE :t OR " \
+        "CONCAT(users.first_name, ' ', users.last_name) ILIKE :t OR users.city ILIKE :t OR users.state ILIKE :t OR users.zip_code ILIKE :t OR " \
         "EXISTS (SELECT 1 FROM locations l WHERE l.user_id = users.id AND " \
         "(LOWER(l.city) LIKE :t OR LOWER(l.state) LIKE :t OR LOWER(l.street_address) LIKE :t))",
         t: term
@@ -60,7 +60,7 @@ class StylistsController < ApplicationController
         )
     end
 
-    @stylists = @stylists.order("users.name")
+    @stylists = @stylists.order("users.first_name, users.last_name")
   end
 
   def show

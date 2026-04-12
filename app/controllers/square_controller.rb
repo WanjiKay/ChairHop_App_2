@@ -13,7 +13,7 @@ class SquareController < ApplicationController
 
     query = {
       client_id: SQUARE_OAUTH_CLIENT_ID,
-      scope:     'MERCHANT_PROFILE_READ PAYMENTS_WRITE PAYMENTS_READ ORDERS_WRITE',
+      scope:     'MERCHANT_PROFILE_READ PAYMENTS_WRITE PAYMENTS_READ ORDERS_WRITE CUSTOMERS_WRITE CUSTOMERS_READ',
       session:   false,
       state:     current_user.id.to_s
     }.to_query

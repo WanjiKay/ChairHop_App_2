@@ -16,12 +16,12 @@
     <h2 style="margin:0;">Appointment Cancelled</h2>
   </div>
   <div class="body">
-    <p>Hi <%= @recipient.name %>,</p>
+    <p>Hi <%= @recipient.full_name %>,</p>
 
     <% if @cancelled_by == 'customer' %>
-      <p>The customer <strong><%= @appointment.customer.name %></strong> has cancelled their appointment with you.</p>
+      <p>The customer <strong><%= @appointment.customer.full_name %></strong> has cancelled their appointment with you.</p>
     <% else %>
-      <p>Unfortunately, <strong><%= @appointment.stylist.name %></strong> has cancelled your upcoming appointment.</p>
+      <p>Unfortunately, <strong><%= @appointment.stylist.full_name %></strong> has cancelled your upcoming appointment.</p>
     <% end %>
 
     <div class="detail-row"><span>Service</span><span><%= @appointment.selected_service %></span></div>

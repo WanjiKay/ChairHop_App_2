@@ -24,6 +24,14 @@ class AppointmentPolicy < ApplicationPolicy
     user.present? && record.customer_id == user.id
   end
 
+  def balance_receipt?
+    user.present? && record.customer_id == user.id
+  end
+
+  def invoice?
+    user.present? && record.customer_id == user.id
+  end
+
   def booked?
     user_is_customer_or_stylist?
   end

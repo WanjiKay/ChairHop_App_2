@@ -11,11 +11,11 @@
           <div class="rounded-circle bg-secondary d-flex align-items-center
                       justify-content-center text-white fw-bold"
                style="width:44px;height:44px;font-size:1rem;flex-shrink:0;">
-            <%= appointment.stylist.name.first.upcase %>
+            <%= appointment.stylist.full_name.first&.upcase %>
           </div>
         <% end %>
         <div>
-          <div class="fw-semibold"><%= appointment.stylist.name %></div>
+          <div class="fw-semibold"><%= appointment.stylist.full_name %></div>
           <small class="text-muted">#<%= appointment.id.to_s.rjust(6, "0") %></small>
         </div>
       </div>
@@ -28,6 +28,9 @@
         <span class="badge bg-warning text-dark">Awaiting Confirmation</span>
       <% when :completed %>
         <span class="badge bg-secondary">Completed</span>
+        <% if appointment.payment_status == 'paid' %>
+          <span class="badge bg-success ms-1">Paid in Full</span>
+        <% end %>
       <% when :cancelled %>
         <span class="badge bg-danger">Cancelled</span>
       <% end %>
@@ -62,12 +65,38 @@
         </div>
       <% end %>
       <% if appointment.payment_amount.present? %>
-        <div class="col-6">
-          <small class="text-muted d-block">Deposit Paid</small>
-          <span class="small fw-semibold text-success">
-            <%= number_to_currency(appointment.payment_amount.to_f * 0.5) %>
-          </span>
-        </div>
+        <% if card_type == :completed %>
+          <div class="col-6">
+            <small class="text-muted d-block">Deposit</small>
+            <span class="small fw-semibold text-success">
+              <%= number_to_currency(appointment.payment_amount.to_f * 0.5) %>
+              <span class="text-muted fw-normal">&middot; <%= appointment.created_at.strftime("%b %-d") %></span>
+            </span>
+          </div>
+          <% if appointment.balance_payment_id.present? %>
+            <div class="col-6">
+              <small class="text-muted d-block">Balance Charged</small>
+              <span class="small fw-semibold text-success">
+                <%= number_to_currency(appointment.payment_amount.to_f * 0.5) %>
+                <% if appointment.completed_at.present? %>
+                  <span class="text-muted fw-normal">&middot; <%= appointment.completed_at.strftime("%b %-d") %></span>
+                <% end %>
+              </span>
+            </div>
+          <% elsif appointment.payment_status == 'balance_waived' %>
+            <div class="col-6">
+              <small class="text-muted d-block">Balance</small>
+              <span class="small text-muted">Waived</span>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="col-6">
+            <small class="text-muted d-block">Deposit Paid</small>
+            <span class="small fw-semibold text-success">
+              <%= number_to_currency(appointment.payment_amount.to_f * 0.5) %>
+            </span>
+          </div>
+        <% end %>
       <% end %>
     </div>
 
@@ -104,9 +133,9 @@
       <% end %>
 
       <% if card_type == :completed %>
-        <%= link_to confirmation_appointment_path(appointment),
+        <%= link_to invoice_appointment_path(appointment),
                     class: "btn btn-outline-secondary btn-sm" do %>
-          <i class="bi bi-receipt me-1"></i>Receipt
+          <i class="bi bi-file-text me-1"></i>Invoice
         <% end %>
         <% unless appointment.review.present? %>
           <%= link_to new_appointment_review_path(appointment),

@@ -28,7 +28,7 @@ class AppointmentMailer < ApplicationMailer
 
     mail(
       to: @stylist.email,
-      subject: "New Booking Request from #{@customer.name}"
+      subject: "New Booking Request from #{@customer.full_name}"
     )
   end
 
@@ -72,11 +72,12 @@ class AppointmentMailer < ApplicationMailer
 
   # Appointment completed → receipt to customer
   def appointment_completed(appointment)
-    @appointment = appointment
-    @stylist = appointment.stylist
-    @customer = appointment.customer
-    @deposit_paid = (appointment.payment_amount.to_f * 0.5).round(2)
-    @balance_paid = @deposit_paid
+    @appointment        = appointment
+    @stylist            = appointment.stylist
+    @customer           = appointment.customer
+    @deposit_paid       = (appointment.payment_amount.to_f * 0.5).round(2)
+    @balance_paid       = @deposit_paid
+    @balance_payment_id = appointment.balance_payment_id
 
     mail(
       to: @customer.email,
@@ -94,7 +95,7 @@ class AppointmentMailer < ApplicationMailer
 
     mail(
       to: @customer.email,
-      subject: "How was your appointment with #{@stylist.name}? Leave a review"
+      subject: "How was your appointment with #{@stylist.full_name}? Leave a review"
     )
   end
 
@@ -121,7 +122,7 @@ class AppointmentMailer < ApplicationMailer
     @amount       = appointment.payment_amount.to_f * 0.5
     mail(
       to: @customer.email,
-      subject: "Action required: Pay your remaining balance for your appointment with #{@stylist.name}"
+      subject: "Action required: Pay your remaining balance for your appointment with #{@stylist.full_name}"
     )
   end
 
@@ -133,7 +134,7 @@ class AppointmentMailer < ApplicationMailer
     @amount_collected = appointment.balance_collected
     mail(
       to: @stylist.email,
-      subject: "Appointment complete — balance recorded for #{@customer&.name}"
+      subject: "Appointment complete — balance recorded for #{@customer&.full_name}"
     )
   end
 
@@ -145,7 +146,7 @@ class AppointmentMailer < ApplicationMailer
     @appointment = review.appointment
     mail(
       to: @customer.email,
-      subject: "#{@stylist.name} responded to your review"
+      subject: "#{@stylist.full_name} responded to your review"
     )
   end
 
@@ -156,7 +157,22 @@ class AppointmentMailer < ApplicationMailer
     @customer    = appointment.customer
     mail(
       to: @stylist.email,
-      subject: "Balance payment received — #{@customer&.name}"
+      subject: "Balance payment received — #{@customer&.full_name}"
+    )
+  end
+
+  # Balance charged on completion → receipt to customer
+  def balance_receipt(appointment)
+    @appointment        = appointment
+    @stylist            = appointment.stylist
+    @customer           = appointment.customer
+    @selected_service   = appointment.selected_service&.split(' - $')&.first
+    @balance_paid       = (appointment.payment_amount.to_f * 0.5).round(2)
+    @balance_payment_id = appointment.balance_payment_id
+
+    mail(
+      to: @customer.email,
+      subject: "Balance Receipt — Booking ##{appointment.id.to_s.rjust(6, '0')}"
     )
   end
 

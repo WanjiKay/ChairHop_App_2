@@ -1,13 +1,13 @@
 Balance Payment Received
 ========================
 
-Hi <%= @stylist.name %>,
+Hi <%= @stylist.full_name %>,
 
-The remaining balance for <%= @customer.name %>'s appointment has been
+The remaining balance for <%= @customer.full_name %>'s appointment has been
 successfully charged. The appointment is now marked as complete.
 
 Appointment Details:
-  Customer:  <%= @customer.name %>
+  Customer:  <%= @customer.full_name %>
 <% if @appointment.selected_service.present? %>  Service:   <%= @appointment.selected_service %>
 <% end %>  Date:      <%= format_datetime(@appointment.time) %>
 <% if @appointment.payment_amount.present? %>  Deposit:   <%= number_to_currency(@appointment.payment_amount.to_f * 0.5) %>

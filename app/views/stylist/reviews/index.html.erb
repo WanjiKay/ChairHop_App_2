@@ -57,7 +57,7 @@
                 </div>
               <% end %>
               <div>
-                <div class="fw-semibold"><%= review.customer.name %></div>
+                <div class="fw-semibold"><%= review.customer.full_name %></div>
                 <% if review.appointment&.selected_service.present? %>
                   <small class="text-muted"><%= review.appointment.selected_service.split(' - $').first %></small>
                 <% end %>

@@ -22,8 +22,8 @@
     <p style="margin:8px 0 0; opacity:0.9;">One last step — pay your remaining balance</p>
   </div>
   <div class="body">
-    <p>Hi <%= @customer.name %>,</p>
-    <p>Your appointment with <strong><%= @stylist.name %></strong> is complete. You paid a deposit when you booked — there's just a remaining balance to settle.</p>
+    <p>Hi <%= @customer.full_name %>,</p>
+    <p>Your appointment with <strong><%= @stylist.full_name %></strong> is complete. You paid a deposit when you booked — there's just a remaining balance to settle.</p>
 
     <div class="amount-box">
       <p style="margin:0 0 4px; color:#6c757d; font-size:14px;">Remaining balance due</p>
@@ -35,11 +35,11 @@
     </div>
 
     <div class="note">
-      <strong>Note:</strong> This payment link expires in 24 hours. If you have trouble completing payment, please contact <%= @stylist.name %> directly.
+      <strong>Note:</strong> This payment link expires in 24 hours. If you have trouble completing payment, please contact <%= @stylist.full_name %> directly.
     </div>
 
     <div class="card">
-      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.name %></strong></div>
+      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.full_name %></strong></div>
       <% if @appointment.selected_service.present? %>
         <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
       <% end %>
@@ -52,7 +52,7 @@
     </div>
 
     <p style="font-size:13px; color:#6c757d;">
-      If you believe you already paid or have any questions, please reach out to <%= @stylist.name %> or contact ChairHop support.
+      If you believe you already paid or have any questions, please reach out to <%= @stylist.full_name %> or contact ChairHop support.
     </p>
   </div>
   <div class="footer">&copy; ChairHop &middot; You're receiving this because you have an account with us.</div>

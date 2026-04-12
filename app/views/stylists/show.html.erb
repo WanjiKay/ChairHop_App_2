@@ -1,6 +1,6 @@
-<% content_for :meta_title, "#{@stylist.name}" %>
+<% content_for :meta_title, "#{@stylist.full_name}" %>
 <% content_for :meta_description, @stylist.about.presence || "Professional stylist on ChairHop" %>
-<% content_for :meta_image, @stylist.avatar.attached? ? url_for(@stylist.avatar) : asset_path("profile.png") %>
+<% content_for :meta_image, @stylist.avatar.attached? ? url_for(@stylist.avatar) : ApplicationHelper::DEFAULT_AVATAR_URL %>
 
 <div class="container py-5">
   <div class="row justify-content-center">
@@ -8,14 +8,14 @@
       <div class="stylist-profile-page">
         <!-- Stylist Header -->
         <div class="text-center mb-5">
-          <h1 class="text-primary fw-bold mb-3"><%= @stylist.name %></h1>
+          <h1 class="text-primary fw-bold mb-3"><%= @stylist.full_name %></h1>
 
           <!-- Circular Profile Picture Below Name -->
           <div class="profile-picture-wrapper mb-4">
             <% if @stylist.avatar.attached? %>
-              <%= image_tag url_for(@stylist.avatar), class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" %>
+              <%= image_tag url_for(@stylist.avatar), class: "profile-picture rounded-circle", alt: @stylist.full_name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);" %>
             <% else %>
-              <%= image_tag "profile.png", class: "profile-picture rounded-circle", alt: @stylist.name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F;" %>
+              <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "profile-picture rounded-circle", alt: @stylist.full_name, style: "width: 150px; height: 150px; object-fit: cover; border: 5px solid #4A5D4F;" %>
             <% end %>
           </div>
 
@@ -44,7 +44,7 @@
                 <div style="flex: 0 0 auto; scroll-snap-align: start;">
                   <%= image_tag url_for(photo),
                         style: "height: 200px; width: 200px; object-fit: cover; border-radius: 8px;",
-                        alt: "Portfolio photo by #{@stylist.name}" %>
+                        alt: "Portfolio photo by #{@stylist.full_name}" %>
                 </div>
               <% end %>
             </div>
@@ -340,7 +340,7 @@
                     <% end %>
                     <span class="ms-2 text-muted"><%= review.rating %>/5</span>
                   </div>
-                  <small class="text-muted">by <%= review.customer.name %></small>
+                  <small class="text-muted">by <%= review.customer.full_name %></small>
                 </div>
                 <p class="mb-1"><%= review.content %></p>
                 <% if review.photos.attached? %>
@@ -352,7 +352,7 @@
                 <% end %>
                 <% if review.stylist_response.present? %>
                   <div class="mt-2 p-2 bg-light rounded border-start border-primary border-3">
-                    <small class="fw-semibold text-primary">Response from <%= @stylist.name %>:</small>
+                    <small class="fw-semibold text-primary">Response from <%= @stylist.full_name %>:</small>
                     <p class="mb-0 small mt-1"><%= review.stylist_response %></p>
                   </div>
                 <% end %>

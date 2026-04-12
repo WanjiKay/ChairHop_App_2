@@ -1,0 +1,95 @@
+.onboarding-card {
+  .card {
+    border: none;
+    border-radius: $border-radius-xxl;
+    padding: 0.5rem;
+  }
+
+  .card-body {
+    padding: 2.5rem !important;
+  }
+
+  .card-title {
+    color: $color-brown-deep;
+    font-size: 1.4rem;
+  }
+
+  .text-muted {
+    color: $color-soft-gray !important;
+  }
+
+  .form-label {
+    color: $color-brown-deep;
+  }
+
+  .form-control, .form-select {
+    border: 1px solid $color-brown-deep;
+    border-radius: $border-radius-xl;
+    color: $color-dark-text;
+
+    &:focus {
+      border-color: $color-dark;
+      box-shadow: 0 0 0 2px rgba(74, 44, 26, 0.2);
+    }
+  }
+
+  .input-group-text {
+    border: 1px solid $color-brown-deep;
+    background-color: $color-cream;
+    color: $color-brown-deep;
+  }
+
+  .btn-primary {
+    background-color: $color-brown-deep;
+    border-color: $color-brown-deep;
+    color: $color-soft-gray;
+    width: 100%;
+
+    &:hover {
+      background-color: $color-dark;
+      border-color: $color-dark;
+    }
+  }
+
+  .btn-success {
+    background-color: $color-brown-deep;
+    border-color: $color-brown-deep;
+    color: $color-soft-gray;
+    width: 100%;
+
+    &:hover {
+      background-color: $color-dark;
+      border-color: $color-dark;
+    }
+  }
+
+  .btn-outline-secondary {
+    border-color: $color-soft-gray;
+    color: $color-soft-gray;
+    width: 100%;
+
+    &:hover {
+      background-color: $color-soft-gray;
+      color: $color-cream;
+    }
+  }
+
+  .progress {
+    background-color: $color-cream;
+    border-radius: $border-radius-xl;
+  }
+
+  .progress-bar {
+    background-color: $color-brown-deep;
+  }
+
+  .badge.bg-primary {
+    background-color: $color-brown-deep !important;
+    color: $color-soft-gray;
+  }
+
+  small.text-muted {
+    color: $color-soft-gray !important;
+    font-size: 0.78rem;
+  }
+}

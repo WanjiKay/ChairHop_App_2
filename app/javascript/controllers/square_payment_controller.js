@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["cardContainer", "statusMessage", "cardButton", "nonceField"]
+  static targets = ["cardContainer", "statusMessage", "cardButton", "nonceField", "consentCheckbox", "consentError"]
   static values = {
     applicationId: String,
     locationId:    String,
@@ -42,6 +42,14 @@ export default class extends Controller {
       this.element.submit()
       return
     }
+
+    // Validate consent checkbox before tokenizing
+    if (this.hasConsentCheckboxTarget && !this.consentCheckboxTarget.checked) {
+      if (this.hasConsentErrorTarget) this.consentErrorTarget.style.display = 'block'
+      this.consentCheckboxTarget.focus()
+      return
+    }
+    if (this.hasConsentErrorTarget) this.consentErrorTarget.style.display = 'none'
 
     this.hideError()
     this.cardButtonTarget.disabled = true

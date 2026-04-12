@@ -1,6 +1,13 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   skip_after_action :verify_authorized
   before_action :configure_sign_up_params, only: [:create]
+  skip_before_action :require_no_authentication, only: [:check_email]
+
+  def check_email
+    email = params[:email].to_s.strip.downcase
+    available = !User.exists?(email: email)
+    render json: { available: available }
+  end
 
   protected
 
@@ -21,7 +28,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :role])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :role, :tos_accepted_at])
     sanitize_role_param
   end
 

@@ -19,11 +19,11 @@
 <body>
   <div class="header">
     <h2>Response to Your Review</h2>
-    <p style="margin:8px 0 0; opacity:0.9;"><%= @stylist.name %> replied to your feedback</p>
+    <p style="margin:8px 0 0; opacity:0.9;"><%= @stylist.full_name %> replied to your feedback</p>
   </div>
   <div class="body">
-    <p>Hi <%= @customer.name %>,</p>
-    <p><strong><%= @stylist.name %></strong> has responded to the review you left for your appointment on <%= @appointment.time.strftime("%B %-d, %Y") %>.</p>
+    <p>Hi <%= @customer.full_name %>,</p>
+    <p><strong><%= @stylist.full_name %></strong> has responded to the review you left for your appointment on <%= @appointment.time.strftime("%B %-d, %Y") %>.</p>
 
     <p style="font-weight:600; margin-bottom:4px;">Your review:</p>
     <div class="review-block">
@@ -33,13 +33,13 @@
       <p style="margin: 8px 0 0; font-size: 14px;"><%= @review.content %></p>
     </div>
 
-    <p style="font-weight:600; margin-bottom:4px;"><%= @stylist.name %>'s response:</p>
+    <p style="font-weight:600; margin-bottom:4px;"><%= @stylist.full_name %>'s response:</p>
     <div class="response-block">
       <p style="margin: 0; font-size: 14px;"><%= @review.stylist_response %></p>
     </div>
 
     <div class="card">
-      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.name %></strong></div>
+      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.full_name %></strong></div>
       <div class="detail-row"><span>Appointment</span><strong><%= @appointment.time.strftime("%B %-d, %Y at %I:%M %p") %></strong></div>
       <% if @appointment.selected_service.present? %>
         <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>

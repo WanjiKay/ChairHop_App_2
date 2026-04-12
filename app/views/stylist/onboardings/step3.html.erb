@@ -1,4 +1,4 @@
-<div class="container py-5">
+<div class="container py-5 onboarding-card">
   <div class="row justify-content-center">
     <div class="col-lg-7">
 
@@ -63,19 +63,17 @@
                 <%= f.label :state, "Province *", class: 'form-label fw-bold' %>
                 <%= f.select :state,
                       [
-                        ['Quebec',                    'QC'],
-                        ['Ontario',                   'ON'],
-                        ['British Columbia',          'BC'],
-                        ['Alberta',                   'AB'],
-                        ['Manitoba',                  'MB'],
-                        ['Saskatchewan',              'SK'],
-                        ['Nova Scotia',               'NS'],
-                        ['New Brunswick',             'NB'],
-                        ['Newfoundland and Labrador', 'NL'],
-                        ['Prince Edward Island',      'PE']
+                        ['Quebec', 'QC']
                       ],
                       { selected: 'QC' },
                       { class: 'form-select', required: true } %>
+                <div class="alert d-flex align-items-center gap-2 mt-2 mb-0 py-2 px-3"
+                     style="background-color: #E5E0DA; border: 1px solid #B7B7A4; border-radius: 0.5rem;">
+                  <span style="font-size: 1rem;">📍</span>
+                  <small style="color: #4a2c1a;">
+                    <strong>Montreal</strong> is live — more cities coming soon!
+                  </small>
+                </div>
               </div>
 
               <!-- Postal Code -->

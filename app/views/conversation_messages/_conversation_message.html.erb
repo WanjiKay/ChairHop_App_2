@@ -5,7 +5,7 @@
     <% if conversation_message.conversation.stylist.avatar.attached? %>
       <%= image_tag conversation_message.conversation.stylist.avatar, class: "stylist-avatar rounded-circle" %>
     <% else %>
-      <%= image_tag "profile.png", class: "stylist-avatar rounded-circle", alt: "Stylist" %>
+      <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "stylist-avatar rounded-circle", alt: "Stylist" %>
     <% end %>
   <% end %>
 
@@ -29,7 +29,7 @@
     <% if conversation_message.conversation.customer.avatar.attached? %>
       <%= image_tag conversation_message.conversation.customer.avatar, class: "customer-avatar rounded-circle" %>
     <% else %>
-      <%= image_tag "profile.png", class: "customer-avatar rounded-circle", alt: "Customer" %>
+      <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "customer-avatar rounded-circle", alt: "Customer" %>
     <% end %>
   <% end %>
 

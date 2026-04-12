@@ -1,9 +1,9 @@
 Your Appointment Is Almost Done!
 =================================
 
-Hi <%= @customer.name %>,
+Hi <%= @customer.full_name %>,
 
-Your appointment with <%= @stylist.name %> is complete. You paid a
+Your appointment with <%= @stylist.full_name %> is complete. You paid a
 deposit when you booked — there's just a remaining balance to settle.
 
 REMAINING BALANCE DUE: <%= number_to_currency(@amount) %>
@@ -11,11 +11,11 @@ REMAINING BALANCE DUE: <%= number_to_currency(@amount) %>
 Pay now: <%= @payment_url %>
 
 Note: This payment link expires in 24 hours. If you have trouble
-completing payment, please contact <%= @stylist.name %> directly.
+completing payment, please contact <%= @stylist.full_name %> directly.
 
 ---
 Appointment Details:
-  Stylist:  <%= @stylist.name %>
+  Stylist:  <%= @stylist.full_name %>
 <% if @appointment.selected_service.present? %>  Service:  <%= @appointment.selected_service %>
 <% end %>  Date:     <%= format_datetime(@appointment.time) %>
 <% if @appointment.payment_amount.present? %>  Deposit:  <%= number_to_currency(@appointment.payment_amount.to_f * 0.5) %>

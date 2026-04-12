@@ -1,0 +1,184 @@
+<% content_for :title, "Invoice — Booking ##{@appointment.id.to_s.rjust(6,'0')}" %>
+
+<div class="container py-4 mt-5" style="max-width: 680px;" id="receipt-container">
+
+  <%# Print-only header %>
+  <div class="d-none d-print-block text-center mb-4">
+    <h3 class="fw-bold">ChairHop</h3>
+    <p class="text-muted mb-0">Service Invoice</p>
+  </div>
+
+  <%# Screen header %>
+  <div class="d-print-none d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">Invoice</h4>
+    <button onclick="window.print()" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-printer me-1"></i> Print
+    </button>
+  </div>
+
+  <%# Status banner %>
+  <div class="alert alert-success d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <strong>
+        <% if @appointment.balance_payment_id.present? %>
+          Paid in Full
+        <% elsif @appointment.payment_status == 'balance_waived' %>
+          Complete — Balance Waived
+        <% else %>
+          Appointment Complete
+        <% end %>
+      </strong>
+      <small class="d-block text-muted">Booking #<%= @appointment.id.to_s.rjust(6, '0') %></small>
+    </div>
+    <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i>Complete</span>
+  </div>
+
+  <%# Parties %>
+  <div class="row mb-3">
+    <div class="col-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <small class="text-muted d-block mb-1">Client</small>
+          <strong><%= @appointment.customer.full_name %></strong>
+          <div class="text-muted small"><%= @appointment.customer.email %></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body d-flex align-items-start gap-2">
+          <% if @appointment.stylist.avatar.attached? %>
+            <%= image_tag url_for(@appointment.stylist.avatar),
+                  class: "rounded-circle",
+                  style: "width:40px;height:40px;object-fit:cover;flex-shrink:0;" %>
+          <% else %>
+            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold"
+                 style="width:40px;height:40px;font-size:0.9rem;flex-shrink:0;">
+              <%= @appointment.stylist.full_name.first&.upcase %>
+            </div>
+          <% end %>
+          <div>
+            <small class="text-muted d-block">Stylist</small>
+            <strong><%= @appointment.stylist.full_name %></strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Appointment details %>
+  <div class="card shadow-sm mb-3">
+    <div class="card-header bg-white"><h6 class="mb-0">Appointment Details</h6></div>
+    <div class="card-body text-start">
+      <div class="row g-3 justify-content-start">
+        <% if @appointment.time.present? %>
+          <div class="col-6">
+            <small class="text-muted d-block">Date & Time</small>
+            <strong><%= @appointment.time.strftime("%A, %b %-d at %-I:%M %p") %></strong>
+          </div>
+        <% end %>
+        <div class="col-6">
+          <small class="text-muted d-block">Location</small>
+          <strong><%= @appointment.location_display %></strong>
+        </div>
+        <% if @appointment.completed_at.present? %>
+          <div class="col-6">
+            <small class="text-muted d-block">Completed On</small>
+            <strong><%= @appointment.completed_at.strftime("%b %-d, %Y") %></strong>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# Services %>
+  <div class="card shadow-sm mb-3">
+    <div class="card-header bg-white"><h6 class="mb-0">Services</h6></div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between mb-2">
+        <span><%= @selected_service || "Service" %></span>
+        <span><%= number_to_currency(@service_price - @add_ons_total) %></span>
+      </div>
+      <% if @appointment.appointment_add_ons.any? %>
+        <% @appointment.appointment_add_ons.each do |add_on| %>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted small"><i class="bi bi-plus-circle me-1"></i><%= add_on.service_name %></span>
+            <span class="text-muted small"><%= number_to_currency(add_on.price) %></span>
+          </div>
+        <% end %>
+      <% end %>
+      <hr class="my-2">
+      <div class="d-flex justify-content-between fw-bold">
+        <span>Total</span>
+        <span><%= number_to_currency(@service_price) %></span>
+      </div>
+    </div>
+  </div>
+
+  <%# Transactions %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-white"><h6 class="mb-0">Transactions</h6></div>
+    <div class="card-body">
+
+      <%# Deposit %>
+      <div class="d-flex justify-content-between align-items-start pb-3 mb-3" style="border-bottom: 1px solid #eee;">
+        <div>
+          <div class="fw-semibold">Deposit <span class="text-muted fw-normal small">(50%)</span></div>
+          <% if @appointment.payment_id.present? %>
+            <code class="small text-muted"><%= @appointment.payment_id %></code>
+          <% end %>
+          <div class="text-muted small"><%= @appointment.created_at.strftime("%b %-d, %Y") %></div>
+        </div>
+        <span class="fw-semibold text-success"><%= number_to_currency(@deposit_paid) %></span>
+      </div>
+
+      <%# Balance %>
+      <% if @appointment.balance_payment_id.present? %>
+        <div class="d-flex justify-content-between align-items-start pb-3 mb-3" style="border-bottom: 1px solid #eee;">
+          <div>
+            <div class="fw-semibold">Balance <span class="text-muted fw-normal small">(50%)</span></div>
+            <code class="small text-muted"><%= @appointment.balance_payment_id %></code>
+            <% if @appointment.completed_at.present? %>
+              <div class="text-muted small"><%= @appointment.completed_at.strftime("%b %-d, %Y") %></div>
+            <% end %>
+          </div>
+          <span class="fw-semibold text-success"><%= number_to_currency(@balance_paid) %></span>
+        </div>
+      <% elsif @appointment.payment_status == 'balance_waived' %>
+        <div class="d-flex justify-content-between align-items-start pb-3 mb-3" style="border-bottom: 1px solid #eee;">
+          <div>
+            <div class="fw-semibold">Balance</div>
+            <div class="text-muted small">Waived by stylist</div>
+          </div>
+          <span class="text-muted">—</span>
+        </div>
+      <% end %>
+
+      <%# Total %>
+      <% total_paid = @deposit_paid + (@appointment.balance_payment_id.present? ? @balance_paid : 0) %>
+      <div class="d-flex justify-content-between fw-bold fs-6">
+        <span>Total Paid</span>
+        <span class="text-success"><%= number_to_currency(total_paid) %></span>
+      </div>
+    </div>
+  </div>
+
+  <%# Actions — hidden on print %>
+  <div class="d-print-none d-flex gap-2 flex-wrap">
+    <%= link_to my_appointments_path, class: "btn btn-primary" do %>
+      <i class="bi bi-calendar-check me-1"></i> View My Appointments
+    <% end %>
+    <button onclick="window.print()" class="btn btn-outline-secondary">
+      <i class="bi bi-printer me-1"></i> Print Invoice
+    </button>
+  </div>
+
+</div>
+
+<style>
+  @media print {
+    nav, footer, .d-print-none { display: none !important; }
+    .card { border: 1px solid #dee2e6 !important; box-shadow: none !important; }
+    body { font-size: 13px; }
+  }
+</style>

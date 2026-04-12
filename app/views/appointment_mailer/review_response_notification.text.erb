@@ -1,15 +1,15 @@
-<%= @stylist.name %> responded to your review
+<%= @stylist.full_name %> responded to your review
 ==========================================
 
-Hi <%= @customer.name %>,
+Hi <%= @customer.full_name %>,
 
-<%= @stylist.name %> has responded to the review you left for your
+<%= @stylist.full_name %> has responded to the review you left for your
 appointment on <%= @appointment.time.strftime("%B %-d, %Y") %>.
 
 YOUR REVIEW (<%= @review.rating %>/5 stars):
 "<%= @review.content %>"
 
-<%= @stylist.name.upcase %>'S RESPONSE:
+<%= @stylist.full_name.upcase %>'S RESPONSE:
 "<%= @review.stylist_response %>"
 
 ---

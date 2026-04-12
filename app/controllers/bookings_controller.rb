@@ -48,8 +48,11 @@ class BookingsController < ApplicationController
         # Only include future slots not overlapping existing booked/pending appointments.
         # Handle appointments with nil end_time by assuming a 60-min default duration.
         overlapping = Appointment.where(stylist_id: stylist.id)
-          .where(status: [:pending, :booked])
           .where.not(customer_id: nil)
+          .where(
+            "(status = ? AND (hold_expires_at IS NULL OR hold_expires_at >= ?)) OR status = ?",
+            Appointment.statuses[:pending], Time.current, Appointment.statuses[:booked]
+          )
           .where(
             '(end_time IS NOT NULL AND time < ? AND end_time > ?) OR
              (end_time IS NULL AND time >= ? AND time < ?)',
@@ -94,7 +97,7 @@ class BookingsController < ApplicationController
     duration = service&.duration_minutes || 60
     end_time = selected_time + duration.minutes
 
-    # Build the appointment
+    # Build the appointment with a 10-minute hold
     appointment = Appointment.new(
       stylist: stylist,
       time: selected_time,
@@ -105,7 +108,8 @@ class BookingsController < ApplicationController
       selected_service: "#{service&.name} - $#{sprintf('%.2f', service&.price || 0)}",
       status: :pending,
       payment_amount: 0,
-      payment_status: 'pending'
+      payment_status: 'pending',
+      hold_expires_at: Time.current + 10.minutes
     )
 
     if appointment.save

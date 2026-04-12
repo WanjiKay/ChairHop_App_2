@@ -20,15 +20,15 @@
     <p style="margin:8px 0 0; opacity:0.9;">Appointment marked as complete</p>
   </div>
   <div class="body">
-    <p>Hi <%= @stylist.name %>,</p>
-    <p>The remaining balance for <strong><%= @customer.name %></strong>'s appointment has been successfully charged. The appointment is now marked as complete.</p>
+    <p>Hi <%= @stylist.full_name %>,</p>
+    <p>The remaining balance for <strong><%= @customer.full_name %></strong>'s appointment has been successfully charged. The appointment is now marked as complete.</p>
 
     <div class="alert-success">
       <strong>Payment successful</strong> &mdash; Balance collected via card on file.
     </div>
 
     <div class="card">
-      <div class="detail-row"><span>Customer</span><strong><%= @customer.name %></strong></div>
+      <div class="detail-row"><span>Customer</span><strong><%= @customer.full_name %></strong></div>
       <% if @appointment.selected_service.present? %>
         <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
       <% end %>

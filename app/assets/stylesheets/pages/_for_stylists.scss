@@ -1,0 +1,188 @@
+.for-stylists-page {
+  background-color: $color-cream;
+  min-height: 100vh;
+}
+
+.fs-hero {
+  background-color: $color-brown-deep;
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+.fs-hero-inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.fs-hero-title {
+  color: $color-cream;
+  font-size: 2.2rem;
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+.fs-hero-subtitle {
+  color: $color-soft-gray;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  line-height: 1.7;
+}
+
+.fs-hero-cta {
+  background-color: $color-cream;
+  border-color: $color-cream;
+  color: $color-brown-deep;
+  padding: 0.75rem 2.5rem;
+  font-size: 1rem;
+
+  &:hover {
+    background-color: $color-soft-gray;
+    border-color: $color-soft-gray;
+    color: $color-brown-deep;
+  }
+}
+
+.fs-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.fs-section-title {
+  color: $color-brown-deep;
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 2.5rem;
+}
+
+.fs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fs-card {
+  background-color: #fff;
+  border: 1px solid $color-soft-gray;
+  border-radius: $border-radius-xl;
+  padding: 1.75rem;
+}
+
+.fs-card-icon {
+  color: $color-brown-deep;
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.fs-card-title {
+  color: $color-brown-deep;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.fs-card-body {
+  color: $color-dark-text;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.fs-how-section {
+  background-color: #fff;
+  border-radius: $border-radius-xxl;
+  max-width: 900px;
+}
+
+.fs-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.fs-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+
+  > div:last-child {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.fs-step-number {
+  background-color: $color-brown-deep;
+  color: $color-cream;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.fs-step-title {
+  color: $color-brown-deep;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  text-align: left;
+}
+
+.fs-step-body {
+  color: $color-dark-text;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.fs-cta-banner {
+  background-color: $color-brown-deep;
+  padding: 4rem 2rem;
+  margin-top: 2rem;
+}
+
+.fs-cta-title {
+  color: $color-cream;
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.fs-cta-subtitle {
+  color: $color-soft-gray;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.fs-cta-btn {
+  background-color: $color-cream;
+  border-color: $color-cream;
+  color: $color-brown-deep;
+  padding: 0.75rem 2.5rem;
+
+  &:hover {
+    background-color: $color-soft-gray;
+    border-color: $color-soft-gray;
+    color: $color-brown-deep;
+  }
+}
+
+.fs-back-link {
+  color: $color-soft-gray;
+  font-size: 0.85rem;
+  text-decoration: none;
+
+  &:hover {
+    color: $color-cream;
+  }
+}

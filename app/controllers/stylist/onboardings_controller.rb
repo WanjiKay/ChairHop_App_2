@@ -69,6 +69,11 @@ class Stylist::OnboardingsController < ApplicationController
     end
   end
 
+  def skip_step2
+    skip_authorization
+    redirect_to step3_stylist_onboarding_path
+  end
+
   def skip_step4
     skip_authorization
     complete_onboarding!
