@@ -2,7 +2,7 @@
 // $body-color: $color-soft-gray in _bootstrap_variables.scss sets this pale color
 // site-wide. -webkit-text-fill-color is required because WebKit/Blink uses it
 // over `color` during focus/active typing.
-input,
+input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]),
 textarea,
 select,
 .form-control {
@@ -10,7 +10,7 @@ select,
   -webkit-text-fill-color: #333333 !important;
 }
 
-input:focus,
+input:not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]):focus,
 textarea:focus,
 select:focus,
 .form-control:focus {

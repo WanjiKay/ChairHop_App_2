@@ -3,8 +3,8 @@
 
     <!-- Header -->
     <div class="text-center mb-4">
-      <h1>My Conversations with Stylists</h1>
-      <p class="text-muted">View all your messages with hair stylists</p>
+      <h1><%= current_user.stylist? ? "My Client Conversations" : "My Conversations with Stylists" %></h1>
+      <p class="text-muted"><%= current_user.stylist? ? "View all your messages with clients" : "View all your messages with hair stylists" %></p>
     </div>
 
     <!-- Back Button -->
@@ -15,6 +15,7 @@
     </div>
 
     <!-- Conversations as Customer Section -->
+    <% if current_user.customer? %>
     <div class="mb-5">
       <h2 class="message-list-title">
         <i class="fas fa-user me-2"></i>Conversations with My Stylists
@@ -72,13 +73,14 @@
             <i class="fas fa-comments fa-4x"></i>
           </div>
           <h3>No Conversations Yet</h3>
-          <p>When you message a stylist about an appointment, the conversation will appear here</p>
+          <p><%= current_user.stylist? ? "When a client messages you about an appointment, the conversation will appear here" : "When you message a stylist about an appointment, the conversation will appear here" %></p>
           <%= link_to root_path, class: "btn btn-primary mt-3" do %>
             <i class="fas fa-search me-2"></i> Browse Appointments
           <% end %>
         </div>
       <% end %>
     </div>
+    <% end %>
 
     <!-- Conversations as Stylist Section -->
     <% if @conversations_as_stylist.any? %>
@@ -131,6 +133,20 @@
               </div>
             <% end %>
           <% end %>
+        </div>
+      </div>
+    <% elsif current_user.stylist? %>
+      <div class="mb-5">
+        <h2 class="message-list-title">
+          <i class="fas fa-scissors me-2"></i>Conversations with My Clients
+        </h2>
+
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fas fa-comments fa-4x"></i>
+          </div>
+          <h3>No Conversations Yet</h3>
+          <p>When a client messages you about an appointment, the conversation will appear here</p>
         </div>
       </div>
     <% end %>
