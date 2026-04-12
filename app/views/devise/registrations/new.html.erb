@@ -1,8 +1,8 @@
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-lg-5">
-      <div class="card shadow">
-        <div class="card-body p-5">
+      <div class="card shadow devise-card">
+        <div class="card-body p-5" data-controller="password-validator">
           <h2 class="card-title text-center mb-4">Join ChairHop</h2>
 
           <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
@@ -26,8 +26,16 @@
 
             <!-- Name -->
             <div class="mb-3">
-              <%= f.label :name, "Full Name", class: 'form-label' %>
-              <%= f.text_field :name, autofocus: true, class: 'form-control', placeholder: 'Enter your full name', required: true %>
+              <div class="row g-2">
+                <div class="col">
+                  <label class="form-label">First name</label>
+                  <%= f.text_field :first_name, class: 'form-control', placeholder: 'First name', required: true %>
+                </div>
+                <div class="col">
+                  <label class="form-label">Last name</label>
+                  <%= f.text_field :last_name, class: 'form-control', placeholder: 'Last name', required: true %>
+                </div>
+              </div>
             </div>
 
             <!-- Email -->
@@ -42,29 +50,43 @@
               <% if @minimum_password_length %>
                 <small class="text-muted d-block mb-1"><%= @minimum_password_length %> characters minimum</small>
               <% end %>
-              <%= f.password_field :password, autocomplete: "new-password", class: 'form-control', placeholder: 'Create a password', required: true %>
+              <%= f.password_field :password, autocomplete: "new-password", class: 'form-control', placeholder: 'Create a password', required: true, data: { password_validator_target: 'password', action: 'input->password-validator#validate' } %>
+              <div class="password-requirements mt-2" id="password-requirements">
+                <p class="req-item" id="req-length" data-password-validator-target="reqLength">At least 8 characters</p>
+                <p class="req-item" id="req-number" data-password-validator-target="reqNumber">At least one number</p>
+                <p class="req-item" id="req-special" data-password-validator-target="reqSpecial">At least one special character (!@#$%^&*)</p>
+              </div>
             </div>
 
             <!-- Password Confirmation -->
             <div class="mb-4">
               <%= f.label :password_confirmation, "Confirm Password", class: 'form-label' %>
-              <%= f.password_field :password_confirmation, autocomplete: "new-password", class: 'form-control', placeholder: 'Confirm your password', required: true %>
+              <%= f.password_field :password_confirmation, autocomplete: "new-password", class: 'form-control', placeholder: 'Confirm your password', required: true, data: { password_validator_target: 'confirmation', action: 'input->password-validator#validateMatch' } %>
+              <p class="req-item" id="req-match" data-password-validator-target="reqMatch">Passwords match</p>
+            </div>
+
+            <!-- Terms of Service -->
+            <div class="form-check mt-3">
+              <%= f.check_box :tos_accepted_at,
+                  { class: "form-check-input", required: true },
+                  Time.current.to_s,
+                  nil %>
+              <label class="form-check-label" for="user_tos_accepted_at">
+                I agree to the <a href="/terms" target="_blank">Terms of Service</a>
+                and <a href="/privacy" target="_blank">Privacy Policy</a>
+              </label>
             </div>
 
             <!-- Submit -->
-            <div class="d-grid">
-              <%= f.submit "Create Account", class: "btn btn-primary btn-lg" %>
+            <div class="d-grid mt-3">
+              <%= f.submit "Create Account", class: "btn btn-primary btn-lg w-100" %>
             </div>
           <% end %>
 
-          <hr class="my-4">
-
-          <div class="text-center">
-            <p class="mb-0">
-              Already have an account?
-              <%= link_to "Sign in", new_session_path(resource_name), class: "text-primary" %>
-            </p>
+          <div class="devise-links mt-4">
+            <a href="/users/sign_in">Already have an account? Log in</a>
           </div>
+
         </div>
       </div>
     </div>

@@ -11,11 +11,11 @@
           <div class="rounded-circle bg-secondary d-flex align-items-center
                       justify-content-center text-white fw-bold"
                style="width:44px;height:44px;font-size:1rem;flex-shrink:0;">
-            <%= appointment.stylist.name.first.upcase %>
+            <%= appointment.stylist.full_name.first&.upcase %>
           </div>
         <% end %>
         <div>
-          <div class="fw-semibold"><%= appointment.stylist.name %></div>
+          <div class="fw-semibold"><%= appointment.stylist.full_name %></div>
           <small class="text-muted">#<%= appointment.id.to_s.rjust(6, "0") %></small>
         </div>
       </div>

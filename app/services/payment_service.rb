@@ -51,8 +51,8 @@ class PaymentService
 
     result = @client.customers.create(
       idempotency_key: "customer-#{@stylist.id}-#{user.id}",
-      given_name:      user.name.to_s.split(' ').first,
-      family_name:     user.name.to_s.split(' ').drop(1).join(' ').presence,
+      given_name:      user.first_name,
+      family_name:     user.last_name,
       email_address:   user.email,
       reference_id:    user.id.to_s
     )

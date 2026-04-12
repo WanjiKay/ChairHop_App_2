@@ -19,11 +19,11 @@
     <p style="margin:8px 0 0; opacity:0.8;">Someone wants to book with you!</p>
   </div>
   <div class="body">
-    <p>Hi <%= @stylist.name %>,</p>
-    <p><strong><%= @customer.name %></strong> has requested an appointment with you.</p>
+    <p>Hi <%= @stylist.full_name %>,</p>
+    <p><strong><%= @customer.full_name %></strong> has requested an appointment with you.</p>
 
     <div class="card">
-      <div class="detail-row"><span>Customer</span><strong><%= @customer.name %></strong></div>
+      <div class="detail-row"><span>Customer</span><strong><%= @customer.full_name %></strong></div>
       <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
       <div class="detail-row"><span>Date &amp; Time</span><strong><%= format_datetime(@appointment.time) %></strong></div>
       <% if @appointment.location.present? %>

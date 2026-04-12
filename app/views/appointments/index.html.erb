@@ -71,12 +71,12 @@
                   <% else %>
                     <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center flex-shrink-0"
                          style="width:56px;height:56px;color:white;font-size:1.3rem;">
-                      <%= block.stylist.name&.first&.upcase || "S" %>
+                      <%= block.stylist.full_name&.first&.upcase || "S" %>
                     </div>
                   <% end %>
 
                   <div>
-                    <h6 class="fw-bold mb-0"><%= block.stylist.name %></h6>
+                    <h6 class="fw-bold mb-0"><%= block.stylist.full_name %></h6>
                     <% if block.location %>
                       <small class="text-muted">
                         <i class="fas fa-map-marker-alt me-1"></i><%= block.location.name %>, <%= block.location.city %>
@@ -107,7 +107,7 @@
                 <% end %>
 
                 <%= link_to stylist_path(block.stylist, anchor: 'book'), class: "btn btn-primary btn-sm w-100" do %>
-                  <i class="fas fa-calendar-plus me-1"></i>Book with <%= block.stylist.name %>
+                  <i class="fas fa-calendar-plus me-1"></i>Book with <%= block.stylist.full_name %>
                 <% end %>
               </div>
             </div>

@@ -22,8 +22,8 @@
     <p style="margin:8px 0 0; opacity:0.8;">Thank you for choosing ChairHop</p>
   </div>
   <div class="body">
-    <p>Hi <%= @customer.name %>,</p>
-    <p>Your appointment with <strong><%= @stylist.name %></strong> is complete. Here's your receipt.</p>
+    <p>Hi <%= @customer.full_name %>,</p>
+    <p>Your appointment with <strong><%= @stylist.full_name %></strong> is complete. Here's your receipt.</p>
     <% if @balance_payment_id.present? %>
       <div class="alert-success">
         <strong>Balance charged</strong> &mdash; <%= number_to_currency(@balance_paid) %> was automatically charged to your card on file. Transaction ID: <code style="font-size:12px;"><%= @balance_payment_id %></code>
@@ -31,7 +31,7 @@
     <% end %>
 
     <div class="card">
-      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.name %></strong></div>
+      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.full_name %></strong></div>
       <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
       <div class="detail-row"><span>Date &amp; Time</span><strong><%= format_datetime(@appointment.time) %></strong></div>
       <% if @appointment.location.present? %>
@@ -48,7 +48,7 @@
       <div class="total-row"><span>Total Paid</span><span><%= number_to_currency(@deposit_paid + @balance_paid) %></span></div>
     </div>
 
-    <p>Enjoyed your experience? Leave a review for <%= @stylist.name %>!</p>
+    <p>Enjoyed your experience? Leave a review for <%= @stylist.full_name %>!</p>
     <a href="<%= new_appointment_review_url(@appointment) %>" class="btn">Leave a Review</a>
     <a href="<%= confirmation_appointment_url(@appointment) %>" class="btn btn-outline">View Full Receipt</a>
   </div>

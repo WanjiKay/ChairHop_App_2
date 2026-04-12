@@ -6,8 +6,8 @@
         <h1 class="text-primary fw-bold">Conversation</h1>
         <p class="text-muted">
           <strong>Appointment:</strong> <%= @conversation.appointment.salon %><br>
-          <strong>Customer:</strong> <%= @conversation.customer.name %><br>
-          <strong>Stylist:</strong> <%= @conversation.stylist.name %><br>
+          <strong>Customer:</strong> <%= @conversation.customer.full_name %><br>
+          <strong>Stylist:</strong> <%= @conversation.stylist.full_name %><br>
           <strong>Time:</strong> <%= @conversation.appointment.time.strftime("%b %d, %Y at %I:%M %p") if @conversation.appointment.time.present? %>
         </p>
         <div class="d-flex gap-2">

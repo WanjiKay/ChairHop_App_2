@@ -35,12 +35,12 @@
       <% else %>
         <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold"
              style="width:56px;height:56px;font-size:1.2rem;">
-          <%= @appointment.stylist.name.first.upcase %>
+          <%= @appointment.stylist.full_name.first&.upcase %>
         </div>
       <% end %>
       <div>
         <small class="text-muted d-block">Stylist</small>
-        <strong><%= @appointment.stylist.name %></strong>
+        <strong><%= @appointment.stylist.full_name %></strong>
       </div>
     </div>
   </div>

@@ -20,15 +20,15 @@
     <p style="margin:8px 0 0; opacity:0.9;">Balance payment could not be processed</p>
   </div>
   <div class="body">
-    <p>Hi <%= @customer.name %>,</p>
-    <p>We were unable to process the remaining balance for your recent appointment with <strong><%= @stylist.name %></strong>. Your appointment has <strong>not</strong> yet been marked as complete.</p>
+    <p>Hi <%= @customer.full_name %>,</p>
+    <p>We were unable to process the remaining balance for your recent appointment with <strong><%= @stylist.full_name %></strong>. Your appointment has <strong>not</strong> yet been marked as complete.</p>
 
     <div class="alert-danger">
       <strong>Payment failed</strong> &mdash; Please arrange payment directly with your stylist.
     </div>
 
     <div class="card">
-      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.name %></strong></div>
+      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.full_name %></strong></div>
       <% if @appointment.selected_service.present? %>
         <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
       <% end %>
@@ -40,7 +40,7 @@
       <div class="detail-row"><span>Booking #</span><strong>#<%= @appointment.id.to_s.rjust(6, "0") %></strong></div>
     </div>
 
-    <p>Please contact <strong><%= @stylist.name %></strong> directly to arrange payment of the outstanding balance. You can also view your appointment details below.</p>
+    <p>Please contact <strong><%= @stylist.full_name %></strong> directly to arrange payment of the outstanding balance. You can also view your appointment details below.</p>
 
     <a href="<%= appointment_url(@appointment) %>" class="btn">View Appointment</a>
   </div>

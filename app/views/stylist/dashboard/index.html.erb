@@ -51,7 +51,7 @@
 <div class="container py-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="fw-bold text-primary mb-0">Dashboard</h1>
-    <span class="text-muted">Welcome back, <%= current_user.name %></span>
+    <span class="text-muted">Welcome back, <%= current_user.full_name %></span>
   </div>
 
   <!-- Stats Cards -->
@@ -179,7 +179,7 @@
                     </td>
                     <td>
                       <% if apt.customer.present? %>
-                        <%= apt.customer.name %>
+                        <%= apt.customer.full_name %>
                       <% else %>
                         <span class="text-muted">Open slot</span>
                       <% end %>
@@ -228,7 +228,7 @@
                           class: "rounded-circle me-1",
                           style: "width: 28px; height: 28px; object-fit: cover;" %>
                   <% end %>
-                  <small class="fw-semibold"><%= review.customer.name %></small>
+                  <small class="fw-semibold"><%= review.customer.full_name %></small>
                 </div>
                 <small class="text-muted"><%= time_ago_in_words(review.created_at) %> ago</small>
               </div>

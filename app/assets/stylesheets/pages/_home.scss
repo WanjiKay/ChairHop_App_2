@@ -19,10 +19,15 @@ body{
 //Hero Section
 .hero-section {
   position: relative;
-  height: 180px;
+  height: 320px;
   overflow: hidden;
   padding-top: 1.5rem;
   background-color: $color-cream;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 
   .hero-image-wrapper {
     position: absolute;
@@ -53,10 +58,6 @@ body{
   }
 
   .hero-title {
-    position: absolute;
-    top: calc(50% + 0.75rem);
-    left: 50%;
-    transform: translate(-50%, -50%);
     font-family: $headers-font;
     font-size: 1.5rem;
     text-align: center;
@@ -70,12 +71,29 @@ body{
   }
 
   .hero-cta {
-    position: absolute;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
     z-index: 2;
     white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-cta-primary {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .hero-cta-sub {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+    text-align: center;
+
+    a {
+      color: #fff;
+      text-decoration: underline;
+    }
   }
 }
 
@@ -233,7 +251,11 @@ h3 {
 
 @media (max-width: 768px) {
   .hero-section {
-    height: 240px;
+    height: 300px;
+  }
+
+  .hero-cta-primary {
+    max-width: 100%;
   }
 
   .home-page,

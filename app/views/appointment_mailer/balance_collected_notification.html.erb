@@ -17,11 +17,11 @@
 <body>
   <div class="header">
     <h2>Appointment Complete</h2>
-    <p style="margin:8px 0 0; opacity:0.9;">Balance recorded for <%= @customer&.name %></p>
+    <p style="margin:8px 0 0; opacity:0.9;">Balance recorded for <%= @customer&.full_name %></p>
   </div>
   <div class="body">
-    <p>Hi <%= @stylist.name %>,</p>
-    <p>You've marked the appointment with <strong><%= @customer&.name %></strong> as complete and recorded the balance as collected in person.</p>
+    <p>Hi <%= @stylist.full_name %>,</p>
+    <p>You've marked the appointment with <strong><%= @customer&.full_name %></strong> as complete and recorded the balance as collected in person.</p>
 
     <div class="alert-success">
       <strong>Appointment complete</strong> &mdash;
@@ -33,7 +33,7 @@
     </div>
 
     <div class="card">
-      <div class="detail-row"><span>Customer</span><strong><%= @customer&.name %></strong></div>
+      <div class="detail-row"><span>Customer</span><strong><%= @customer&.full_name %></strong></div>
       <% if @appointment.selected_service.present? %>
         <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
       <% end %>

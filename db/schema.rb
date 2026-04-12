@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_04_11_000003) do
+ActiveRecord::Schema[7.1].define(version: 2026_04_11_232826) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "vector"
@@ -355,6 +355,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_11_000003) do
     t.datetime "square_connected_at"
     t.string "square_location_id"
     t.string "booking_slug"
+    t.string "first_name", default: "", null: false
+    t.string "last_name", default: "", null: false
+    t.datetime "tos_accepted_at"
     t.index ["booking_slug"], name: "index_users_on_booking_slug", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

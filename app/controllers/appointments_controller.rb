@@ -16,7 +16,7 @@ class AppointmentsController < ApplicationController
     if params[:query].present?
       query_term = "%#{params[:query].downcase}%"
       @availability_blocks = @availability_blocks.where(
-        "LOWER(users.name) ILIKE :q OR LOWER(users.about) ILIKE :q OR " \
+        "LOWER(CONCAT(users.first_name, ' ', users.last_name)) ILIKE :q OR LOWER(users.about) ILIKE :q OR " \
         "EXISTS (SELECT 1 FROM services s2 WHERE s2.stylist_id = users.id AND LOWER(s2.name) ILIKE :q) OR " \
         "EXISTS (SELECT 1 FROM locations l2 WHERE l2.user_id = users.id AND " \
         "(LOWER(l2.city) ILIKE :q OR LOWER(l2.name) ILIKE :q))",

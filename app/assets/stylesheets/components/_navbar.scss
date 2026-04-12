@@ -18,7 +18,7 @@ header,
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1.5rem;
+  padding: 1.1rem 1.5rem;
 
   background: $color-cream;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
@@ -217,6 +217,8 @@ header,
     left: auto;
     min-width: 150px;
   }
+
+  .navbar-stylist-cta { display: none; }
 }
 
 

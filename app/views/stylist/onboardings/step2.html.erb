@@ -1,4 +1,4 @@
-<div class="container py-5">
+<div class="container py-5 onboarding-card">
   <div class="row justify-content-center">
     <div class="col-lg-7">
 
@@ -78,6 +78,13 @@
               <%= f.submit "Continue to Location →", class: "btn btn-primary btn-lg" %>
             </div>
           <% end %>
+
+          <div class="d-grid mt-3">
+            <%= button_to "Skip — I'll add services from my dashboard",
+                  skip_step2_stylist_onboarding_path,
+                  method: :post,
+                  class: "btn btn-outline-secondary" %>
+          </div>
 
           <div class="text-center mt-3">
             <small class="text-muted">You can add more services from your dashboard after setup</small>

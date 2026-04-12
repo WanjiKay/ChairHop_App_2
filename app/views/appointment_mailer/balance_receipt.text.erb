@@ -1,14 +1,14 @@
 Balance Receipt — Booking #<%= @appointment.id.to_s.rjust(6, "0") %>
 =============================================================
 
-Hi <%= @customer.name %>,
+Hi <%= @customer.full_name %>,
 
-The remaining balance for your appointment with <%= @stylist.name %> has been charged.
+The remaining balance for your appointment with <%= @stylist.full_name %> has been charged.
 
 Payment successful — <%= number_to_currency(@balance_paid) %> charged to your card on file.
 
 Receipt Details:
-  Stylist:        <%= @stylist.name %>
+  Stylist:        <%= @stylist.full_name %>
 <% if @selected_service.present? %>  Service:        <%= @selected_service %>
 <% end %><% if @appointment.appointment_add_ons.any? %>  Add-ons:        <%= @appointment.appointment_add_ons.map(&:service_name).join(", ") %>
 <% end %><% if @appointment.location.present? %>  Location:       <%= @appointment.location.name %>

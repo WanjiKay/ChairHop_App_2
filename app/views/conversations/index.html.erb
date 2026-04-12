@@ -26,15 +26,15 @@
             <%= link_to conversation_path(conversation), class: "message-item text-decoration-none" do %>
               <div class="message-avatar">
                 <% if conversation.stylist.avatar.attached? %>
-                  <%= image_tag conversation.stylist.avatar, class: "ai-avatar-img rounded-circle", alt: conversation.stylist.name %>
+                  <%= image_tag conversation.stylist.avatar, class: "ai-avatar-img rounded-circle", alt: conversation.stylist.full_name %>
                 <% else %>
-                  <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "ai-avatar-img rounded-circle", alt: conversation.stylist.name %>
+                  <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "ai-avatar-img rounded-circle", alt: conversation.stylist.full_name %>
                 <% end %>
               </div>
               <div class="message-content">
                 <div class="message-header">
                   <h3 class="message-title">
-                    <%= conversation.stylist.name %>
+                    <%= conversation.stylist.full_name %>
                   </h3>
                   <span class="message-time">
                     <%= time_ago_in_words(conversation.updated_at) %> ago
@@ -92,15 +92,15 @@
             <%= link_to conversation_path(conversation), class: "message-item text-decoration-none" do %>
               <div class="message-avatar">
                 <% if conversation.customer.avatar.attached? %>
-                  <%= image_tag conversation.customer.avatar, class: "ai-avatar-img rounded-circle", alt: conversation.customer.name %>
+                  <%= image_tag conversation.customer.avatar, class: "ai-avatar-img rounded-circle", alt: conversation.customer.full_name %>
                 <% else %>
-                  <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "ai-avatar-img rounded-circle", alt: conversation.customer.name %>
+                  <%= image_tag ApplicationHelper::DEFAULT_AVATAR_URL, class: "ai-avatar-img rounded-circle", alt: conversation.customer.full_name %>
                 <% end %>
               </div>
               <div class="message-content">
                 <div class="message-header">
                   <h3 class="message-title">
-                    <%= conversation.customer.name %>
+                    <%= conversation.customer.full_name %>
                   </h3>
                   <span class="message-time">
                     <%= time_ago_in_words(conversation.updated_at) %> ago

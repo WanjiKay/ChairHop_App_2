@@ -20,7 +20,7 @@
              data-bs-toggle="dropdown"
              aria-expanded="false">
             <span class="d-none d-sm-inline fw-semibold" style="font-size: 0.85rem;">
-              <%= current_user.name %>
+              <%= current_user.full_name %>
             </span>
             <% if current_user&.avatar&.attached? %>
               <%= image_tag url_for(current_user.avatar), class: "avatar-img", alt: "User menu" %>
@@ -30,7 +30,7 @@
           </a>
 
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <li><span class="dropdown-item-text fw-bold"><%= current_user.name %></span></li>
+            <li><span class="dropdown-item-text fw-bold"><%= current_user.full_name %></span></li>
             <li><span class="dropdown-item-text text-muted" style="font-size: 0.8rem; margin-top: -0.5rem;"><%= current_user.email %></span></li>
             <li><hr class="dropdown-divider"></li>
             <li><%= link_to "Profile", profile_path(edit: 1), class: "dropdown-item" %></li>
@@ -48,7 +48,9 @@
       <% else %>
         <!-- Sign In / Sign Up -->
         <%= link_to "Sign In", new_user_session_path, class: "chairhop-navbar__cta chairhop-navbar__cta--auth" %>
-        <%= link_to "Sign Up", new_user_registration_path, class: "chairhop-navbar__cta chairhop-navbar__cta--auth" %>
+        <span class="navbar-stylist-cta">
+          <%= link_to "List your chair", "/users/sign_up", class: "chairhop-navbar__cta chairhop-navbar__cta--auth" %>
+        </span>
       <% end %>
 
     </div>

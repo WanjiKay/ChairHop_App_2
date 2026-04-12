@@ -19,7 +19,7 @@
               <div class="row g-4">
                 <div class="col-md-6">
                   <h6 class="text-muted text-uppercase small fw-semibold mb-3">Customer</h6>
-                  <p class="mb-1"><strong><%= @appointment.customer&.name || 'Unknown' %></strong></p>
+                  <p class="mb-1"><strong><%= @appointment.customer&.full_name || 'Unknown' %></strong></p>
                   <p class="mb-0 text-muted"><%= @appointment.customer&.email || 'N/A' %></p>
                 </div>
                 <div class="col-md-6">
@@ -67,7 +67,7 @@
               <div class="row g-4">
                 <div class="col-md-6">
                   <h6 class="text-muted text-uppercase small fw-semibold mb-3">Customer</h6>
-                  <p class="mb-1"><strong><%= @appointment.customer&.name || 'Unknown' %></strong></p>
+                  <p class="mb-1"><strong><%= @appointment.customer&.full_name || 'Unknown' %></strong></p>
                   <p class="mb-0 text-muted"><%= @appointment.customer&.email || 'N/A' %></p>
                 </div>
                 <div class="col-md-6">
@@ -116,7 +116,7 @@
               <div class="row g-4">
                 <div class="col-md-6">
                   <h6 class="text-muted text-uppercase small fw-semibold mb-3">Customer</h6>
-                  <p class="mb-1"><strong><%= @appointment.customer&.name || 'Unknown' %></strong></p>
+                  <p class="mb-1"><strong><%= @appointment.customer&.full_name || 'Unknown' %></strong></p>
                   <p class="mb-0 text-muted"><%= @appointment.customer&.email || 'N/A' %></p>
                 </div>
                 <div class="col-md-6">
@@ -179,13 +179,13 @@
                 <%= link_to stylist_path(@appointment.stylist), class: "text-decoration-none" do %>
                   <div class="profile-picture-wrapper mb-3">
                     <% if @appointment.stylist.avatar.attached? %>
-                      <%= image_tag url_for(@appointment.stylist.avatar), class: "profile-picture rounded-circle", alt: @appointment.stylist.name, style: "width: 120px; height: 120px; object-fit: cover; border: 4px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;" %>
+                      <%= image_tag url_for(@appointment.stylist.avatar), class: "profile-picture rounded-circle", alt: @appointment.stylist.full_name, style: "width: 120px; height: 120px; object-fit: cover; border: 4px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;" %>
                     <% else %>
                       <%= image_tag "https://via.placeholder.com/120", class: "profile-picture rounded-circle", style: "width: 120px; height: 120px; object-fit: cover; border: 4px solid #4A5D4F; cursor: pointer;" %>
                     <% end %>
                   </div>
                   <h5 class="text-primary fw-bold mb-2">Your Stylist</h5>
-                  <p class="text-muted mb-3"><%= @appointment.stylist.name %></p>
+                  <p class="text-muted mb-3"><%= @appointment.stylist.full_name %></p>
                 <% end %>
                 <% if @appointment.stylist.about.present? %>
                   <p class="text-muted small mb-3"><%= @appointment.stylist.about %></p>
@@ -431,7 +431,7 @@
                   <div class="flex-grow-1">
                     <h6 class="fw-bold mb-3">
                       <i class="bi bi-info-circle me-1"></i>
-                      You have <%= @pending_appointments.count %> <%= 'appointment'.pluralize(@pending_appointments.count) %> with <%= @appointment.stylist.name %>
+                      You have <%= @pending_appointments.count %> <%= 'appointment'.pluralize(@pending_appointments.count) %> with <%= @appointment.stylist.full_name %>
                     </h6>
 
                     <% @pending_appointments.each_with_index do |appt, i| %>
@@ -487,13 +487,13 @@
                 <%= link_to stylist_path(@appointment.stylist), class: "text-decoration-none" do %>
                   <div class="profile-picture-wrapper mb-3">
                     <% if @appointment.stylist.avatar.attached? %>
-                      <%= image_tag url_for(@appointment.stylist.avatar), class: "profile-picture rounded-circle", alt: @appointment.stylist.name, style: "width: 120px; height: 120px; object-fit: cover; border: 4px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;" %>
+                      <%= image_tag url_for(@appointment.stylist.avatar), class: "profile-picture rounded-circle", alt: @appointment.stylist.full_name, style: "width: 120px; height: 120px; object-fit: cover; border: 4px solid #4A5D4F; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;" %>
                     <% else %>
                       <%= image_tag "https://via.placeholder.com/120", class: "profile-picture rounded-circle", style: "width: 120px; height: 120px; object-fit: cover; border: 4px solid #4A5D4F; cursor: pointer;" %>
                     <% end %>
                   </div>
                   <h5 class="text-primary fw-bold mb-2">Your Stylist</h5>
-                  <p class="text-muted mb-3"><%= @appointment.stylist.name %></p>
+                  <p class="text-muted mb-3"><%= @appointment.stylist.full_name %></p>
                 <% end %>
                 <% if @appointment.stylist.about.present? %>
                   <p class="text-muted small mb-3"><%= @appointment.stylist.about %></p>

@@ -60,7 +60,7 @@
                 </td>
                 <td>
                   <% if appointment.customer.present? %>
-                    <%= appointment.customer.name %>
+                    <%= appointment.customer.full_name %>
                   <% else %>
                     <span class="text-muted">Open slot</span>
                   <% end %>

@@ -30,6 +30,7 @@ Rails.application.routes.draw do
       post :complete_step3, on: :collection
       get  :step4,          on: :collection
       post :complete_step4, on: :collection
+      post :skip_step2,     on: :collection
       post :skip_step4,     on: :collection
     end
 

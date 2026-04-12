@@ -19,8 +19,8 @@
     <h2>Booking Update</h2>
   </div>
   <div class="body">
-    <p>Hi <%= @customer.name %>,</p>
-    <p>Unfortunately, <strong><%= @stylist.name %></strong> is unable to accept your booking request.</p>
+    <p>Hi <%= @customer.full_name %>,</p>
+    <p>Unfortunately, <strong><%= @stylist.full_name %></strong> is unable to accept your booking request.</p>
 
     <% if @appointment.payment_amount.present? %>
       <div class="alert-warning">
@@ -29,7 +29,7 @@
     <% end %>
 
     <div class="card">
-      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.name %></strong></div>
+      <div class="detail-row"><span>Stylist</span><strong><%= @stylist.full_name %></strong></div>
       <div class="detail-row"><span>Service</span><strong><%= @appointment.selected_service %></strong></div>
       <div class="detail-row"><span>Date &amp; Time</span><strong><%= format_datetime(@appointment.time) %></strong></div>
       <div class="detail-row"><span>Booking #</span><strong>#<%= @appointment.id.to_s.rjust(6, "0") %></strong></div>

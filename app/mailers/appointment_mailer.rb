@@ -28,7 +28,7 @@ class AppointmentMailer < ApplicationMailer
 
     mail(
       to: @stylist.email,
-      subject: "New Booking Request from #{@customer.name}"
+      subject: "New Booking Request from #{@customer.full_name}"
     )
   end
 
@@ -95,7 +95,7 @@ class AppointmentMailer < ApplicationMailer
 
     mail(
       to: @customer.email,
-      subject: "How was your appointment with #{@stylist.name}? Leave a review"
+      subject: "How was your appointment with #{@stylist.full_name}? Leave a review"
     )
   end
 
@@ -122,7 +122,7 @@ class AppointmentMailer < ApplicationMailer
     @amount       = appointment.payment_amount.to_f * 0.5
     mail(
       to: @customer.email,
-      subject: "Action required: Pay your remaining balance for your appointment with #{@stylist.name}"
+      subject: "Action required: Pay your remaining balance for your appointment with #{@stylist.full_name}"
     )
   end
 
@@ -134,7 +134,7 @@ class AppointmentMailer < ApplicationMailer
     @amount_collected = appointment.balance_collected
     mail(
       to: @stylist.email,
-      subject: "Appointment complete — balance recorded for #{@customer&.name}"
+      subject: "Appointment complete — balance recorded for #{@customer&.full_name}"
     )
   end
 
@@ -146,7 +146,7 @@ class AppointmentMailer < ApplicationMailer
     @appointment = review.appointment
     mail(
       to: @customer.email,
-      subject: "#{@stylist.name} responded to your review"
+      subject: "#{@stylist.full_name} responded to your review"
     )
   end
 
@@ -157,7 +157,7 @@ class AppointmentMailer < ApplicationMailer
     @customer    = appointment.customer
     mail(
       to: @stylist.email,
-      subject: "Balance payment received — #{@customer&.name}"
+      subject: "Balance payment received — #{@customer&.full_name}"
     )
   end
 

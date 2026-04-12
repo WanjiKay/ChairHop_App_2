@@ -1,9 +1,9 @@
 Appointment Complete
 ====================
 
-Hi <%= @stylist.name %>,
+Hi <%= @stylist.full_name %>,
 
-You've marked the appointment with <%= @customer&.name %> as complete
+You've marked the appointment with <%= @customer&.full_name %> as complete
 and recorded the balance as collected in person.
 
 <% if @amount_collected.present? %>Balance collected: <%= number_to_currency(@amount_collected) %>
@@ -11,7 +11,7 @@ and recorded the balance as collected in person.
 <% end %>
 ---
 Appointment Details:
-  Customer: <%= @customer&.name %>
+  Customer: <%= @customer&.full_name %>
 <% if @appointment.selected_service.present? %>  Service:  <%= @appointment.selected_service %>
 <% end %>  Date:     <%= format_datetime(@appointment.time) %>
 <% if @appointment.payment_amount.present? %>  Deposit:  <%= number_to_currency(@appointment.payment_amount.to_f * 0.5) %>

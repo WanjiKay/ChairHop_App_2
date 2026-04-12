@@ -49,13 +49,13 @@
                 <% else %>
                   <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center"
                        style="width: 100px; height: 100px; color: white; font-size: 2rem;">
-                    <%= stylist.name&.first&.upcase || "S" %>
+                    <%= stylist.full_name&.first&.upcase || "S" %>
                   </div>
                 <% end %>
               </div>
 
               <!-- Name -->
-              <h5 class="card-title fw-bold"><%= stylist.name || "Stylist" %></h5>
+              <h5 class="card-title fw-bold"><%= stylist.full_name.presence || "Stylist" %></h5>
 
               <!-- Location -->
               <p class="text-muted mb-2">

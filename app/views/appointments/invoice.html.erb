@@ -39,7 +39,7 @@
       <div class="card shadow-sm h-100">
         <div class="card-body">
           <small class="text-muted d-block mb-1">Client</small>
-          <strong><%= @appointment.customer.name %></strong>
+          <strong><%= @appointment.customer.full_name %></strong>
           <div class="text-muted small"><%= @appointment.customer.email %></div>
         </div>
       </div>
@@ -54,12 +54,12 @@
           <% else %>
             <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold"
                  style="width:40px;height:40px;font-size:0.9rem;flex-shrink:0;">
-              <%= @appointment.stylist.name.first.upcase %>
+              <%= @appointment.stylist.full_name.first&.upcase %>
             </div>
           <% end %>
           <div>
             <small class="text-muted d-block">Stylist</small>
-            <strong><%= @appointment.stylist.name %></strong>
+            <strong><%= @appointment.stylist.full_name %></strong>
           </div>
         </div>
       </div>
