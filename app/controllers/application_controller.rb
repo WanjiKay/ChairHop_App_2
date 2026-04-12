@@ -42,7 +42,7 @@ class ApplicationController < ActionController::Base
 
   def redirect_to_primary_domain
     if request.host.include?("chairhop.ca")
-      redirect_to "https://chair-hop.com#{request.fullpath}", status: :moved_permanently
+      redirect_to "https://chair-hop.com#{request.fullpath}", status: :moved_permanently, allow_other_host: true
     end
   end
 
