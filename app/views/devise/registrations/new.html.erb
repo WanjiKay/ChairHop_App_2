@@ -2,7 +2,7 @@
   <div class="row justify-content-center">
     <div class="col-lg-5">
       <div class="card shadow devise-card">
-        <div class="card-body p-5" data-controller="password-validator">
+        <div class="card-body p-5" data-controller="password-validator email-check">
           <h2 class="card-title text-center mb-4">Join ChairHop</h2>
 
           <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
@@ -41,7 +41,16 @@
             <!-- Email -->
             <div class="mb-3">
               <%= f.label :email, class: 'form-label' %>
-              <%= f.email_field :email, autocomplete: "email", class: 'form-control', placeholder: 'Enter your email', required: true %>
+              <%= f.email_field :email,
+                    autocomplete: "email",
+                    class: 'form-control',
+                    placeholder: 'Enter your email',
+                    required: true,
+                    data: {
+                      email_check_target: 'field',
+                      action: 'blur->email-check#check'
+                    } %>
+              <div class="invalid-feedback">This email is already registered.</div>
             </div>
 
             <!-- Password -->
@@ -79,7 +88,8 @@
 
             <!-- Submit -->
             <div class="d-grid mt-3">
-              <%= f.submit "Create Account", class: "btn btn-primary btn-lg w-100" %>
+              <%= f.submit "Create Account", class: "btn btn-primary btn-lg w-100",
+                    data: { email_check_target: 'submit' } %>
             </div>
           <% end %>
 
@@ -87,6 +97,28 @@
             <a href="/users/sign_in">Already have an account? Log in</a>
           </div>
 
+        </div>
+
+        <!-- Email already taken modal -->
+        <div class="modal fade" id="emailTakenModal" tabindex="-1" aria-labelledby="emailTakenModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header border-0">
+                <h5 class="modal-title" id="emailTakenModalLabel">Email already in use</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p>An account with this email address already exists. Would you like to reset your password or use a different email?</p>
+              </div>
+              <div class="modal-footer border-0">
+                <a href="/users/password/new" class="btn btn-primary">Reset password</a>
+                <button type="button" class="btn btn-outline-secondary"
+                        data-action="click->email-check#useDifferentEmail">
+                  Use a different email
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
