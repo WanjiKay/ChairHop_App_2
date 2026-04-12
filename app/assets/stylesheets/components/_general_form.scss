@@ -1,3 +1,35 @@
+// Global fix: override Bootstrap's --bs-body-color (#B7B7A4) on all form inputs.
+// $body-color: $color-soft-gray in _bootstrap_variables.scss sets this pale color
+// site-wide. -webkit-text-fill-color is required because WebKit/Blink uses it
+// over `color` during focus/active typing.
+input,
+textarea,
+select,
+.form-control {
+  color: #333333 !important;
+  -webkit-text-fill-color: #333333 !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.form-control:focus {
+  color: #333333 !important;
+  -webkit-text-fill-color: #333333 !important;
+}
+
+// Placeholder: reset the -webkit-text-fill-color inherited from the input rule
+// above, otherwise WebKit renders placeholder text as solid #333333.
+// opacity: 1 cancels Firefox's built-in 0.54 placeholder opacity reduction.
+input::placeholder,
+textarea::placeholder,
+select::placeholder,
+.form-control::placeholder {
+  color: rgba(51, 51, 51, 0.45) !important;
+  -webkit-text-fill-color: rgba(51, 51, 51, 0.45) !important;
+  opacity: 1 !important;
+}
+
 // Override Bootstrap CSS variables for search filter forms
 [data-controller="search-toggle"] {
   --bs-body-color: #333333 !important;
