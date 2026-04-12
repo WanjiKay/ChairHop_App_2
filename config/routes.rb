@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   root to: "pages#home"
+  get '/for-stylists', to: 'pages#for_stylists'
 
   devise_for :users, controllers: {
     registrations: 'users/registrations'

@@ -68,8 +68,41 @@
       <%= link_to "Browse All Stylists", stylists_path, class: "btn btn-primary" %>
       <%= link_to "Browse Availability", appointments_path, class: "btn btn-outline-primary" %>
     </div>
+
   <% else %>
     <p class="text-center mt-4 text-muted">No stylists available right now — check back soon.</p>
   <% end %>
+
+  <div class="stylist-pitch-section mt-5 mb-4">
+    <div class="stylist-pitch-inner text-center mb-4">
+      <h2 class="stylist-pitch-title">Are you a stylist?</h2>
+      <p class="stylist-pitch-subtitle">Join independent stylists across Montreal already using ChairHop</p>
+    </div>
+
+    <div class="stylist-pitch-grid">
+      <div class="stylist-pitch-card">
+        <div class="stylist-pitch-icon">✦</div>
+        <h3 class="stylist-pitch-card-title">Get discovered by new clients</h3>
+        <p class="stylist-pitch-card-body">Show up to clients actively searching for stylists in Montreal — no marketing needed.</p>
+      </div>
+      <div class="stylist-pitch-card">
+        <div class="stylist-pitch-icon">✦</div>
+        <h3 class="stylist-pitch-card-title">Manage your schedule in one place</h3>
+        <p class="stylist-pitch-card-body">Your availability, bookings, and calendar all in one dashboard — no more back-and-forth.</p>
+      </div>
+      <div class="stylist-pitch-card">
+        <div class="stylist-pitch-icon">✦</div>
+        <h3 class="stylist-pitch-card-title">Always get paid, automatically</h3>
+        <p class="stylist-pitch-card-body">Deposits collected at booking, remainder charged on completion. No chasing clients for payment.</p>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <%= link_to "Join ChairHop as a Stylist", new_user_registration_path, class: "btn btn-primary btn-lg stylist-pitch-cta" %>
+      <p class="stylist-pitch-learn-more mt-2">
+        <%= link_to "Learn more about ChairHop for stylists →", "/for-stylists" %>
+      </p>
+    </div>
+  </div>
 
 </div>

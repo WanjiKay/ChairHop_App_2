@@ -1,0 +1,88 @@
+<div class="for-stylists-page">
+
+  <!-- Hero -->
+  <div class="fs-hero">
+    <div class="fs-hero-inner text-center">
+      <h1 class="fs-hero-title">Grow your clientele.<br>Simplify your business.</h1>
+      <p class="fs-hero-subtitle">ChairHop helps independent stylists in Montreal get discovered, stay organized, and always get paid.</p>
+      <%= link_to "Join ChairHop Free", new_user_registration_path, class: "btn btn-primary btn-lg fs-hero-cta" %>
+    </div>
+  </div>
+
+  <!-- Value Props -->
+  <div class="fs-section">
+    <h2 class="fs-section-title text-center">Everything you need. Nothing you don't.</h2>
+    <div class="fs-grid">
+
+      <div class="fs-card">
+        <div class="fs-card-icon">✦</div>
+        <h3 class="fs-card-title">Get discovered by new clients</h3>
+        <p class="fs-card-body">Your profile shows up to clients actively searching for stylists in Montreal. No marketing budget needed — just show up and get booked.</p>
+      </div>
+
+      <div class="fs-card">
+        <div class="fs-card-icon">✦</div>
+        <h3 class="fs-card-title">Manage your schedule in one place</h3>
+        <p class="fs-card-body">Set your availability, manage bookings, and view your calendar all from one dashboard. No more DMs, no more spreadsheets.</p>
+      </div>
+
+      <div class="fs-card">
+        <div class="fs-card-icon">✦</div>
+        <h3 class="fs-card-title">Always get paid, automatically</h3>
+        <p class="fs-card-body">A deposit is collected at booking. The remainder is charged automatically when you mark the appointment complete. No chasing. No awkward money conversations.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- How It Works -->
+  <div class="fs-section fs-how-section">
+    <h2 class="fs-section-title text-center">How it works</h2>
+    <div class="fs-steps">
+
+      <div class="fs-step">
+        <div class="fs-step-number">1</div>
+        <div>
+          <h3 class="fs-step-title">Create your profile</h3>
+          <p class="fs-step-body">Add your bio, services, location, and availability. Takes less than 10 minutes.</p>
+        </div>
+      </div>
+
+      <div class="fs-step">
+        <div class="fs-step-number">2</div>
+        <div>
+          <h3 class="fs-step-title">Get discovered</h3>
+          <p class="fs-step-body">Clients in Montreal search for available stylists and find your profile.</p>
+        </div>
+      </div>
+
+      <div class="fs-step">
+        <div class="fs-step-number">3</div>
+        <div>
+          <h3 class="fs-step-title">Accept bookings</h3>
+          <p class="fs-step-body">Review and confirm booking requests from your dashboard. A deposit is collected automatically when you accept.</p>
+        </div>
+      </div>
+
+      <div class="fs-step">
+        <div class="fs-step-number">4</div>
+        <div>
+          <h3 class="fs-step-title">Get paid</h3>
+          <p class="fs-step-body">Mark the appointment complete and the remaining balance is charged automatically. Funds go directly to your Square account.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CTA Banner -->
+  <div class="fs-cta-banner text-center">
+    <h2 class="fs-cta-title">Ready to grow your business?</h2>
+    <p class="fs-cta-subtitle">Join stylists in Montreal already using ChairHop.</p>
+    <%= link_to "Create your free profile", new_user_registration_path, class: "btn btn-primary btn-lg fs-cta-btn" %>
+    <p class="fs-cta-home mt-3">
+      <%= link_to "← Back to ChairHop", root_path, class: "fs-back-link" %>
+    </p>
+  </div>
+
+</div>
