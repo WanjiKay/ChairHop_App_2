@@ -5,6 +5,13 @@ class ProfilesController < ApplicationController
   def show
     skip_authorization
     @user = current_user
+    if current_user.customer?
+      base = Appointment.where(customer_id: current_user.id)
+                        .includes(:stylist, :location)
+                        .order(time: :desc)
+      @upcoming = base.where(status: :booked)
+      @pending  = base.where(status: :pending)
+    end
   end
 
   # GET /profile/edit

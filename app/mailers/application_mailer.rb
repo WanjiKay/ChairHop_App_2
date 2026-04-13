@@ -1,5 +1,6 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "ChairHop <noreply@chairhop.com>"
+  default from: "ChairHop <notifications@chair-hop.com>",
+          reply_to: "noreply@chair-hop.com"
   layout "mailer"
 
   helper_method :format_datetime

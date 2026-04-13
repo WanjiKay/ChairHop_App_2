@@ -29,80 +29,96 @@ ActiveRecord::Base.transaction do
   puts "  Done."
 
   # ============================================================
-  # STYLISTS (8)
+  # STYLISTS (8) — all Montréal-based
   # ============================================================
   puts "  Creating stylists..."
 
   maya = User.create!(
+    first_name:              "Maya",
+    last_name:               "Johnson",
     email:                   "maya@example.com",
-    password:                "password123",
-    name:                    "Maya Johnson",
+    password:                "Chairhop1!",
     role:                    :stylist,
+    tos_accepted_at:         Time.current,
     onboarding_completed_at: Time.current,
-    about:                   "Natural hair specialist with 9 years of experience in silk presses, protective styles, and scalp care. I celebrate the versatility of textured hair and help every client leave feeling confident and cared for."
+    about:                   "Natural hair specialist with 9 years of experience in silk presses, protective styles, and scalp care. Based in the Plateau, I celebrate the versatility of textured hair and help every client leave my Montréal studio feeling confident and cared for."
   )
 
   derek = User.create!(
+    first_name:              "Derek",
+    last_name:               "Kim",
     email:                   "derek@example.com",
-    password:                "password123",
-    name:                    "Derek Kim",
+    password:                "Chairhop1!",
     role:                    :stylist,
+    tos_accepted_at:         Time.current,
     onboarding_completed_at: Time.current,
-    about:                   "Precision barber with 11 years of experience in fades, tapers, and beard sculpting. Known for clean lines, consistent results, and a relaxed chair-side manner that keeps clients coming back."
+    about:                   "Precision barber with 11 years of experience in fades, tapers, and beard sculpting. My Rosemont shop is where Montréal's best clients come for clean lines, consistent results, and a laid-back chair-side manner that keeps them coming back."
   )
 
   sofia = User.create!(
+    first_name:              "Sofia",
+    last_name:               "Rivera",
     email:                   "sofia@example.com",
-    password:                "password123",
-    name:                    "Sofia Rivera",
+    password:                "Chairhop1!",
     role:                    :stylist,
+    tos_accepted_at:         Time.current,
     onboarding_completed_at: Time.current,
-    about:                   "Color specialist with 7 years of experience in balayage, highlights, and full-color transformations. I use premium, low-damage products to create stunning results tailored to each client's vision."
+    about:                   "Color specialist with 7 years of experience in balayage, highlights, and full-color transformations. Working from my Mile End studio, I use premium low-damage products to create stunning results tailored to each client's vision in Montréal."
   )
 
   jordan = User.create!(
+    first_name:              "Jordan",
+    last_name:               "Hayes",
     email:                   "jordan@example.com",
-    password:                "password123",
-    name:                    "Jordan Hayes",
+    password:                "Chairhop1!",
     role:                    :stylist,
+    tos_accepted_at:         Time.current,
     onboarding_completed_at: Time.current,
-    about:                   "Curl specialist and DevaCurl-certified stylist with 6 years helping clients embrace their natural texture. I specialize in curly cuts and building personalized care plans for every curl pattern."
+    about:                   "Curl specialist and DevaCurl-certified stylist with 6 years helping Montréal clients embrace their natural texture. I specialize in curly cuts and building personalized care plans for every curl pattern, right here in Villeray."
   )
 
   aaliyah = User.create!(
+    first_name:              "Aaliyah",
+    last_name:               "Brooks",
     email:                   "aaliyah@example.com",
-    password:                "password123",
-    name:                    "Aaliyah Brooks",
+    password:                "Chairhop1!",
     role:                    :stylist,
+    tos_accepted_at:         Time.current,
     onboarding_completed_at: Time.current,
-    about:                   "Licensed cosmetologist specializing in bridal and special-occasion styling. With 8 years of experience in updos, blowouts, and editorial looks, I make sure every client feels camera-ready for their biggest moments."
+    about:                   "Licensed cosmetologist specializing in bridal and special-occasion styling. With 8 years of experience in updos, blowouts, and editorial looks, I make sure every client in Montréal feels camera-ready for their biggest moments."
   )
 
   marcus = User.create!(
+    first_name:              "Marcus",
+    last_name:               "Dupont",
     email:                   "marcus@example.com",
-    password:                "password123",
-    name:                    "Marcus Dupont",
+    password:                "Chairhop1!",
     role:                    :stylist,
+    tos_accepted_at:         Time.current,
     onboarding_completed_at: Time.current,
-    about:                   "Master barber with 14 years of craft behind the chair, specializing in high-top fades, lineups, and hot towel shaves. My shop is a community space where every client gets top-tier service and genuine conversation."
+    about:                   "Master barber with 14 years of craft behind the chair, specializing in high-top fades, lineups, and hot towel shaves. My Verdun shop is a community space where every Montréal client gets top-tier service and genuine conversation."
   )
 
   priya = User.create!(
+    first_name:              "Priya",
+    last_name:               "Menon",
     email:                   "priya@example.com",
-    password:                "password123",
-    name:                    "Priya Menon",
+    password:                "Chairhop1!",
     role:                    :stylist,
+    tos_accepted_at:         Time.current,
     onboarding_completed_at: Time.current,
-    about:                   "Hair extension specialist and texture artist with 5 years of experience in tape-ins, sew-ins, and fusion bonds. I help clients achieve length, volume, and seamless blends that look and feel completely natural."
+    about:                   "Hair extension specialist and texture artist with 5 years of experience in tape-ins, sew-ins, and fusion bonds. From my Côte-des-Neiges studio I help Montréal clients achieve length, volume, and seamless blends that look completely natural."
   )
 
   claire = User.create!(
+    first_name:              "Claire",
+    last_name:               "Osei",
     email:                   "claire@example.com",
-    password:                "password123",
-    name:                    "Claire Osei",
+    password:                "Chairhop1!",
     role:                    :stylist,
+    tos_accepted_at:         Time.current,
     onboarding_completed_at: Time.current,
-    about:                   "Loctician and natural hair artist with 10 years of experience in starter locs, retwists, and loc maintenance. I take a holistic approach to hair care and guide clients through every stage of their loc journey."
+    about:                   "Loctician and natural hair artist with 10 years of experience in starter locs, retwists, and loc maintenance. Based in Hochelaga, I take a holistic approach to hair care and guide Montréal clients through every stage of their loc journey."
   )
 
   puts "  Attaching avatars to stylists..."
@@ -121,32 +137,32 @@ ActiveRecord::Base.transaction do
   # ============================================================
   puts "  Creating customers..."
 
-  emma   = User.create!(email: "emma@example.com",   password: "password123", name: "Emma Wilson",  role: :customer)
-  james  = User.create!(email: "james@example.com",  password: "password123", name: "James Carter", role: :customer)
-  olivia = User.create!(email: "olivia@example.com", password: "password123", name: "Olivia Chen",  role: :customer)
-  tyler  = User.create!(email: "tyler@example.com",  password: "password123", name: "Tyler Brooks", role: :customer)
-  zoe    = User.create!(email: "zoe@example.com",    password: "password123", name: "Zoe Williams", role: :customer)
-  aisha  = User.create!(email: "aisha@example.com",  password: "password123", name: "Aisha Grant",  role: :customer)
-  leo    = User.create!(email: "leo@example.com",    password: "password123", name: "Leo Santos",   role: :customer)
-  nina   = User.create!(email: "nina@example.com",   password: "password123", name: "Nina Park",    role: :customer)
-  caleb  = User.create!(email: "caleb@example.com",  password: "password123", name: "Caleb Moore",  role: :customer)
-  simone = User.create!(email: "simone@example.com", password: "password123", name: "Simone Baker", role: :customer)
+  emma   = User.create!(first_name: "Emma",   last_name: "Wilson",   email: "emma@example.com",   password: "Chairhop1!", role: :customer, tos_accepted_at: Time.current)
+  james  = User.create!(first_name: "James",  last_name: "Carter",   email: "james@example.com",  password: "Chairhop1!", role: :customer, tos_accepted_at: Time.current)
+  olivia = User.create!(first_name: "Olivia", last_name: "Chen",     email: "olivia@example.com", password: "Chairhop1!", role: :customer, tos_accepted_at: Time.current)
+  tyler  = User.create!(first_name: "Tyler",  last_name: "Brooks",   email: "tyler@example.com",  password: "Chairhop1!", role: :customer, tos_accepted_at: Time.current)
+  zoe    = User.create!(first_name: "Zoe",    last_name: "Williams", email: "zoe@example.com",    password: "Chairhop1!", role: :customer, tos_accepted_at: Time.current)
+  aisha  = User.create!(first_name: "Aisha",  last_name: "Grant",    email: "aisha@example.com",  password: "Chairhop1!", role: :customer, tos_accepted_at: Time.current)
+  leo    = User.create!(first_name: "Leo",    last_name: "Santos",   email: "leo@example.com",    password: "Chairhop1!", role: :customer, tos_accepted_at: Time.current)
+  nina   = User.create!(first_name: "Nina",   last_name: "Park",     email: "nina@example.com",   password: "Chairhop1!", role: :customer, tos_accepted_at: Time.current)
+  caleb  = User.create!(first_name: "Caleb",  last_name: "Moore",    email: "caleb@example.com",  password: "Chairhop1!", role: :customer, tos_accepted_at: Time.current)
+  simone = User.create!(first_name: "Simone", last_name: "Baker",    email: "simone@example.com", password: "Chairhop1!", role: :customer, tos_accepted_at: Time.current)
 
   puts "  Done."
 
   # ============================================================
-  # LOCATIONS (1 per stylist)
+  # LOCATIONS (1 per stylist — all Montréal, QC)
   # ============================================================
   puts "  Creating locations..."
 
-  maya_loc    = maya.locations.create!(    name: "Maya's Studio",            street_address: "1214 Fillmore St",       city: "San Francisco", state: "CA", zip_code: "94115")
-  derek_loc   = derek.locations.create!(   name: "Derek's Barbershop",       street_address: "456 Atlantic Ave",       city: "Brooklyn",      state: "NY", zip_code: "11217")
-  sofia_loc   = sofia.locations.create!(   name: "Sofia Color Studio",       street_address: "789 South Congress Ave", city: "Austin",        state: "TX", zip_code: "78704")
-  jordan_loc  = jordan.locations.create!(  name: "Curl Lab ATL",             street_address: "321 Auburn Ave NE",      city: "Atlanta",       state: "GA", zip_code: "30312")
-  aaliyah_loc = aaliyah.locations.create!( name: "Aaliyah's Salon Suite",    street_address: "55 W Wacker Dr",         city: "Chicago",       state: "IL", zip_code: "60601")
-  marcus_loc  = marcus.locations.create!(  name: "Dupont's Barbershop",      street_address: "900 Magazine St",        city: "New Orleans",   state: "LA", zip_code: "70130")
-  priya_loc   = priya.locations.create!(   name: "Priya's Extension Bar",    street_address: "6420 Wilshire Blvd",     city: "Los Angeles",   state: "CA", zip_code: "90048")
-  claire_loc  = claire.locations.create!(  name: "Claire's Loc Studio",      street_address: "1400 U Street NW",       city: "Washington",    state: "DC", zip_code: "20009")
+  maya_loc    = maya.locations.create!(    name: "Maya's Atelier",               street_address: "4312 Rue Saint-Denis",              city: "Montréal", state: "QC", zip_code: "H2J 2K8")
+  derek_loc   = derek.locations.create!(   name: "Derek's Barbershop",           street_address: "3845 Rue Beaubien E",               city: "Montréal", state: "QC", zip_code: "H1X 1H4")
+  sofia_loc   = sofia.locations.create!(   name: "Sofia Color Studio",           street_address: "5425 Boul Saint-Laurent",           city: "Montréal", state: "QC", zip_code: "H2T 1S8")
+  jordan_loc  = jordan.locations.create!(  name: "Curl Lab MTL",                 street_address: "8265 Rue Saint-Denis",              city: "Montréal", state: "QC", zip_code: "H2P 2G9")
+  aaliyah_loc = aaliyah.locations.create!( name: "Aaliyah's Salon Suite",        street_address: "880 Ave Van Horne",                 city: "Montréal", state: "QC", zip_code: "H2V 1K4")
+  marcus_loc  = marcus.locations.create!(  name: "Dupont's Barbershop",          street_address: "4340 Rue Wellington",               city: "Montréal", state: "QC", zip_code: "H4G 1V6")
+  priya_loc   = priya.locations.create!(   name: "Priya's Extension Bar",        street_address: "5252 Ch de la Côte-des-Neiges",     city: "Montréal", state: "QC", zip_code: "H3T 1Y2")
+  claire_loc  = claire.locations.create!(  name: "Claire's Loc Studio",          street_address: "2660 Rue Ontario E",                city: "Montréal", state: "QC", zip_code: "H2K 1X2")
 
   puts "  Done."
 
@@ -238,44 +254,44 @@ ActiveRecord::Base.transaction do
   # ============================================================
   puts "  Creating availability blocks..."
 
-  # ---- Maya (SF) ----
+  # ---- Maya (Plateau) ----
   maya_past_1   = AvailabilityBlock.create!(stylist: maya, location: maya_loc, start_time: Time.zone.parse("2026-03-21 09:00"), end_time: Time.zone.parse("2026-03-21 17:00"), available_for_all_services: true)
   maya_past_2   = AvailabilityBlock.create!(stylist: maya, location: maya_loc, start_time: Time.zone.parse("2026-03-28 09:00"), end_time: Time.zone.parse("2026-03-28 17:00"), available_for_all_services: true)
   maya_future_1 = AvailabilityBlock.create!(stylist: maya, location: maya_loc, start_time: Time.zone.parse("2026-04-17 09:00"), end_time: Time.zone.parse("2026-04-17 17:00"), available_for_all_services: true)
   maya_future_2 = AvailabilityBlock.create!(stylist: maya, location: maya_loc, start_time: Time.zone.parse("2026-04-25 10:00"), end_time: Time.zone.parse("2026-04-25 16:00"), available_for_all_services: true)
 
-  # ---- Derek (Brooklyn) ----
+  # ---- Derek (Rosemont) ----
   derek_past_1   = AvailabilityBlock.create!(stylist: derek, location: derek_loc, start_time: Time.zone.parse("2026-03-20 10:00"), end_time: Time.zone.parse("2026-03-20 18:00"), available_for_all_services: true)
   derek_past_2   = AvailabilityBlock.create!(stylist: derek, location: derek_loc, start_time: Time.zone.parse("2026-04-04 10:00"), end_time: Time.zone.parse("2026-04-04 18:00"), available_for_all_services: true)
   derek_future_1 = AvailabilityBlock.create!(stylist: derek, location: derek_loc, start_time: Time.zone.parse("2026-04-18 10:00"), end_time: Time.zone.parse("2026-04-18 18:00"), available_for_all_services: true)
   derek_future_2 = AvailabilityBlock.create!(stylist: derek, location: derek_loc, start_time: Time.zone.parse("2026-04-25 10:00"), end_time: Time.zone.parse("2026-04-25 18:00"), available_for_all_services: true)
 
-  # ---- Sofia (Austin) ----
+  # ---- Sofia (Mile End) ----
   sofia_past_1   = AvailabilityBlock.create!(stylist: sofia, location: sofia_loc, start_time: Time.zone.parse("2026-03-21 08:00"), end_time: Time.zone.parse("2026-03-21 18:00"), available_for_all_services: true)
   sofia_future_1 = AvailabilityBlock.create!(stylist: sofia, location: sofia_loc, start_time: Time.zone.parse("2026-04-18 08:00"), end_time: Time.zone.parse("2026-04-18 18:00"), available_for_all_services: true)
   sofia_future_2 = AvailabilityBlock.create!(stylist: sofia, location: sofia_loc, start_time: Time.zone.parse("2026-05-02 08:00"), end_time: Time.zone.parse("2026-05-02 18:00"), available_for_all_services: true)
 
-  # ---- Jordan (Atlanta) ----
+  # ---- Jordan (Villeray) ----
   jordan_past_1   = AvailabilityBlock.create!(stylist: jordan, location: jordan_loc, start_time: Time.zone.parse("2026-03-28 09:00"), end_time: Time.zone.parse("2026-03-28 17:00"), available_for_all_services: true)
   jordan_future_1 = AvailabilityBlock.create!(stylist: jordan, location: jordan_loc, start_time: Time.zone.parse("2026-04-19 09:00"), end_time: Time.zone.parse("2026-04-19 17:00"), available_for_all_services: true)
   jordan_future_2 = AvailabilityBlock.create!(stylist: jordan, location: jordan_loc, start_time: Time.zone.parse("2026-05-03 09:00"), end_time: Time.zone.parse("2026-05-03 17:00"), available_for_all_services: true)
 
-  # ---- Aaliyah (Chicago) ----
+  # ---- Aaliyah (Outremont) ----
   aaliyah_past_1   = AvailabilityBlock.create!(stylist: aaliyah, location: aaliyah_loc, start_time: Time.zone.parse("2026-03-22 10:00"), end_time: Time.zone.parse("2026-03-22 18:00"), available_for_all_services: true)
   aaliyah_future_1 = AvailabilityBlock.create!(stylist: aaliyah, location: aaliyah_loc, start_time: Time.zone.parse("2026-04-19 10:00"), end_time: Time.zone.parse("2026-04-19 18:00"), available_for_all_services: true)
   aaliyah_future_2 = AvailabilityBlock.create!(stylist: aaliyah, location: aaliyah_loc, start_time: Time.zone.parse("2026-05-03 10:00"), end_time: Time.zone.parse("2026-05-03 18:00"), available_for_all_services: true)
 
-  # ---- Marcus (New Orleans) ----
+  # ---- Marcus (Verdun) ----
   marcus_past_1   = AvailabilityBlock.create!(stylist: marcus, location: marcus_loc, start_time: Time.zone.parse("2026-03-21 09:00"), end_time: Time.zone.parse("2026-03-21 17:00"), available_for_all_services: true)
   marcus_past_2   = AvailabilityBlock.create!(stylist: marcus, location: marcus_loc, start_time: Time.zone.parse("2026-04-04 09:00"), end_time: Time.zone.parse("2026-04-04 17:00"), available_for_all_services: true)
   marcus_future_1 = AvailabilityBlock.create!(stylist: marcus, location: marcus_loc, start_time: Time.zone.parse("2026-04-18 09:00"), end_time: Time.zone.parse("2026-04-18 17:00"), available_for_all_services: true)
 
-  # ---- Priya (LA) ----
+  # ---- Priya (Côte-des-Neiges) ----
   priya_past_1   = AvailabilityBlock.create!(stylist: priya, location: priya_loc, start_time: Time.zone.parse("2026-03-28 09:00"), end_time: Time.zone.parse("2026-03-28 18:00"), available_for_all_services: true)
   priya_future_1 = AvailabilityBlock.create!(stylist: priya, location: priya_loc, start_time: Time.zone.parse("2026-04-18 09:00"), end_time: Time.zone.parse("2026-04-18 18:00"), available_for_all_services: true)
   priya_future_2 = AvailabilityBlock.create!(stylist: priya, location: priya_loc, start_time: Time.zone.parse("2026-05-02 09:00"), end_time: Time.zone.parse("2026-05-02 18:00"), available_for_all_services: true)
 
-  # ---- Claire (DC) ----
+  # ---- Claire (Hochelaga) ----
   claire_past_1   = AvailabilityBlock.create!(stylist: claire, location: claire_loc, start_time: Time.zone.parse("2026-03-21 08:00"), end_time: Time.zone.parse("2026-03-21 18:00"), available_for_all_services: true)
   claire_future_1 = AvailabilityBlock.create!(stylist: claire, location: claire_loc, start_time: Time.zone.parse("2026-04-19 08:00"), end_time: Time.zone.parse("2026-04-19 18:00"), available_for_all_services: true)
   claire_future_2 = AvailabilityBlock.create!(stylist: claire, location: claire_loc, start_time: Time.zone.parse("2026-05-03 08:00"), end_time: Time.zone.parse("2026-05-03 18:00"), available_for_all_services: true)
@@ -830,13 +846,13 @@ ActiveRecord::Base.transaction do
   Review.new(
     appointment: appt_maya_c1, customer: emma, stylist: maya,
     rating: 5,
-    content: "Maya is absolutely incredible. My silk press came out better than I've ever seen — so smooth and full of shine. She really listened to what I wanted and didn't use too much heat. The scalp treatment was the perfect addition. I left feeling genuinely pampered and have already booked my next appointment."
+    content: "Maya is absolutely incredible. My silk press came out better than I've ever seen — so smooth and full of shine. She really listened to what I wanted and didn't use too much heat. The scalp treatment was the perfect addition. I left her Plateau studio feeling genuinely pampered and have already booked my next appointment."
   ).save(validate: false)
 
   Review.new(
     appointment: appt_maya_c2, customer: nina, stylist: maya,
     rating: 5,
-    content: "I've been nervous about going natural but Maya made the whole process feel exciting rather than daunting. My braid-out came out beautifully defined and she gave me so many tips for maintaining my hair at home. Her studio is calm and welcoming. I genuinely looked forward to coming back.",
+    content: "I've been nervous about going natural but Maya made the whole process feel exciting rather than daunting. My braid-out came out beautifully defined and she gave me so many tips for maintaining my hair at home. Her studio in Montréal is calm and welcoming. I genuinely looked forward to coming back.",
     stylist_response: "Nina, thank you so much! It was such a pleasure working with your hair. The texture you have is stunning — so glad we got to celebrate it together. See you soon!",
     stylist_responded_at: Time.zone.parse("2026-03-22 10:00")
   ).save(validate: false)
@@ -844,13 +860,13 @@ ActiveRecord::Base.transaction do
   Review.new(
     appointment: appt_derek_c1, customer: caleb, stylist: derek,
     rating: 5,
-    content: "I came in for a clean fade before a big interview and Derek delivered beyond my expectations. The lineup was razor-sharp and the taper was perfectly blended. He worked quickly without rushing and I felt comfortable the whole time. Got the job too — this is my new go-to in Brooklyn."
+    content: "I came in for a clean fade before a big interview and Derek delivered beyond my expectations. The lineup was razor-sharp and the taper was perfectly blended. He worked quickly without rushing and I felt comfortable the whole time. Got the job too — this is my new go-to in Montréal."
   ).save(validate: false)
 
   Review.new(
     appointment: appt_sofia_c1, customer: olivia, stylist: sofia,
     rating: 5,
-    content: "Sofia gave me the most gorgeous balayage I've ever had. I've been to multiple colorists and none have nailed the look I described as well as she did. The tones are so natural-looking and the damage was minimal despite going lighter. She also walked me through the aftercare in detail. Worth every penny.",
+    content: "Sofia gave me the most gorgeous balayage I've ever had. I've been to multiple colorists in Montréal and none have nailed the look I described as well as she did. The tones are so natural-looking and the damage was minimal despite going lighter. She also walked me through the aftercare in detail. Worth every penny.",
     stylist_response: "Olivia, this review made my day! I loved working with your hair — the dimension we got was stunning. Make sure you're using that purple shampoo! Can't wait to see you again.",
     stylist_responded_at: Time.zone.parse("2026-03-22 16:00")
   ).save(validate: false)
@@ -858,13 +874,13 @@ ActiveRecord::Base.transaction do
   Review.new(
     appointment: appt_jordan_c1, customer: simone, stylist: jordan,
     rating: 5,
-    content: "I have been getting my hair cut the wrong way for years. Jordan explained the DevaCut method while she worked and completely changed how I understand my curls. My hair bounced in a way it never has before. She recommended products that actually work for my curl type. Absolute game changer."
+    content: "I have been getting my hair cut the wrong way for years. Jordan explained the DevaCut method while she worked and completely changed how I understand my curls. My hair bounced in a way it never has before. She recommended products that actually work for my curl type. Absolute game changer right here in Montréal."
   ).save(validate: false)
 
   Review.new(
     appointment: appt_aaliyah_c1, customer: nina, stylist: aaliyah,
     rating: 4,
-    content: "Aaliyah did a beautiful job on my bridal trial. The updo was elegant and held up all day. I had a couple of small tweaks I wanted for the actual wedding day and she was very open to the feedback. Communication before the appointment was prompt and professional. Really glad I went with her.",
+    content: "Aaliyah did a beautiful job on my bridal trial. The updo was elegant and held up all day. I had a couple of small tweaks I wanted for the actual wedding day and she was very open to the feedback. Communication before the appointment was prompt and professional. Really glad I went with her in Montréal.",
     stylist_response: "Nina, thank you for this lovely review! I took all your notes and I'm so excited to create your final look for the big day. You are going to be stunning.",
     stylist_responded_at: Time.zone.parse("2026-03-23 09:00")
   ).save(validate: false)
@@ -872,7 +888,7 @@ ActiveRecord::Base.transaction do
   Review.new(
     appointment: appt_marcus_c1, customer: leo, stylist: marcus,
     rating: 5,
-    content: "Marcus is a true craftsman. The high-top fade he gave me was clean, precise, and exactly what I had in mind. His shop has great energy and he's the kind of barber who remembers your name and your usual. I've been going to him for over a year and genuinely look forward to every visit."
+    content: "Marcus is a true craftsman. The high-top fade he gave me was clean, precise, and exactly what I had in mind. His Verdun shop has great energy and he's the kind of barber who remembers your name and your usual. I've been going to him for over a year and genuinely look forward to every visit."
   ).save(validate: false)
 
   Review.new(
@@ -884,8 +900,190 @@ ActiveRecord::Base.transaction do
   Review.new(
     appointment: appt_claire_c1, customer: aisha, stylist: claire,
     rating: 5,
-    content: "Claire is so knowledgeable about locs it's almost hard to believe. She spotted an issue with one of my locs I hadn't even noticed and addressed it during the retwist at no extra charge. My locs look healthier than ever and the scalp oil treatment felt incredible. Best in DC without question."
+    content: "Claire is so knowledgeable about locs it's almost hard to believe. She spotted an issue with one of my locs I hadn't even noticed and addressed it during the retwist at no extra charge. My locs look healthier than ever and the scalp oil treatment felt incredible. Best loc specialist in Montréal without question."
   ).save(validate: false)
+
+  puts "  Done."
+
+  # ============================================================
+  # CONVERSATIONS & MESSAGES
+  #
+  # Conversations are linked 1-to-1 with an appointment.
+  # ConversationMessage role: "customer" or "stylist"
+  # read_at: nil = unread, set = read
+  #
+  # Completed appointments: all messages fully read
+  # Pending/booked appointments: most recent stylist reply unread
+  # ============================================================
+  puts "  Creating conversations and messages..."
+
+  # ------------------------------------------------------------------
+  # CONV 1: Emma ↔ Maya — appt_maya_c1 (completed)
+  # Theme: pre-appointment silk press prep + post-appointment check-in
+  # ------------------------------------------------------------------
+  conv_maya_c1 = Conversation.create!(
+    appointment: appt_maya_c1,
+    customer: emma,
+    stylist: maya
+  )
+  ConversationMessage.create!(
+    conversation: conv_maya_c1, role: "customer",
+    content: "Hi Maya! I just booked a silk press for March 21st. I wanted to ask — should I come in with clean hair or wash it the night before?",
+    read_at: Time.zone.parse("2026-03-19 18:30")
+  )
+  ConversationMessage.create!(
+    conversation: conv_maya_c1, role: "stylist",
+    content: "Hi Emma! Welcome — so excited to have you. Please come in with freshly washed hair, ideally the morning of or the night before. Avoid any heavy products or oils after washing so I can work with a clean base. See you Saturday!",
+    read_at: Time.zone.parse("2026-03-19 19:45")
+  )
+  ConversationMessage.create!(
+    conversation: conv_maya_c1, role: "customer",
+    content: "Perfect, thank you! And just to confirm — I'm getting the scalp treatment as an add-on too, right?",
+    read_at: Time.zone.parse("2026-03-19 20:00")
+  )
+  ConversationMessage.create!(
+    conversation: conv_maya_c1, role: "stylist",
+    content: "Yes, I see it on your booking! The scalp treatment pairs beautifully with the silk press — your scalp will feel amazing. Can't wait to see you!",
+    read_at: Time.zone.parse("2026-03-19 20:15")
+  )
+
+  # ------------------------------------------------------------------
+  # CONV 2: Caleb ↔ Derek — appt_derek_c1 (completed)
+  # Theme: booking question about fade length + post-appointment follow-up
+  # ------------------------------------------------------------------
+  conv_derek_c1 = Conversation.create!(
+    appointment: appt_derek_c1,
+    customer: caleb,
+    stylist: derek
+  )
+  ConversationMessage.create!(
+    conversation: conv_derek_c1, role: "customer",
+    content: "Hey Derek, I booked a fade for next Friday. I'm going to a job interview the day after — can you do a clean but professional-looking fade? Not too short on top.",
+    read_at: Time.zone.parse("2026-03-18 11:00")
+  )
+  ConversationMessage.create!(
+    conversation: conv_derek_c1, role: "stylist",
+    content: "Absolutely. I'd recommend a mid-fade with a taper — keeps it sharp and polished without being too aggressive. Bring in a reference photo if you have one, or we can figure it out together in the chair. See you Friday!",
+    read_at: Time.zone.parse("2026-03-18 11:45")
+  )
+  ConversationMessage.create!(
+    conversation: conv_derek_c1, role: "customer",
+    content: "Got it, I'll bring a photo. Thanks! Also just wanted to say — got the job! That fade was a conversation starter with the panel haha. Will definitely be back.",
+    read_at: Time.zone.parse("2026-03-21 17:00")
+  )
+
+  # ------------------------------------------------------------------
+  # CONV 3: Olivia ↔ Sofia — appt_sofia_c1 (completed)
+  # Theme: color inspiration + aftercare instructions
+  # ------------------------------------------------------------------
+  conv_sofia_c1 = Conversation.create!(
+    appointment: appt_sofia_c1,
+    customer: olivia,
+    stylist: sofia
+  )
+  ConversationMessage.create!(
+    conversation: conv_sofia_c1, role: "customer",
+    content: "Hi Sofia! I'm booked for a balayage on March 21st. I have dark brown hair and I want something that looks very natural — like sun-kissed. My hair is on the finer side, will that affect anything?",
+    read_at: Time.zone.parse("2026-03-16 14:00")
+  )
+  ConversationMessage.create!(
+    conversation: conv_sofia_c1, role: "stylist",
+    content: "Hi Olivia! Fine hair is actually wonderful for balayage — the color tends to blend seamlessly. For a sun-kissed result on dark brown, I'd suggest a warm caramel placement starting mid-shaft. No bleach on the roots, very natural. Can you send me a photo of your hair and one of the inspiration look you have in mind?",
+    read_at: Time.zone.parse("2026-03-16 14:30")
+  )
+  ConversationMessage.create!(
+    conversation: conv_sofia_c1, role: "customer",
+    content: "Sent! And the results today were absolutely stunning. Thank you so much — I keep getting compliments already.",
+    read_at: Time.zone.parse("2026-03-21 13:00")
+  )
+  ConversationMessage.create!(
+    conversation: conv_sofia_c1, role: "stylist",
+    content: "You're glowing, Olivia! Don't forget — purple shampoo once a week to keep the tone fresh, and always use heat protectant. Come back in 8–10 weeks for a gloss refresh and we'll keep it looking perfect!",
+    read_at: Time.zone.parse("2026-03-21 13:20")
+  )
+
+  # ------------------------------------------------------------------
+  # CONV 4: Olivia ↔ Maya — appt_maya_p1 (pending, upcoming Apr 17)
+  # Theme: first-time client asking about the appointment
+  # Most recent stylist reply is unread (realistic inbox)
+  # ------------------------------------------------------------------
+  conv_maya_p1 = Conversation.create!(
+    appointment: appt_maya_p1,
+    customer: olivia,
+    stylist: maya
+  )
+  ConversationMessage.create!(
+    conversation: conv_maya_p1, role: "customer",
+    content: "Hi Maya! I just booked a silk press for April 17th — it's my first time coming to you. Is there anything I should do to prepare my hair beforehand?",
+    read_at: Time.zone.parse("2026-04-10 09:00")
+  )
+  ConversationMessage.create!(
+    conversation: conv_maya_p1, role: "stylist",
+    content: "Hi Olivia! So glad you booked — can't wait to meet you. Please come in with freshly shampooed and conditioned hair. Skip the leave-in and oils the day of so I have a clean base to work with. If your hair tends to be dry, a light moisturizing conditioner the night before works great.",
+    read_at: Time.zone.parse("2026-04-10 10:00")
+  )
+  ConversationMessage.create!(
+    conversation: conv_maya_p1, role: "customer",
+    content: "That's really helpful, thank you! One more question — how long does the silk press usually last?",
+    read_at: nil
+  )
+
+  # ------------------------------------------------------------------
+  # CONV 5: Aisha ↔ Priya — appt_priya_p1 (pending, upcoming Apr 18)
+  # Theme: sew-in consultation and preparation questions
+  # Stylist's last reply is unread
+  # ------------------------------------------------------------------
+  conv_priya_p1 = Conversation.create!(
+    appointment: appt_priya_p1,
+    customer: aisha,
+    stylist: priya
+  )
+  ConversationMessage.create!(
+    conversation: conv_priya_p1, role: "customer",
+    content: "Hi Priya! I booked a sew-in for April 18th. I've never had a sew-in before — should I wash my hair before I come in, and do I need to bring the hair?",
+    read_at: Time.zone.parse("2026-04-08 15:00")
+  )
+  ConversationMessage.create!(
+    conversation: conv_priya_p1, role: "stylist",
+    content: "Hi Aisha! Great questions for a first sew-in. Yes, please come in with freshly washed and blow-dried hair — or I can do the prep in the salon, just let me know. As for the hair, I have bundles available, or you're welcome to bring your own (I recommend 2–3 bundles of 18–20 inch straight or body wave). What length and texture are you thinking?",
+    read_at: Time.zone.parse("2026-04-08 15:45")
+  )
+  ConversationMessage.create!(
+    conversation: conv_priya_p1, role: "customer",
+    content: "I was thinking 18 inch body wave — does that sound right for a natural look? And I'll bring my own bundles.",
+    read_at: nil
+  )
+
+  # ------------------------------------------------------------------
+  # CONV 6: Tyler ↔ Claire — appt_claire_b1 (booked, upcoming May 3)
+  # Theme: starter locs preparation, excitement about beginning journey
+  # Stylist's last reply is unread
+  # ------------------------------------------------------------------
+  conv_claire_b1 = Conversation.create!(
+    appointment: appt_claire_b1,
+    customer: tyler,
+    stylist: claire
+  )
+  ConversationMessage.create!(
+    conversation: conv_claire_b1, role: "customer",
+    content: "Hi Claire! I'm so excited — I booked Starter Locs for May 3rd. I've been wanting to start my loc journey for years. Is there anything I need to do to prep my hair before the appointment?",
+    read_at: Time.zone.parse("2026-04-12 10:00")
+  )
+  ConversationMessage.create!(
+    conversation: conv_claire_b1, role: "stylist",
+    content: "Tyler, welcome to the beginning of something beautiful! Please come in with freshly washed, blow-dried or air-dried natural hair — no braids, twists, or products in it. The cleaner the base, the better your sections will be. Also, the appointment is about 4 hours, so come comfortable and well-rested. We'll go over everything together.",
+    read_at: Time.zone.parse("2026-04-12 11:00")
+  )
+  ConversationMessage.create!(
+    conversation: conv_claire_b1, role: "customer",
+    content: "4 hours sounds like a big commitment but I'm ready for it! Should I eat before I come or will there be a break?",
+    read_at: Time.zone.parse("2026-04-12 11:30")
+  )
+  ConversationMessage.create!(
+    conversation: conv_claire_b1, role: "stylist",
+    content: "Definitely eat beforehand! We can take a short break in the middle too if needed. I'll have water available in the studio. So excited to start this journey with you, Tyler — see you May 3rd!",
+    read_at: nil
+  )
 
   puts "  Done."
 
@@ -895,16 +1093,20 @@ ActiveRecord::Base.transaction do
   puts ""
   puts "Seeding complete!"
   puts ""
-  puts "  Stylists:            #{User.stylist.count}"
-  puts "  Customers:           #{User.customer.count}"
-  puts "  Locations:           #{Location.count}"
-  puts "  Services:            #{Service.main_services.count} main, #{Service.add_ons.count} add-ons"
-  puts "  Availability blocks: #{AvailabilityBlock.count}"
-  puts "  Appointments:        #{Appointment.count} total"
-  puts "    Pending:           #{Appointment.pending.count}"
-  puts "    Booked:            #{Appointment.booked.count}"
-  puts "    Completed:         #{Appointment.completed.count}"
-  puts "    Cancelled:         #{Appointment.cancelled.count}"
-  puts "  Add-ons:             #{AppointmentAddOn.count}"
-  puts "  Reviews:             #{Review.count}"
+  puts "  Stylists:              #{User.stylist.count}"
+  puts "  Customers:             #{User.customer.count}"
+  puts "  Locations:             #{Location.count} (all Montréal, QC)"
+  puts "  Services:              #{Service.main_services.count} main, #{Service.add_ons.count} add-ons"
+  puts "  Availability blocks:   #{AvailabilityBlock.count}"
+  puts "  Appointments:          #{Appointment.count} total"
+  puts "    Pending:             #{Appointment.pending.count}"
+  puts "    Booked:              #{Appointment.booked.count}"
+  puts "    Completed:           #{Appointment.completed.count}"
+  puts "    Cancelled:           #{Appointment.cancelled.count}"
+  puts "  Add-ons:               #{AppointmentAddOn.count}"
+  puts "  Reviews:               #{Review.count}"
+  puts "  Conversations:         #{Conversation.count}"
+  puts "  Messages:              #{ConversationMessage.count} (#{ConversationMessage.where(read_at: nil).count} unread)"
+  puts ""
+  puts "  Login credentials: <email> / Chairhop1!"
 end

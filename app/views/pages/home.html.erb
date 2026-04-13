@@ -28,16 +28,6 @@
     </div>
   </div>
 
-  <!-- USER APPOINTMENTS LINK -->
-  <% if defined?(user_signed_in?) && user_signed_in? && current_user.customer? %>
-    <div class="mb-3 text-start">
-      <%= link_to my_appointments_path, class: "btn btn-primary" do %>
-        My Appointments
-      <% end %>
-    </div>
-
-  <% end %>
-
   <!-- AVAILABLE STYLISTS SECTION -->
   <% if @available_stylists.any? %>
     <h2 class="section-title text-center mb-3">Stylists Available Now</h2>
