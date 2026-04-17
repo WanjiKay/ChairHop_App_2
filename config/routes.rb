@@ -75,6 +75,10 @@ Rails.application.routes.draw do
     to: 'profiles#upload_portfolio_photos',
     as: :upload_portfolio_photos
 
+  patch 'profile/apply_hopps_bio',
+    to: 'profiles#apply_hopps_bio',
+    as: :apply_hopps_bio
+
   resource :profile, only: [:show, :edit, :update]
 
   resources :appointments do
@@ -103,6 +107,9 @@ Rails.application.routes.draw do
   resources :stylists, only: [:index, :show]
 
   resources :chats, only: [:index, :new, :create, :show] do
+    member do
+      patch :set_city
+    end
     resources :messages, only: [:create]
   end
 
@@ -110,5 +117,4 @@ Rails.application.routes.draw do
     resources :conversation_messages, only: [:create]
   end
 
-  resources :messages, only: [:index, :create]
 end

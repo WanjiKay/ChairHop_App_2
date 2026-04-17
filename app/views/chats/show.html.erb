@@ -1,22 +1,14 @@
 <div class="chat-show-page mt-5" data-controller="chat-message">
   <br>
   <div class="container">
-    <!-- Flash Messages -->
-    <% if flash[:alert] || flash[:notice] %>
+    <!-- Inline validation alert (suppressed from global flash banner) -->
+    <% if flash[:validation_error] %>
       <div class="row">
         <div class="col-12">
-          <% if flash[:alert] %>
-            <div class="alert alert-warning alert-dismissible fade show m-2" role="alert">
-              <%= flash[:alert] %>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-          <% end %>
-          <% if flash[:notice] %>
-            <div class="alert alert-info alert-dismissible fade show m-2" role="alert">
-              <%= flash[:notice] %>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-          <% end %>
+          <div class="alert alert-warning alert-dismissible fade show m-2" role="alert">
+            <%= flash[:validation_error] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
         </div>
       </div>
     <% end %>
@@ -80,7 +72,24 @@
                   <%= image_tag "icons/favicon-96x96.png", class: "assistant-avatar rounded-circle", alt: "Hopps" %>
                   <div class="message-bubble">
                     <strong>Hopps</strong>
-                    <div class="mb-0"><%= markdown_to_html(message.content).html_safe %></div>
+                    <% parsed = parse_hopps_bio_marker(message.content) %>
+                    <%= render_markdown(parsed[:body]) %>
+
+                    <% if parsed[:bio].present? && current_user.stylist? && current_user.pro? %>
+                      <div class="hopps-bio-apply mt-3 p-3 rounded"
+                           style="background: #f9f0f0; border: 1px solid #D8A7A7;">
+                        <p class="mb-2 small fw-bold">✏️ HOPPS drafted a bio for you:</p>
+                        <button
+                          class="btn btn-sm btn-primary hopps-apply-bio-btn"
+                          data-bio="<%= CGI.escapeHTML(parsed[:bio]) %>"
+                          data-url="<%= apply_hopps_bio_path %>"
+                          data-csrf="<%= form_authenticity_token %>">
+                          Apply to my profile
+                        </button>
+                        <span class="hopps-bio-feedback ms-2 small text-success"
+                              style="display:none;"></span>
+                      </div>
+                    <% end %>
                   </div>
                 </div>
               <% end %>
@@ -114,28 +123,95 @@
         </div>
 
         <!-- Message Input -->
-        <div class="message-input-container mt-3" data-controller="image-upload">
-          <%= simple_form_for [@chat, @message], html: { multipart: true, class: "message-input-form", id: "messageForm", data: { chat_message_target: "form", action: "turbo:submit-end->chat-message#scrollToBottom" } } do |f| %>
-            <div class="input-wrapper d-flex align-items-center gap-2" data-image-upload-target="area">
-              <label for="messagePhoto" class="btn btn-link upload-btn" data-action="click->image-upload#openFileDialog">
-                <i class="fas fa-image"></i>
-              </label>
-              <%= f.input :photos, as: :file, input_html: { multiple: true, accept: "image/*", class: "d-none", id: "messagePhoto", data: { image_upload_target: "input", action: "change->image-upload#handleFileSelect" } }, label: false, wrapper: false %>
-              <%= f.input :content, as: :text, input_html: { class: "form-control message-input flex-grow-1", placeholder: "Type your message...", rows: 1, id: "messageTextarea", data: { chat_message_target: "textarea", action: "input->chat-message#handleInput keydown->chat-message#handleKeydown" } }, label: false, wrapper: false %>
-              <button type="submit" class="btn btn-primary send-btn">
-                <i class="fas fa-paper-plane"></i>
-              </button>
-            </div>
+        <% if current_user.customer? && @chat.city.blank? && current_user.city.blank? %>
+          <!-- City collection — replaces normal input while city is pending -->
+          <div class="message-input-container mt-3">
+            <%= form_with url: set_city_chat_path(@chat), method: :patch,
+                          html: { class: "message-input-form" } do %>
+              <div class="input-wrapper d-flex align-items-center gap-2">
+                <%= text_field_tag :city, nil,
+                      class: "form-control message-input flex-grow-1",
+                      placeholder: "Enter your city (e.g. Montreal, Toronto...)",
+                      autofocus: true %>
+                <button type="submit" class="btn btn-primary send-btn">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="message-input-container mt-3" data-controller="image-upload">
+            <%= simple_form_for [@chat, @message], html: { multipart: true, class: "message-input-form", id: "messageForm", data: { chat_message_target: "form", action: "turbo:submit-end->chat-message#scrollToBottom" } } do |f| %>
+              <div class="input-wrapper d-flex align-items-center gap-2" data-image-upload-target="area">
+                <label for="messagePhoto" class="btn btn-link upload-btn" data-action="click->image-upload#openFileDialog">
+                  <i class="fas fa-image"></i>
+                </label>
+                <%= f.input :photos, as: :file, input_html: { multiple: true, accept: "image/*", class: "d-none", id: "messagePhoto", data: { image_upload_target: "input", action: "change->image-upload#handleFileSelect" } }, label: false, wrapper: false %>
+                <%= f.input :content, as: :text, input_html: { class: "form-control message-input flex-grow-1", placeholder: "Type your message...", rows: 1, id: "messageTextarea", data: { chat_message_target: "textarea", action: "input->chat-message#handleInput keydown->chat-message#handleKeydown" } }, label: false, wrapper: false %>
+                <button type="submit" class="btn btn-primary send-btn">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
 
-            <div class="image-preview d-none" id="imagePreview" data-image-upload-target="previewContainer">
-              <img src="" alt="Preview" id="previewImg" data-image-upload-target="previewImage">
-              <button type="button" class="btn btn-sm btn-danger remove-image" id="removeImage" data-image-upload-target="removeButton" data-action="click->image-upload#removePreview">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-          <% end %>
-        </div>
+              <div class="image-preview d-none" id="imagePreview" data-image-upload-target="previewContainer">
+                <img src="" alt="Preview" id="previewImg" data-image-upload-target="previewImage">
+                <button type="button" class="btn btn-sm btn-danger remove-image" id="removeImage" data-image-upload-target="removeButton" data-action="click->image-upload#removePreview">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
 </div>
+
+<% content_for :page_scripts do %>
+<script>
+  document.addEventListener("click", function(e) {
+    const btn = e.target.closest(".hopps-apply-bio-btn");
+    if (!btn) return;
+
+    btn.disabled = true;
+    btn.textContent = "Applying...";
+
+    const bio = btn.dataset.bio;
+    const url = btn.dataset.url;
+    const csrf = btn.dataset.csrf;
+
+    fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": csrf
+      },
+      body: JSON.stringify({ bio: bio })
+    })
+    .then(res => res.json())
+    .then(data => {
+      const feedback = btn.nextElementSibling;
+      if (data.success) {
+        btn.textContent = "✓ Applied!";
+        btn.classList.replace("btn-primary", "btn-success");
+        if (feedback) {
+          feedback.textContent = "Your profile bio has been updated.";
+          feedback.style.display = "inline";
+        }
+      } else {
+        btn.disabled = false;
+        btn.textContent = "Apply to my profile";
+        if (feedback) {
+          feedback.textContent = data.error || "Something went wrong.";
+          feedback.style.display = "inline";
+          feedback.classList.replace("text-success", "text-danger");
+        }
+      }
+    })
+    .catch(() => {
+      btn.disabled = false;
+      btn.textContent = "Apply to my profile";
+    });
+  });
+</script>
+<% end %>

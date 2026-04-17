@@ -10,6 +10,12 @@ class User < ApplicationRecord
     admin: 2
   }
 
+  scope :pro, -> { where(pro: true) }
+
+  def pro?
+    self[:pro]
+  end
+
   has_many :appointments_as_customer, class_name: "Appointment", foreign_key: :customer_id, dependent: :nullify
   has_many :appointments,             class_name: "Appointment", foreign_key: :customer_id
   has_many :appointments_as_stylist,  class_name: "Appointment", foreign_key: :stylist_id,  dependent: :nullify

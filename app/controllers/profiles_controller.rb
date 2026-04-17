@@ -79,6 +79,20 @@ class ProfilesController < ApplicationController
     }, status: :unprocessable_entity
   end
 
+  def apply_hopps_bio
+    authorize current_user, policy_class: ProfilePolicy
+    bio = params[:bio].to_s.strip
+    if bio.length < 50
+      render json: { error: "Bio must be at least 50 characters." }, status: :unprocessable_entity
+      return
+    end
+    if current_user.update(about: bio)
+      render json: { success: true, message: "Bio applied to your profile!" }
+    else
+      render json: { error: current_user.errors.full_messages.join(", ") }, status: :unprocessable_entity
+    end
+  end
+
   def user_params
     params.require(:user).permit(:name, :email, :avatar, :about,
                                   :street_address, :city, :state, :zip_code)
