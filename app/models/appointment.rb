@@ -146,7 +146,7 @@ class Appointment < ApplicationRecord
   end
 
   def set_embedding
-    embedding = RubyLLM.embed("Time: #{time}. Location: #{location_display}. Stylist: #{stylist.name}.")
+    embedding = RubyLLM.embed("Time: #{time}. Location: #{location_display}. Stylist: #{stylist.full_name}.")
     update(embedding: embedding.vectors)
   rescue => e
     # Silently skip embedding if API is not configured or rate limit is hit

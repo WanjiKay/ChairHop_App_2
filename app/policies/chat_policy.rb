@@ -7,6 +7,10 @@ class ChatPolicy < ApplicationPolicy
     user.present?
   end
 
+  def set_city?
+    record.customer == user
+  end
+
   def destroy?
     false
   end

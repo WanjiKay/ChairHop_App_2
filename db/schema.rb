@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_04_11_232826) do
+ActiveRecord::Schema[7.1].define(version: 2026_04_14_164130) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "unaccent"
   enable_extension "vector"
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -115,6 +116,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_11_232826) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "model_id"
+    t.string "city"
     t.index ["appointment_id"], name: "index_chats_on_appointment_id"
     t.index ["customer_id"], name: "index_chats_on_customer_id"
   end
@@ -358,6 +360,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_11_232826) do
     t.string "first_name", default: "", null: false
     t.string "last_name", default: "", null: false
     t.datetime "tos_accepted_at"
+    t.boolean "pro", default: false, null: false
     t.index ["booking_slug"], name: "index_users_on_booking_slug", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

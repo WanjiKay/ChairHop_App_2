@@ -1,5 +1,4 @@
 class MessagesController < ApplicationController
-  SYSTEM_PROMPT = "You are an assistant for a booking application.\n\nThe task is to help answer the customer's questions."
   before_action :set_chat
 
   def new
@@ -9,6 +8,13 @@ class MessagesController < ApplicationController
 
   def create
     skip_authorization
+
+    # Guard: prevent AI response if city is still pending for this chat
+    if @chat.city.blank? && current_user.city.blank? && current_user.customer?
+      flash[:validation_error] = "Please provide your city first."
+      redirect_to chat_path(@chat) and return
+    end
+
     @message = Message.new(message_params)
     @message.chat = @chat
     @message.role = "user"
@@ -64,7 +70,7 @@ class MessagesController < ApplicationController
     else
       # Validation failed
       Rails.logger.error("Message validation failed: #{@message.errors.full_messages.join(', ')}")
-      flash.now[:alert] = @message.errors.full_messages.join(", ")
+      flash.now[:validation_error] = @message.errors.full_messages.join(", ")
 
       render "chats/show", status: :unprocessable_entity
     end
@@ -77,27 +83,18 @@ class MessagesController < ApplicationController
     return unless attachment.image?
 
     image_url = attachment.url
-    ask_ai_for_message(model: "gpt-4o", image_url: image_url)
+    ask_ai_for_message(image_url: image_url)
   end
 
   # ------------------------------------------------------
   # MAIN AI FUNCTION — PATCHED FOR RUBYLLM 1.6.4
   # ------------------------------------------------------
-  def ask_ai_for_message(model: "gpt-4.1-nano", image_url: nil)
-    model = "gpt-4o" if image_url.present?
+  def ask_ai_for_message(image_url: nil)
+    model = HoppsService.new(user: current_user, chat: @chat).model(image_url: image_url)
 
     chat = RubyLLM.chat(model: model)
 
-    # Build instructions
-    base_instructions =
-      if @chat.appointment.nil?
-        instruction_without_appointment +
-          @appointments.map { |a| appointment_prompt(a) }.join("\n\n")
-      else
-        instruction_with_appointment
-      end
-
-    instructions = base_instructions + conversation_history
+    instructions = HoppsService.new(user: current_user, chat: @chat).system_prompt + conversation_history
 
     # Build user text
     user_text = @message.content.presence || "What do you see in this image?"
@@ -113,10 +110,7 @@ class MessagesController < ApplicationController
     end
   end
 
-  # ------------------------------------------------------
-  # STYLIST SUGGESTION HELPER
-  # Suggest a stylist to the user and provide a link to their profile/booking page.
-  # ------------------------------------------------------
+  # TODO: wire up or remove
   def suggest_stylist(stylist_id)
     stylist = User.where(role: :stylist).find_by(id: stylist_id)
     return "I couldn't find that stylist." unless stylist
@@ -133,46 +127,6 @@ class MessagesController < ApplicationController
 
   def message_params
     params.require(:message).permit(:content, photos: [])
-  end
-
-  def instruction_without_appointment
-    "You are a helpful assistant for a hair salon booking app called ChairHop. " \
-    "Help users find the right stylist for their needs. " \
-    "Describe available appointments and stylists, and suggest who to book with. " \
-    "Do NOT book appointments on the user's behalf — instead, direct them to the stylist's profile page to complete the booking themselves."
-  end
-
-  def instruction_with_appointment
-    "You are a helpful assistant. The user is asking about their appointment. " \
-    "Provide details about the appointment and assist with any changes or cancellations.\n\n" +
-    appointment_context
-  end
-
-  def appointment_context
-    return "" if @chat.appointment.nil?
-    appointment = @chat.appointment
-
-    <<~CONTEXT
-      Here is the appointment information:
-      - Time: #{appointment.time&.strftime('%A, %B %d, %Y at %H:%M')}
-      - Location: #{appointment.location_display}
-      - Salon: #{appointment.salon}
-      - Stylist: #{appointment.stylist&.name}
-      - Selected Service: #{appointment.selected_service}
-      - Available Services: #{appointment.availability_block&.available_services&.map { |s| "#{s.name} - $#{sprintf('%.2f', s.price)}" }&.join(', ')}
-      - Status: #{appointment.status}
-
-      Always use ONLY this information when answering questions about the appointment.
-      Never invent or guess appointment details.
-    CONTEXT
-  end
-
-  def appointment_prompt(appointment)
-    if appointment.booked?
-      "Appointment on #{appointment.time&.strftime('%B %d, %Y at %H:%M')} is booked."
-    else
-      "Available appointment on #{appointment.time&.strftime('%B %d, %Y at %H:%M')}."
-    end
   end
 
   def conversation_history

@@ -1,5 +1,4 @@
 class ChatsController < ApplicationController
-  SYSTEM_PROMPT = "You are an assistant for a booking application.\n\nThe task is to help answer the questions of the customers."
   before_action :authenticate_user!
 
   rescue_from RubyLLM::ConfigurationError, with: :handle_llm_error
@@ -57,7 +56,8 @@ class ChatsController < ApplicationController
     @chat = Chat.new(
       title: chat_title,
       model_id: "gpt-4.1-nano",
-      customer: current_user
+      customer: current_user,
+      city: current_user.city.presence
     )
     authorize @chat
 
@@ -75,25 +75,41 @@ class ChatsController < ApplicationController
       if @message.save!
         chat_photos.each { |photo| @message.photos.attach(photo) } if chat_photos.present?
 
-        begin
-          if @chat.appointment.nil?
-            @embedding = RubyLLM.embed(@message.content)
-            @appointments = Appointment.nearest_neighbors(
-              :embedding,
-              @embedding.vectors,
-              distance: "euclidean"
-            ).first(2)
+        if city_pending?(@chat)
+          Message.create!(
+            role: "assistant",
+            content: "Before I help you, which city are you looking in? " \
+                     "(You can save it to your profile later to skip this step)",
+            chat: @chat
+          )
+        else
+          begin
+            @appointments = []
+            if @chat.appointment.nil? && @message.content.present?
+              begin
+                embedding = RubyLLM.embed(@message.content)
+                @appointments = Appointment.nearest_neighbors(
+                  :embedding,
+                  embedding.vectors,
+                  distance: "euclidean"
+                ).first(2)
+              rescue RubyLLM::RateLimitError, StandardError => e
+                Rails.logger.warn "HOPPS embed failed: #{e.message}"
+                @appointments = Appointment.where(status: :pending)
+                                           .order(created_at: :desc).limit(2)
+              end
+            end
+            if chat_photos.present?
+              @message.reload
+              send_question(image_url: @message.photos.first.url)
+            else
+              send_question
+            end
+            Message.create(role: "assistant", content: @response.content, chat: @chat)
+          rescue RubyLLM::ConfigurationError
+            redirect_to root_path, alert: "HOPPS is currently unavailable. Please try again later."
+            return
           end
-          if chat_photos.present?
-            @message.reload
-            send_question(image_url: @message.photos.first.url)
-          else
-            send_question
-          end
-          Message.create(role: "assistant", content: @response.content, chat: @chat)
-        rescue RubyLLM::ConfigurationError
-          redirect_to root_path, alert: "HOPPS is currently unavailable. Please try again later."
-          return
         end
       else
         flash.now[:alert] = "Could not send your message. #{@message.errors.full_messages.join(', ')}"
@@ -118,6 +134,41 @@ class ChatsController < ApplicationController
     @message = Message.new
   end
 
+  def set_city
+    @chat = current_user.chats.find(params[:id])
+    authorize @chat
+
+    city = params[:city].to_s.strip
+    if city.blank?
+      flash[:validation_error] = "Please enter a city to continue."
+      redirect_to chat_path(@chat) and return
+    end
+
+    @chat.update!(city: city)
+
+    @message = @chat.messages.where(role: "user").order(:created_at).first
+    if @message
+      begin
+        if @message.photos.attached?
+          @message.reload
+          send_question(image_url: @message.photos.first.url)
+        else
+          send_question
+        end
+        Message.create!(role: "assistant", content: @response.content, chat: @chat)
+      rescue RubyLLM::ConfigurationError
+        redirect_to root_path, alert: "HOPPS is currently unavailable. Please try again later."
+        return
+      end
+    end
+
+    if current_user.city.blank?
+      flash[:notice] = "City saved for this chat. Visit your profile to save it permanently."
+    end
+
+    redirect_to chat_path(@chat)
+  end
+
   private
     # Strong parameters (optional, if you want to use them)
     def message_params
@@ -133,17 +184,11 @@ class ChatsController < ApplicationController
   # end
 
   def send_question(image_url: nil)
-    # Auto-select correct model if image is attached
-    model = image_url.present? ? "gpt-4o" : "gpt-4.1-nano"
+    model = HoppsService.new(user: current_user, chat: @chat).model(image_url: image_url)
 
     @ruby_llm_chat = RubyLLM.chat(model: model)
 
-    instructions = if @chat.appointment.nil?
-      instruction_without_appointment +
-        @appointments.map { |appointment| appointment_prompt(appointment) }.join("\n\n")
-    else
-      instruction_with_appointment
-    end
+    instructions = HoppsService.new(user: current_user, chat: @chat).system_prompt
 
     content = @message.content.presence || "What do you see in this image?"
 
@@ -156,69 +201,8 @@ class ChatsController < ApplicationController
     end
   end
 
-
-  def instruction_without_appointment
-    [SYSTEM_PROMPT, chat_context_without_appointment]
-    .compact.join("\n\n")
-  end
-
-    def chat_context_without_appointment
-      "You are an assistant for an appointment booking app. \
-      Your task is to help the user pick and book an appointment from the options provided. \
-  \
-      Only use the appointment list provided to you for this turn. \
-      Never invent new appointments, locations, times, stylists, or services. \
-      Never show appointments from earlier messages unless the user explicitly refers to them. \
-  \
-      When presenting appointments, format each one clearly with: \
-      - The appointment number/ID \
-      - Time, location, salon, and stylist name \
-      - Services available \
-      - A clickable link using this format: [View Appointment](URL) \
-  \
-      When the user selects an option (e.g. 'I want #1', 'the first one', 'the 20:53 appointment'), \
-      lock in that appointment and do not show any other options for the rest of the conversation \
-      unless the user explicitly requests a different appointment. \
-  \
-      If the appointment contains multiple services and the user chooses one or multiple services, \
-      do not ask for more services. \
-      Confirm exactly the service(s) they chose and continue toward booking. \
-      Allow the user to book ANY combination of services listed in the appointment. \
-  \
-      When the user says they want to book (e.g. 'yes', 'book it', 'confirm', 'I want this one'), \
-      provide the check-in link for their chosen appointment as a clickable markdown link: \
-      [Check in for your appointment](URL) \
-  \
-      Do not return to the appointment search stage after the user selects an appointment. \
-      Do not introduce new appointments after the user has made a selection. \
-      Do not replace the user's chosen appointment with a different one. \
-  \
-      Always keep the conversation context and continue where the user left off. \
-      Never restart the search unless the user explicitly asks for new times, dates, locations, \
-      or if the previously provided appointments are no longer valid. \
-  \
-      Here are the nearest appointments available based on the user's question:"
-    end
-
-  def appointment_prompt(appointment)
-    "APPOINTMENT id: #{appointment.id},
-    time: #{appointment.time},
-    location: #{appointment.location_display},
-    stylist: #{appointment.stylist.name},
-    salon: #{appointment.salon},
-    service: #{appointment.selected_service},
-    url: #{review_appointment_url(appointment)}"
-  end
-
-  def instruction_with_appointment
-    [SYSTEM_PROMPT, appointment_context]
-    .compact.join("\n\n")
-  end
-
-  def appointment_context
-    return if @chat.appointment.nil?
-    appointment = @chat.appointment
-    "Here is the context of the appointment: #{appointment.content}, #{appointment.time}, the location is: #{appointment.location_display}, the stylist's name is: #{appointment.stylist.name}."
+  def city_pending?(chat)
+    current_user.customer? && chat.city.blank? && current_user.city.blank?
   end
 
 end

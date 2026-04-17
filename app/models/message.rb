@@ -2,7 +2,7 @@ class Message < ApplicationRecord
   belongs_to :chat
   has_many_attached :photos
 
-  validates :content, length: { maximum: 1000 }
+  validates :content, length: { maximum: 5000 }
   validate :content_or_photos_present, if: -> { role == "user" }
   validates :role, presence: true
   validates :chat, presence: true

@@ -1,126 +1,112 @@
-<div class="chat-index-page mt-5">
-  <br>
-  <div class="container mt-4">
+<% content_for :title, "Chat with Hopps" %>
 
-    <% if params[:appointment_id].present? %>
-      <div class="mb-3">
-        <%= link_to appointment_path(params[:appointment_id]), class: "btn btn-outline-primary" do %>
-          <i class="fas fa-arrow-left me-2"></i>Back to Appointment
-        <% end %>
+<div class="container py-5" style="max-width: 680px;">
+  <div class="text-center mb-4">
+    <%= image_tag "icons/favicon-96x96.png", height: 48, class: "mb-3 rounded-circle" %>
+    <h1 class="fw-bold">Chat with Hopps</h1>
+    <% if current_user.stylist? %>
+      <p class="text-muted">Your AI assistant for managing your ChairHop business</p>
+    <% else %>
+      <p class="text-muted">Need help finding the perfect stylist? Chat with Hopps</p>
+    <% end %>
+  </div>
+
+  <%= simple_form_for :message, url: chats_path do |f| %>
+    <% if current_user.stylist? %>
+      <p class="text-muted mb-3">Ask me anything about managing your profile,
+      services, availability, or growing your business.</p>
+    <% else %>
+      <% if current_user.pro? %>
+        <div class="mb-3">
+          <p class="text-muted mb-3">
+            Share a picture and let Hopps help you find a stylist
+            <span class="badge ms-1"
+                  style="background-color: #D8A7A7; font-size: 0.7rem;">
+              ✨ Pro
+            </span>
+          </p>
+          <%= f.input :photos,
+                as: :file,
+                label: "Upload your hair inspo (optional)",
+                input_html: {
+                  multiple: true,
+                  accept: "image/png,image/jpeg,image/jpg,image/webp",
+                  class: "form-control"
+                } %>
+        </div>
+      <% else %>
+        <div class="mb-3 p-3 rounded"
+             style="background: #f9f0f0; border: 1px dashed #D8A7A7;">
+          <p class="mb-1 small fw-semibold">
+            ✨ Pro feature: Photo style matching
+          </p>
+          <p class="mb-0 small text-muted">
+            Upload a hair inspiration photo and HOPPS will match you
+            with the right stylist. Available on the Pro plan.
+          </p>
+        </div>
+      <% end %>
+    <% end %>
+
+    <%= f.input :content,
+          as: :text,
+          label: false,
+          input_html: {
+            class: "form-control",
+            rows: 3,
+            placeholder: current_user.stylist? ?
+              "E.g. How do I add a new service? or Write me a bio..." :
+              "E.g. I'm looking for a stylist, or ask me anything..."
+          } %>
+
+    <% if current_user.stylist? %>
+      <div class="d-flex gap-2 flex-wrap mb-3">
+        <button type="button"
+                class="btn btn-outline-secondary btn-sm hopps-suggestion"
+                data-suggestion="Write me a professional bio for my profile">
+          ✍️ Write my bio
+        </button>
+        <button type="button"
+                class="btn btn-outline-secondary btn-sm hopps-suggestion"
+                data-suggestion="How can I attract more clients this week?">
+          📈 Grow my bookings
+        </button>
+        <button type="button"
+                class="btn btn-outline-secondary btn-sm hopps-suggestion"
+                data-suggestion="What are some tips for retaining clients?">
+          💡 Client retention tips
+        </button>
+      </div>
+    <% else %>
+      <div class="d-flex gap-2 flex-wrap mb-3">
+        <button type="button" class="btn btn-outline-secondary btn-sm hopps-suggestion"
+          data-suggestion="I'm looking for a stylist, can you help me find one?">
+          🌊 Find a stylist
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm hopps-suggestion"
+          data-suggestion="What should I do to prepare for my appointment?">
+          📋 Prep for my appointment
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm hopps-suggestion"
+          data-suggestion="How do I reschedule an appointment?">
+          🔄 Reschedule help
+        </button>
       </div>
     <% end %>
 
-    Chat with Hopps
+    <%= f.submit "Chat with Hopps",
+          class: "btn btn-primary px-4",
+          data: { disable_with: "Starting chat..." } %>
+  <% end %>
 
-    <div class="text-center mb4">
-      <h1>New Chat</h1>
-      <p class="text-muted">Need help finding the perfect stylist and appointments, chat with Hopps</p>
-    </div>
-
-    <div class="row justify-content-center mb-4">
-      <div class="col-lg-10 col-xl-8">
-
-        <div class="upload-section" data-controller="image-upload">
-
-          <h4>Upload your hair inspo</h4>
-          <p class="text-muted mb-3">Share a picture and let Hopps help you find a stylist</p>
-
-          <%= simple_form_for :message,
-                url: chats_path,
-                method: :post,
-                html: { multipart: true, class: "upload-form" },
-                local: true do |f| %>
-                <%= hidden_field_tag :appointment_id, params[:appointment_id] %>
-
-            <div class="upload-area" id="uploadArea"
-                 data-image-upload-target="area"
-                 data-action="click->image-upload#openFileDialog">
-
-              <div class="upload-icon">
-                <i class="fas fa-image"></i>
-              </div>
-
-              <p class="upload-text">Click to upload or drag and drop</p>
-              <p class="upload-subtext">PNG, JPG, JPEG up to 10mb</p>
-
-              <%= f.input :photos,
-                          as: :file,
-                          input_html: {
-                            multiple: true,
-                            accept: 'image/*',
-                            class: 'upload-input',
-                            id: 'chatPhotoInput',
-                            'data-image-upload-target': 'input',
-                            'data-action': 'change->image-upload#handleFileSelect'
-                          },
-                          label: false,
-                          wrapper: false %>
-
-              <div class="preview-container d-none" id="previewContainer"
-                   data-image-upload-target="previewContainer">
-                <img src="" alt="Preview" id="previewImage" class="preview-image"
-                     data-image-upload-target="previewImage">
-                <button type="button" class="btn btn-sm btn-danger remove-preview" id="removePreview"
-                        data-image-upload-target="removeButton"
-                        data-action="click->image-upload#removePreview">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-
-            </div>
-
-            <!-- MESSAGE TEXT AREA -->
-            <div class="mt-3">
-              <%= f.text_area :content,class: "form-control",placeholder: "Describe what you're looking for or ask a question...",rows: 3 %>
-            </div>
-
-            <!-- SUBMIT BUTTON -->
-            <div class="mt-3 text-center">
-              <%= f.submit "Chat with Hopps", class: "btn btn-primary px-4" %>
-            </div>
-
-          <% end %>
-
-        </div>
-
-        <!-- QUICK START HOT TOPICS -->
-        <div class="quick-start-section mt-4">
-          <h5 class="text-center mb-3">Or try one of these to get the conversation going:</h5>
-
-          <div class="row g-3">
-
-            <div class="col-md-6">
-              <%= button_to chats_path(prompt: "Help me find a stylist for curly hair", appointment_id: params[:appointment_id]),
-                    method: :post,
-                    class: "quick-start-card w-100 border-0" do %>
-                <i class="fas fa-user-tie mb-2"></i>
-                <p class="mb-0">Find a stylist for curly hair</p>
-              <% end %>
-            </div>
-
-            <div class="col-md-6">
-              <%= button_to chats_path(prompt: "Book an appointment for a haircut", appointment_id: params[:appointment_id]),
-                    method: :post,
-                    class: "quick-start-card w-100 border-0" do %>
-                <i class="fas fa-user-tie mb-2"></i>
-                <p class="mb-0">Book a haircut</p>
-              <% end %>
-            </div>
-
-            <div class="col-md-6">
-              <%= button_to chats_path(prompt: "Hair colour consultation", appointment_id: params[:appointment_id]),
-                    method: :post,
-                    class: "quick-start-card w-100 border-0" do %>
-                <i class="fas fa-user-tie mb-2"></i>
-                <p class="mb-0">Hair colour consultation</p>
-              <% end %>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
+  <% content_for :page_scripts do %>
+  <script>
+    document.querySelectorAll(".hopps-suggestion").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        const textarea = document.querySelector("textarea");
+        if (textarea) textarea.value = btn.dataset.suggestion;
+      });
+    });
+  </script>
+  <% end %>
 </div>
