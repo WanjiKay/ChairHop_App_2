@@ -1,5 +1,5 @@
 class PagesController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:home, :for_stylists]
+  skip_before_action :authenticate_user!, only: [:home, :for_stylists, :privacy, :terms, :payment_terms]
 
   # def home
   #   @time_range = Time.current..(Time.current + 4.hours)
@@ -19,5 +19,17 @@ class PagesController < ApplicationController
       )
       .includes(:locations)
       .limit(6)
+  end
+
+  def privacy
+    skip_authorization
+  end
+
+  def terms
+    skip_authorization
+  end
+
+  def payment_terms
+    skip_authorization
   end
 end

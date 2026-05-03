@@ -1,5 +1,9 @@
-Welcome <%= @email %>!
+Hi <%= @resource.first_name.presence || @email %>,
 
-You can confirm your account email through the link below:
+Thanks for signing up for ChairHop! Please confirm your email address to activate your account.
 
-<%= confirmation_url(@resource, confirmation_token: @token) %>
+Confirm your account: <%= confirmation_url(@resource, confirmation_token: @token) %>
+
+This link expires in 3 days. If you didn't sign up for ChairHop, you can safely ignore this email.
+
+© ChairHop

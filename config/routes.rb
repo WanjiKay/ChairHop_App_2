@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   root to: "pages#home"
-  get '/for-stylists', to: 'pages#for_stylists'
+  get '/for-stylists',  to: 'pages#for_stylists'
+  get '/privacy',       to: 'pages#privacy'
+  get '/terms',         to: 'pages#terms'
+  get '/payment-terms', to: 'pages#payment_terms'
 
   devise_for :users, controllers: {
     registrations: 'users/registrations'
@@ -54,6 +57,16 @@ Rails.application.routes.draw do
     get 'analytics', to: 'analytics#index', as: :analytics
   end
 
+  # Admin console
+  namespace :admin do
+    root to: "users#index"
+    resources :users, only: [:index] do
+      member do
+        patch :toggle_founding_stylist
+      end
+    end
+  end
+
   # Square webhooks
   namespace :webhooks do
     post 'square', to: 'square#receive'
@@ -75,9 +88,10 @@ Rails.application.routes.draw do
     to: 'profiles#upload_portfolio_photos',
     as: :upload_portfolio_photos
 
-  patch 'profile/apply_hopps_bio',
-    to: 'profiles#apply_hopps_bio',
-    as: :apply_hopps_bio
+  # PRO TIER — re-enable when Pro features are ready
+  # patch 'profile/apply_hopps_bio',
+  #   to: 'profiles#apply_hopps_bio',
+  #   as: :apply_hopps_bio
 
   resource :profile, only: [:show, :edit, :update]
 
@@ -107,9 +121,6 @@ Rails.application.routes.draw do
   resources :stylists, only: [:index, :show]
 
   resources :chats, only: [:index, :new, :create, :show] do
-    member do
-      patch :set_city
-    end
     resources :messages, only: [:create]
   end
 

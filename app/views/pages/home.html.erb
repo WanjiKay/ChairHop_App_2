@@ -63,6 +63,7 @@
     <p class="text-center mt-4 text-muted">No stylists available right now — check back soon.</p>
   <% end %>
 
+  <% unless user_signed_in? %>
   <div class="stylist-pitch-section mt-5 mb-4">
     <div class="stylist-pitch-inner text-center mb-4">
       <h2 class="stylist-pitch-title">Are you a stylist?</h2>
@@ -94,5 +95,6 @@
       </p>
     </div>
   </div>
+  <% end %>
 
 </div>

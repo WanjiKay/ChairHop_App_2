@@ -13,8 +13,9 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-    # New stylist who hasn't completed onboarding takes priority over stored location
-    if resource.stylist? && resource.onboarding_completed_at.nil?
+    if resource.admin?
+      admin_root_path
+    elsif resource.stylist? && resource.onboarding_completed_at.nil?
       step1_stylist_onboarding_path
     elsif resource.stylist?
       stored_location_for(resource) || stylist_dashboard_path

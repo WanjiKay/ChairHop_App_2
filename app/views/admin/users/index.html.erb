@@ -1,0 +1,48 @@
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-primary mb-0">Admin — Stylists</h2>
+    <span class="text-muted small"><%= @stylists.count %> stylist<%= "s" if @stylists.count != 1 %></span>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th class="text-center">Founding Stylist</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @stylists.each do |stylist| %>
+            <tr>
+              <td class="align-middle fw-semibold"><%= stylist.full_name %></td>
+              <td class="align-middle text-muted small"><%= stylist.email %></td>
+              <td class="align-middle text-center">
+                <% if stylist.founding_stylist? %>
+                  <span class="badge founding-stylist-badge">✦ Founding Stylist</span>
+                <% else %>
+                  <span class="text-muted">—</span>
+                <% end %>
+              </td>
+              <td class="align-middle text-end">
+                <%= link_to stylist.founding_stylist? ? "Revoke" : "Grant",
+                      toggle_founding_stylist_admin_user_path(stylist),
+                      data: { turbo_method: :patch, turbo_confirm: stylist.founding_stylist? ? "Remove founding stylist status?" : nil },
+                      class: "btn btn-sm #{stylist.founding_stylist? ? 'btn-outline-danger' : 'btn-outline-success'}" %>
+              </td>
+            </tr>
+          <% end %>
+
+          <% if @stylists.empty? %>
+            <tr>
+              <td colspan="5" class="text-center text-muted py-4">No stylists found.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

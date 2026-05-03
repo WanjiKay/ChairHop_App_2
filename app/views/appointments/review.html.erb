@@ -143,8 +143,7 @@
                 action: "submit->square-payment#submit",
                 square_payment_application_id_value: ENV['SQUARE_APPLICATION_ID'],
                 square_payment_location_id_value: @appointment.stylist.square_location_id,
-                square_payment_deposit_label_value: "Request Appointment & Pay Deposit ($#{number_with_precision(@deposit, precision: 2)})",
-                square_payment_bypass_mode_value: ENV['BYPASS_SQUARE_PAYMENTS'] == 'true'
+                square_payment_deposit_label_value: "Request Appointment & Pay Deposit ($#{number_with_precision(@deposit, precision: 2)})"
               } do |f| %>
           <div class="card mb-4 shadow-sm">
             <div class="card-body p-4">

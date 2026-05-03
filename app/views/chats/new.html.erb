@@ -15,37 +15,6 @@
     <% if current_user.stylist? %>
       <p class="text-muted mb-3">Ask me anything about managing your profile,
       services, availability, or growing your business.</p>
-    <% else %>
-      <% if current_user.pro? %>
-        <div class="mb-3">
-          <p class="text-muted mb-3">
-            Share a picture and let Hopps help you find a stylist
-            <span class="badge ms-1"
-                  style="background-color: #D8A7A7; font-size: 0.7rem;">
-              ✨ Pro
-            </span>
-          </p>
-          <%= f.input :photos,
-                as: :file,
-                label: "Upload your hair inspo (optional)",
-                input_html: {
-                  multiple: true,
-                  accept: "image/png,image/jpeg,image/jpg,image/webp",
-                  class: "form-control"
-                } %>
-        </div>
-      <% else %>
-        <div class="mb-3 p-3 rounded"
-             style="background: #f9f0f0; border: 1px dashed #D8A7A7;">
-          <p class="mb-1 small fw-semibold">
-            ✨ Pro feature: Photo style matching
-          </p>
-          <p class="mb-0 small text-muted">
-            Upload a hair inspiration photo and HOPPS will match you
-            with the right stylist. Available on the Pro plan.
-          </p>
-        </div>
-      <% end %>
     <% end %>
 
     <%= f.input :content,

@@ -1,7 +1,17 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   skip_after_action :verify_authorized
-  before_action :configure_sign_up_params, only: [:create]
   skip_before_action :require_no_authentication, only: [:check_email]
+  before_action :configure_sign_up_params, only: [:create]
+  rescue_from ActiveRecord::RecordNotUnique do
+    redirect_to new_user_registration_path,
+      alert: "Something went wrong during sign up. Please try again."
+  end
+
+  def create
+    super do |resource|
+      UserMailer.welcome(resource).deliver_later if resource.persisted?
+    end
+  end
 
   def check_email
     email = params[:email].to_s.strip.downcase
@@ -10,6 +20,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   protected
+
+  def after_inactive_sign_up_path_for(resource)
+    new_user_session_path
+  end
 
   def after_sign_up_path_for(resource)
     if resource.stylist?
@@ -28,7 +42,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :role, :tos_accepted_at])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :role, :tos_accepted_at, :payment_terms_accepted_at, :city])
     sanitize_role_param
   end
 

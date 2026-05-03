@@ -5,20 +5,10 @@ export default class extends Controller {
   static values = {
     applicationId: String,
     locationId:    String,
-    depositLabel:  String,
-    bypassMode:    Boolean
+    depositLabel:  String
   }
 
   async connect() {
-    if (this.bypassModeValue) {
-      this.cardContainerTarget.innerHTML =
-        '<div class="alert alert-warning mb-0">' +
-        '<strong>⚠️ Dev Bypass Mode</strong> — Square payment skipped. ' +
-        'A fake nonce will be submitted.' +
-        '</div>'
-      return
-    }
-
     if (!this.applicationIdValue || !this.locationIdValue) {
       this.showError('Payment configuration error. Please contact support.')
       return
@@ -36,12 +26,6 @@ export default class extends Controller {
 
   async submit(event) {
     event.preventDefault()
-
-    if (this.bypassModeValue) {
-      this.nonceFieldTarget.value = 'cnon:DEVELOPMENT_BYPASS_TOKEN'
-      this.element.submit()
-      return
-    }
 
     // Validate consent checkbox before tokenizing
     if (this.hasConsentCheckboxTarget && !this.consentCheckboxTarget.checked) {

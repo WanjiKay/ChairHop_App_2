@@ -75,7 +75,8 @@
                     <% parsed = parse_hopps_bio_marker(message.content) %>
                     <%= render_markdown(parsed[:body]) %>
 
-                    <% if parsed[:bio].present? && current_user.stylist? && current_user.pro? %>
+                    <%# PRO TIER — bio apply card disabled until Pro is ready %>
+                    <% if false %>
                       <div class="hopps-bio-apply mt-3 p-3 rounded"
                            style="background: #f9f0f0; border: 1px solid #D8A7A7;">
                         <p class="mb-2 small fw-bold">✏️ HOPPS drafted a bio for you:</p>
@@ -123,45 +124,27 @@
         </div>
 
         <!-- Message Input -->
-        <% if current_user.customer? && @chat.city.blank? && current_user.city.blank? %>
-          <!-- City collection — replaces normal input while city is pending -->
-          <div class="message-input-container mt-3">
-            <%= form_with url: set_city_chat_path(@chat), method: :patch,
-                          html: { class: "message-input-form" } do %>
-              <div class="input-wrapper d-flex align-items-center gap-2">
-                <%= text_field_tag :city, nil,
-                      class: "form-control message-input flex-grow-1",
-                      placeholder: "Enter your city (e.g. Montreal, Toronto...)",
-                      autofocus: true %>
-                <button type="submit" class="btn btn-primary send-btn">
-                  <i class="fas fa-paper-plane"></i>
-                </button>
-              </div>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="message-input-container mt-3" data-controller="image-upload">
-            <%= simple_form_for [@chat, @message], html: { multipart: true, class: "message-input-form", id: "messageForm", data: { chat_message_target: "form", action: "turbo:submit-end->chat-message#scrollToBottom" } } do |f| %>
-              <div class="input-wrapper d-flex align-items-center gap-2" data-image-upload-target="area">
-                <label for="messagePhoto" class="btn btn-link upload-btn" data-action="click->image-upload#openFileDialog">
-                  <i class="fas fa-image"></i>
-                </label>
-                <%= f.input :photos, as: :file, input_html: { multiple: true, accept: "image/*", class: "d-none", id: "messagePhoto", data: { image_upload_target: "input", action: "change->image-upload#handleFileSelect" } }, label: false, wrapper: false %>
-                <%= f.input :content, as: :text, input_html: { class: "form-control message-input flex-grow-1", placeholder: "Type your message...", rows: 1, id: "messageTextarea", data: { chat_message_target: "textarea", action: "input->chat-message#handleInput keydown->chat-message#handleKeydown" } }, label: false, wrapper: false %>
-                <button type="submit" class="btn btn-primary send-btn">
-                  <i class="fas fa-paper-plane"></i>
-                </button>
-              </div>
+        <div class="message-input-container mt-3" data-controller="image-upload">
+          <%= simple_form_for [@chat, @message], html: { multipart: true, class: "message-input-form", id: "messageForm", data: { chat_message_target: "form", action: "turbo:submit-end->chat-message#scrollToBottom" } } do |f| %>
+            <div class="input-wrapper d-flex align-items-center gap-2" data-image-upload-target="area">
+              <label for="messagePhoto" class="btn btn-link upload-btn" data-action="click->image-upload#openFileDialog">
+                <i class="fas fa-image"></i>
+              </label>
+              <%= f.input :photos, as: :file, input_html: { multiple: true, accept: "image/*", class: "d-none", id: "messagePhoto", data: { image_upload_target: "input", action: "change->image-upload#handleFileSelect" } }, label: false, wrapper: false %>
+              <%= f.input :content, as: :text, input_html: { class: "form-control message-input flex-grow-1", placeholder: "Type your message...", rows: 1, id: "messageTextarea", data: { chat_message_target: "textarea", action: "input->chat-message#handleInput keydown->chat-message#handleKeydown" } }, label: false, wrapper: false %>
+              <button type="submit" class="btn btn-primary send-btn">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
 
-              <div class="image-preview d-none" id="imagePreview" data-image-upload-target="previewContainer">
-                <img src="" alt="Preview" id="previewImg" data-image-upload-target="previewImage">
-                <button type="button" class="btn btn-sm btn-danger remove-image" id="removeImage" data-image-upload-target="removeButton" data-action="click->image-upload#removePreview">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-            <% end %>
-          </div>
-        <% end %>
+            <div class="image-preview d-none" id="imagePreview" data-image-upload-target="previewContainer">
+              <img src="" alt="Preview" id="previewImg" data-image-upload-target="previewImage">
+              <button type="button" class="btn btn-sm btn-danger remove-image" id="removeImage" data-image-upload-target="removeButton" data-action="click->image-upload#removePreview">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>

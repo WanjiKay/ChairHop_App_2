@@ -75,41 +75,32 @@ class ChatsController < ApplicationController
       if @message.save!
         chat_photos.each { |photo| @message.photos.attach(photo) } if chat_photos.present?
 
-        if city_pending?(@chat)
-          Message.create!(
-            role: "assistant",
-            content: "Before I help you, which city are you looking in? " \
-                     "(You can save it to your profile later to skip this step)",
-            chat: @chat
-          )
-        else
-          begin
-            @appointments = []
-            if @chat.appointment.nil? && @message.content.present?
-              begin
-                embedding = RubyLLM.embed(@message.content)
-                @appointments = Appointment.nearest_neighbors(
-                  :embedding,
-                  embedding.vectors,
-                  distance: "euclidean"
-                ).first(2)
-              rescue RubyLLM::RateLimitError, StandardError => e
-                Rails.logger.warn "HOPPS embed failed: #{e.message}"
-                @appointments = Appointment.where(status: :pending)
-                                           .order(created_at: :desc).limit(2)
-              end
+        begin
+          @appointments = []
+          if @chat.appointment.nil? && @message.content.present?
+            begin
+              embedding = RubyLLM.embed(@message.content)
+              @appointments = Appointment.nearest_neighbors(
+                :embedding,
+                embedding.vectors,
+                distance: "euclidean"
+              ).first(2)
+            rescue RubyLLM::RateLimitError, StandardError => e
+              Rails.logger.warn "HOPPS embed failed: #{e.message}"
+              @appointments = Appointment.where(status: :pending)
+                                         .order(created_at: :desc).limit(2)
             end
-            if chat_photos.present?
-              @message.reload
-              send_question(image_url: @message.photos.first.url)
-            else
-              send_question
-            end
-            Message.create(role: "assistant", content: @response.content, chat: @chat)
-          rescue RubyLLM::ConfigurationError
-            redirect_to root_path, alert: "HOPPS is currently unavailable. Please try again later."
-            return
           end
+          if chat_photos.present?
+            @message.reload
+            send_question(image_url: @message.photos.first.url)
+          else
+            send_question
+          end
+          Message.create(role: "assistant", content: @response.content, chat: @chat)
+        rescue RubyLLM::ConfigurationError
+          redirect_to root_path, alert: "HOPPS is currently unavailable. Please try again later."
+          return
         end
       else
         flash.now[:alert] = "Could not send your message. #{@message.errors.full_messages.join(', ')}"
@@ -132,41 +123,6 @@ class ChatsController < ApplicationController
       @appointment = nil
     end
     @message = Message.new
-  end
-
-  def set_city
-    @chat = current_user.chats.find(params[:id])
-    authorize @chat
-
-    city = params[:city].to_s.strip
-    if city.blank?
-      flash[:validation_error] = "Please enter a city to continue."
-      redirect_to chat_path(@chat) and return
-    end
-
-    @chat.update!(city: city)
-
-    @message = @chat.messages.where(role: "user").order(:created_at).first
-    if @message
-      begin
-        if @message.photos.attached?
-          @message.reload
-          send_question(image_url: @message.photos.first.url)
-        else
-          send_question
-        end
-        Message.create!(role: "assistant", content: @response.content, chat: @chat)
-      rescue RubyLLM::ConfigurationError
-        redirect_to root_path, alert: "HOPPS is currently unavailable. Please try again later."
-        return
-      end
-    end
-
-    if current_user.city.blank?
-      flash[:notice] = "City saved for this chat. Visit your profile to save it permanently."
-    end
-
-    redirect_to chat_path(@chat)
   end
 
   private
@@ -199,10 +155,6 @@ class ChatsController < ApplicationController
     else
       @response = @ruby_llm_chat.ask(content)
     end
-  end
-
-  def city_pending?(chat)
-    current_user.customer? && chat.city.blank? && current_user.city.blank?
   end
 
 end

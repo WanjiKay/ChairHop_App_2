@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; }
+    .header { background: #0d6efd; color: white; padding: 24px; text-align: center; }
+    .header h2 { margin: 0; }
+    .body { padding: 24px; }
+    .card { border: 1px solid #dee2e6; border-radius: 6px; padding: 16px; margin: 16px 0; }
+    .step { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    .step:last-child { border-bottom: none; }
+    .step-num { background: #0d6efd; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; flex-shrink: 0; }
+    .btn { display: inline-block; background: #0d6efd; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 16px; }
+    .footer { background: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d; margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Welcome to ChairHop!</h2>
+    <% if @user.stylist? %>
+      <p style="margin:8px 0 0; opacity:0.8;">Let's get your profile set up</p>
+    <% else %>
+      <p style="margin:8px 0 0; opacity:0.8;">Your next great hair experience starts here</p>
+    <% end %>
+  </div>
+
+  <div class="body">
+    <p>Hi <%= @user.first_name %>,</p>
+
+    <% if @user.stylist? %>
+      <p>You've joined ChairHop as a stylist — welcome to the community! Here's how to get started:</p>
+
+      <div class="card">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div><strong>Complete your profile</strong> — Add your bio, services, and a great profile photo so clients know who you are.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div><strong>Set your availability</strong> — Let clients know when you're open for bookings.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div><strong>Start getting discovered</strong> — Once your profile is live, clients searching in Montreal will find you.</div>
+        </div>
+      </div>
+
+      <a href="<%= step1_stylist_onboarding_url %>" class="btn">Complete My Profile</a>
+    <% else %>
+      <p>You've joined ChairHop as a client — welcome! Here's how to find and book your next appointment:</p>
+
+      <div class="card">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div><strong>Browse stylists</strong> — Explore independent stylists available in Montreal.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div><strong>Pick a service &amp; time</strong> — Choose what you need and when works for you.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div><strong>Book instantly</strong> — A small deposit secures your spot. Easy.</div>
+        </div>
+      </div>
+
+      <a href="<%= stylists_url %>" class="btn">Find a Stylist</a>
+    <% end %>
+  </div>
+
+  <div class="footer">&copy; ChairHop &middot; You're receiving this because you just created an account with us.</div>
+</body>
+</html>

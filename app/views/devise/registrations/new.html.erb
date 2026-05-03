@@ -38,6 +38,16 @@
               </div>
             </div>
 
+            <!-- City (customers only) -->
+            <div class="mb-3" id="city-field">
+              <label class="form-label">City</label>
+              <%= f.text_field :city,
+                    class: 'form-control',
+                    placeholder: 'e.g. Montreal, Toronto, Vancouver',
+                    id: 'user_city',
+                    required: true %>
+            </div>
+
             <!-- Email -->
             <div class="mb-3">
               <%= f.label :email, class: 'form-label' %>
@@ -86,6 +96,17 @@
               </label>
             </div>
 
+            <!-- Payment Terms (stylists only) -->
+            <div class="form-check mt-2 d-none" id="payment-terms-field">
+              <%= f.check_box :payment_terms_accepted_at,
+                  { class: "form-check-input", id: "user_payment_terms_accepted_at" },
+                  Time.current.to_s,
+                  nil %>
+              <label class="form-check-label" for="user_payment_terms_accepted_at">
+                I agree to the <a href="/payment-terms" target="_blank">Payment Terms</a>
+              </label>
+            </div>
+
             <!-- Submit -->
             <div class="d-grid mt-3">
               <%= f.submit "Create Account", class: "btn btn-primary btn-lg w-100",
@@ -98,6 +119,28 @@
           </div>
 
         </div>
+
+        <script>
+          (function () {
+            var cityField       = document.getElementById('city-field');
+            var cityInput       = document.getElementById('user_city');
+            var paymentField    = document.getElementById('payment-terms-field');
+            var paymentCheckbox = document.getElementById('user_payment_terms_accepted_at');
+            var stylistRadio    = document.getElementById('role_stylist');
+            var radios          = document.querySelectorAll('input[name="user[role]"]');
+
+            function updateFields() {
+              var isStylist = stylistRadio.checked;
+              cityField.classList.toggle('d-none', isStylist);
+              cityInput.required = !isStylist;
+              paymentField.classList.toggle('d-none', !isStylist);
+              if (!isStylist) paymentCheckbox.checked = false;
+            }
+
+            radios.forEach(function (r) { r.addEventListener('change', updateFields); });
+            updateFields();
+          })();
+        </script>
 
         <!-- Email already taken modal -->
         <div class="modal fade" id="emailTakenModal" tabindex="-1" aria-labelledby="emailTakenModalLabel" aria-hidden="true">

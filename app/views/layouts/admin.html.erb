@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= favicon_link_tag 'favicon.ico' %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <title>ChairHop Admin</title>
+  </head>
+  <body style="background: #f4f6f8;">
+    <nav class="navbar navbar-dark" style="background: #1a1a2e;">
+      <div class="container-fluid px-4">
+        <span class="navbar-brand fw-bold">ChairHop <span style="color: #b8860b; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;">Admin</span></span>
+        <div class="d-flex align-items-center gap-3">
+          <span class="text-white-50 small"><%= current_user.full_name %></span>
+          <%= link_to "← Back to site", root_path, class: "btn btn-sm btn-outline-light" %>
+          <%= link_to "Sign out", destroy_user_session_path, data: { turbo_method: :delete }, class: "btn btn-sm btn-outline-danger" %>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid px-4 py-3">
+      <% if notice %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= notice %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% end %>
+      <% if alert %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= alert %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </div>
+  </body>
+</html>

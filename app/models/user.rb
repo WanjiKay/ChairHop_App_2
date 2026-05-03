@@ -2,7 +2,7 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable, :confirmable
 
   enum role: {
     customer: 0,
@@ -11,6 +11,7 @@ class User < ApplicationRecord
   }
 
   scope :pro, -> { where(pro: true) }
+  scope :founding_stylists, -> { where(founding_stylist: true) }
 
   def pro?
     self[:pro]
@@ -35,11 +36,13 @@ class User < ApplicationRecord
   has_many_attached :portfolio_photos
 
   before_create :default_role
-  before_create :generate_booking_slug
+  before_validation :generate_booking_slug, on: :create
 
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :tos_accepted_at, presence: { message: "You must accept the terms of service" }
+  validates :payment_terms_accepted_at, presence: { message: "You must accept the Payment Terms" }, if: -> { stylist? && new_record? }
+  validates :city, presence: true, if: -> { customer? && new_record? }
   validates :booking_slug, uniqueness: true, allow_nil: true
 
   # Validate avatar file upload
@@ -129,12 +132,13 @@ class User < ApplicationRecord
   end
 
   def generate_booking_slug
+    return unless stylist?
     return if booking_slug.present?
     base = "#{first_name} #{last_name}".strip.downcase.gsub(/[^a-z0-9\s]/, '').gsub(/\s+/, '-')
     base = 'stylist' if base.blank?
     slug = base
     counter = 1
-    while User.where(role: :stylist).exists?(booking_slug: slug)
+    while User.exists?(booking_slug: slug)
       slug = "#{base}-#{counter}"
       counter += 1
     end
