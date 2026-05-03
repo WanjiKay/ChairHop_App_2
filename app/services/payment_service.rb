@@ -1,30 +1,14 @@
-# TODO: Remove BYPASS_SQUARE_PAYMENTS before production!
-# This bypass is ONLY for development testing while Square Sandbox is configured.
-# To enable: export BYPASS_SQUARE_PAYMENTS=true in terminal before starting Rails
-
-# TODO: Platform fees (app_fee_money) require Square Platform approval.
-# Apply at: https://developer.squareup.com/docs/platform/overview
-# Disabled for now to allow testing — re-enable after approval.
 class PaymentService
-  PLATFORM_FEE_RATE = 0.035 # 3.5% platform fee on total (reserved for when Platform is approved)
-
-  # Development bypass for testing without Square Sandbox
-  def self.bypass_payments?
-    Rails.env.development? && ENV['BYPASS_SQUARE_PAYMENTS'] == 'true'
-  end
+  PLATFORM_FEE_RATE    = 0.045 # 4.5% per payment (deposit + balance), totalling 4.5% of full appointment
+  CANADIAN_PROVINCES   = %w[AB BC MB NB NL NS NT NU ON PE QC SK YT].freeze
 
   def initialize(stylist)
     @stylist = stylist
 
-    unless @stylist.square_connected? || PaymentService.bypass_payments?
+    unless @stylist.square_connected?
       raise "Stylist must have Square account connected"
     end
 
-    return if PaymentService.bypass_payments?
-
-    # Create a per-stylist Square client using their OAuth access token.
-    # square_merchant_id is used as location_id — replace with a dedicated
-    # square_location_id column once fetched from the Locations API.
     @client = Square::Client.new(
       token:    @stylist.square_access_token,
       base_url: ENV['SQUARE_ENVIRONMENT'] == 'production' ?
@@ -37,15 +21,6 @@ class PaymentService
   # Looks up by (user, stylist) pair in user_square_customers.
   # Returns the Square customer_id string. Raises on unrecoverable failure.
   def create_or_find_customer(user)
-    if PaymentService.bypass_payments?
-      dev_id = "DEV_CUSTOMER_#{@stylist.id}_#{user.id}"
-      UserSquareCustomer.find_or_create_by!(user: user, stylist: @stylist) do |r|
-        r.square_customer_id = dev_id
-      end
-      return dev_id
-    end
-
-    # Trust the DB record — Square Customer records persist unless explicitly deleted.
     existing = UserSquareCustomer.find_by(user: user, stylist: @stylist)
     return existing.square_customer_id if existing
 
@@ -68,11 +43,6 @@ class PaymentService
   # Vault a payment nonce as a Card on File in the stylist's Square account.
   # Returns { success: true, card_id: "ccof_..." } or { success: false, error: "..." }.
   def create_card(user, payment_nonce, appointment)
-    if PaymentService.bypass_payments?
-      Rails.logger.info "⚠️  DEVELOPMENT MODE: Bypassing Square create_card"
-      return { success: true, card_id: "DEV_CARD_#{SecureRandom.hex(8)}" }
-    end
-
     customer_record = UserSquareCustomer.find_by(user: user, stylist: @stylist)
     raise "No Square customer record for user #{user.id} / stylist #{@stylist.id} — call create_or_find_customer first" unless customer_record
 
@@ -93,8 +63,7 @@ class PaymentService
   # Deactivate a stored card. Best-effort cleanup when deposit charge fails
   # after card creation but before appointment save.
   def disable_card(card_id)
-    return if PaymentService.bypass_payments?
-    return if card_id.blank? || card_id.start_with?('DEV_')
+    return if card_id.blank?
 
     @client.cards.disable(card_id: card_id)
   rescue => e
@@ -105,22 +74,9 @@ class PaymentService
   # Charge 50% deposit with platform fee applied to the total.
   # v45 gem raises Square::ApiException on any API error — no .success? needed.
   def charge_deposit(appointment, card_id, customer_id)
-    # DEVELOPMENT BYPASS: Skip Square API in development
-    if PaymentService.bypass_payments?
-      Rails.logger.info "⚠️  DEVELOPMENT MODE: Bypassing Square deposit charge"
-      payment_amount = appointment.payment_amount.to_f
-      return {
-        success:        true,
-        payment_id:     "DEV_DEPOSIT_#{SecureRandom.hex(8)}",
-        amount_charged: (payment_amount * 0.5).round(2),
-        platform_fee:   0
-      }
-    end
-
-    # Original Square API logic continues below...
     total_cents   = total_amount_cents(appointment)
     deposit_cents = (total_cents * 0.5).to_i
-    fee_cents     = (total_cents * PLATFORM_FEE_RATE).to_i
+    fee_cents     = @stylist.founding_stylist? ? 0 : (deposit_cents * PLATFORM_FEE_RATE).to_i
 
     Rails.logger.info "Charging deposit: #{deposit_cents} cents, platform fee: #{fee_cents} cents"
 
@@ -128,8 +84,8 @@ class PaymentService
       result = @client.payments.create(
         source_id:       card_id,
         idempotency_key: "deposit-#{appointment.id}",
-        amount_money:    { amount: deposit_cents, currency: 'USD' },
-        # app_fee_money: { amount: fee_cents, currency: 'USD' }, # Requires Square Platform approval
+        amount_money:    { amount: deposit_cents, currency: currency_for(appointment) },
+        app_fee_money:   { amount: fee_cents,   currency: currency_for(appointment) },
         autocomplete:    true,
         customer_id:     customer_id,
         location_id:     @stylist.square_location_id,
@@ -141,7 +97,7 @@ class PaymentService
         success:        true,
         payment_id:     payment.id,
         amount_charged: deposit_cents / 100.0,
-        platform_fee:   0,
+        platform_fee:   fee_cents / 100.0,
         status:         payment.status
       }
     rescue => e
@@ -154,18 +110,6 @@ class PaymentService
   # Charge remaining 50% balance when appointment is completed.
   # Card and customer IDs are read from the appointment and its customer record.
   def charge_balance(appointment)
-    # DEVELOPMENT BYPASS: Skip Square API in development
-    if PaymentService.bypass_payments?
-      Rails.logger.info "⚠️  DEVELOPMENT MODE: Bypassing Square balance charge"
-      balance_amount = (appointment.payment_amount.to_f * 0.5).round(2)
-      return {
-        success:        true,
-        payment_id:     "DEV_BALANCE_#{SecureRandom.hex(8)}",
-        amount_charged: balance_amount,
-        platform_fee:   0
-      }
-    end
-
     card_id = appointment.square_card_id
     unless card_id.present?
       return { success: false, error: "No vaulted card on file for appointment ##{appointment.id}" }
@@ -174,10 +118,9 @@ class PaymentService
     customer_record = UserSquareCustomer.find_by(user: appointment.customer, stylist: @stylist)
     customer_id = customer_record&.square_customer_id
 
-    # Original Square API logic continues below...
     total_cents   = total_amount_cents(appointment)
     balance_cents = (total_cents * 0.5).to_i
-    fee_cents     = (total_cents * PLATFORM_FEE_RATE).to_i
+    fee_cents     = @stylist.founding_stylist? ? 0 : (balance_cents * PLATFORM_FEE_RATE).to_i
 
     Rails.logger.info "Charging balance: #{balance_cents} cents, platform fee: #{fee_cents} cents"
 
@@ -185,8 +128,8 @@ class PaymentService
       result = @client.payments.create(
         source_id:       card_id,
         idempotency_key: "completion-#{appointment.id}",
-        amount_money:    { amount: balance_cents, currency: 'USD' },
-        # app_fee_money: { amount: fee_cents, currency: 'USD' }, # Requires Square Platform approval
+        amount_money:    { amount: balance_cents, currency: currency_for(appointment) },
+        app_fee_money:   { amount: fee_cents,    currency: currency_for(appointment) },
         autocomplete:    true,
         customer_id:     customer_id,
         location_id:     @stylist.square_location_id,
@@ -198,7 +141,7 @@ class PaymentService
         success:        true,
         payment_id:     payment.id,
         amount_charged: balance_cents / 100.0,
-        platform_fee:   0,
+        platform_fee:   fee_cents / 100.0,
         status:         payment.status
       }
     rescue => e
@@ -209,17 +152,6 @@ class PaymentService
 
   # Create a Square payment link for the remaining 50% balance.
   def create_payment_link(appointment)
-    if PaymentService.bypass_payments?
-      Rails.logger.info "⚠️  DEV MODE: Bypassing Square payment link creation"
-      fake_checkout_id = "DEV_CHECKOUT_#{SecureRandom.hex(8)}"
-      fake_url = "https://squareup.com/pay/DEV_#{SecureRandom.hex(4)}"
-      return {
-        success:     true,
-        checkout_id: fake_checkout_id,
-        payment_url: fake_url
-      }
-    end
-
     total_cents   = total_amount_cents(appointment)
     balance_cents = (total_cents * 0.5).to_i
 
@@ -235,7 +167,7 @@ class PaymentService
                 quantity: "1",
                 base_price_money: {
                   amount:   balance_cents,
-                  currency: "USD"
+                  currency: currency_for(appointment)
                 }
               }
             ]
@@ -265,17 +197,6 @@ class PaymentService
 
   # Refund deposit when cancelled 24+ hours before appointment.
   def refund_deposit(appointment)
-    # DEVELOPMENT BYPASS: Skip Square API in development
-    if PaymentService.bypass_payments?
-      Rails.logger.info "⚠️  DEVELOPMENT MODE: Bypassing Square refund"
-      return {
-        success:         true,
-        refund_id:       "DEV_REFUND_#{SecureRandom.hex(8)}",
-        amount_refunded: (appointment.payment_amount.to_f * 0.5).round(2)
-      }
-    end
-
-    # Original Square API logic continues below...
     unless appointment.payment_id.present?
       return { success: false, error: "No payment to refund" }
     end
@@ -295,7 +216,7 @@ class PaymentService
       result = @client.refunds.refund_payment(
         payment_id:      appointment.payment_id,
         idempotency_key: SecureRandom.uuid,
-        amount_money:    { amount: deposit_cents, currency: 'USD' }
+        amount_money:    { amount: deposit_cents, currency: currency_for(appointment) }
       )
 
       refund = result.refund
@@ -312,6 +233,10 @@ class PaymentService
   end
 
   private
+
+  def currency_for(appointment)
+    CANADIAN_PROVINCES.include?(appointment.location&.state&.upcase) ? 'CAD' : 'USD'
+  end
 
   # Derives total amount in cents. Falls back to deposit_amount * 2
   # if payment_amount wasn't explicitly set on the appointment.

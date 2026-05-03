@@ -9,6 +9,11 @@
         <!-- Stylist Header -->
         <div class="text-center mb-5">
           <h1 class="text-primary fw-bold mb-3"><%= @stylist.full_name %></h1>
+          <% if @stylist.founding_stylist? %>
+            <div class="mb-3">
+              <span class="badge founding-stylist-badge">✦ Founding Stylist</span>
+            </div>
+          <% end %>
 
           <!-- Circular Profile Picture Below Name -->
           <div class="profile-picture-wrapper mb-4">

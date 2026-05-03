@@ -1,5 +1,33 @@
-<p>Welcome <%= @email %>!</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; }
+    .header { background: #0d6efd; color: white; padding: 24px; text-align: center; }
+    .header h2 { margin: 0; }
+    .body { padding: 24px; }
+    .alert { background: #cfe2ff; border: 1px solid #b6d4fe; border-radius: 6px; padding: 12px 16px; margin: 16px 0; font-size: 14px; }
+    .btn { display: inline-block; background: #0d6efd; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 16px; }
+    .footer { background: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d; margin-top: 24px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Confirm your email</h2>
+    <p style="margin:8px 0 0; opacity:0.8;">One quick step to activate your ChairHop account</p>
+  </div>
 
-<p>You can confirm your account email through the link below:</p>
+  <div class="body">
+    <p>Hi <%= @resource.first_name.presence || @email %>,</p>
+    <p>Thanks for signing up for ChairHop! Please confirm your email address to activate your account.</p>
 
-<p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
+    <div class="alert">
+      This confirmation link expires in 3 days. If you didn't create a ChairHop account, you can safely ignore this email.
+    </div>
+
+    <a href="<%= confirmation_url(@resource, confirmation_token: @token) %>" class="btn">Confirm My Account</a>
+  </div>
+
+  <div class="footer">&copy; ChairHop &middot; You're receiving this because someone signed up with this email address.</div>
+</body>
+</html>

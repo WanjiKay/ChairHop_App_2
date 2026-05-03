@@ -1,0 +1,13 @@
+<footer class="chairhop-footer">
+  <div class="chairhop-footer__inner">
+    <span class="chairhop-footer__brand">ChairHop</span>
+
+    <nav class="chairhop-footer__links" aria-label="Legal">
+      <%= link_to "Privacy Policy",   "/privacy",       class: "chairhop-footer__link" %>
+      <%= link_to "Terms of Service", "/terms",         class: "chairhop-footer__link" %>
+      <%= link_to "Payment Terms",    "/payment-terms", class: "chairhop-footer__link" %>
+    </nav>
+
+    <p class="chairhop-footer__copy">&copy; <%= Time.current.year %> ChairHop. All rights reserved.</p>
+  </div>
+</footer>

@@ -17,7 +17,8 @@ class HoppsService
 
   def model(image_url: nil)
     return "gpt-4o" if image_url.present?
-    return "gpt-4o-mini" if @user.pro?
+    # PRO TIER — disabled until Pro features are ready for launch
+    # return "gpt-4o-mini" if @user.pro?
     "gpt-4.1-nano"
   end
 
@@ -25,7 +26,8 @@ class HoppsService
 
   def client_prompt
     base = client_base_prompt
-    base += client_pro_prompt if @user.pro?
+    # PRO TIER — disabled until Pro features are ready for launch
+    # base += client_pro_prompt if @user.pro?
     base += appointment_context if @appointment.present?
     base += stylist_finder_context
     base
@@ -33,7 +35,8 @@ class HoppsService
 
   def stylist_prompt
     base = stylist_base_prompt
-    base += stylist_pro_prompt if @user.pro?
+    # PRO TIER — disabled until Pro features are ready for launch
+    # base += stylist_pro_prompt if @user.pro?
     base
   end
 
@@ -48,7 +51,10 @@ class HoppsService
       - Answering general hair and beauty questions (always clarify you
         are not a licensed professional and recommend consulting a stylist
         for personalized advice)
-      - Navigating the ChairHop platform (booking, rescheduling, cancellations)
+      - Navigating the ChairHop platform (booking, rescheduling, cancellations) —
+        for rescheduling, direct clients to their Appointments page (/appointments)
+        to manage bookings or use the Messages tab to contact their stylist directly.
+        Keep navigation guidance brief and direct.
       - Recommending the client message their stylist directly for complex
         or appointment-specific questions
 
@@ -68,10 +74,6 @@ class HoppsService
       - Always format stylist profile links as markdown hyperlinks, never
         as plain text URLs. Example: [Maya Johnson](/book/maya-johnson)
       - Never invent stylist names or URLs not present in your stylist list.
-      - You only have stylist data for the city provided at the start
-        of this chat. If the client asks about a different city, let
-        them know warmly: "I can only search one city per chat — start
-        a new chat and enter [city name] to see stylists there."
 
       CONVERSATION RULES:
       - You have already introduced yourself. Do not say "Hi [name]!" or
@@ -104,9 +106,11 @@ class HoppsService
       - Light client communication coaching (how to respond professionally to client questions)
 
       You cannot:
-      - Access or modify the stylist's account directly (except bio — see below if Pro)
+      - Access or modify the stylist's account directly
       - Guarantee business outcomes or income
       - Give legal or financial advice
+      - Access Pro features — these are not yet available. If asked about Pro features, say:
+        "Pro features are coming soon to ChairHop! I'll let you know when they're available."
 
       Always be encouraging, practical, and direct. Stylists are professionals — treat them as such.
 
@@ -177,18 +181,42 @@ class HoppsService
     city = @chat&.city.presence || @user.city.presence
 
     unless city.present?
+      all_stylists = User.where(role: :stylist)
+                         .joins(:locations)
+                         .joins(
+                           "LEFT JOIN availability_blocks ON
+                            availability_blocks.stylist_id = users.id
+                            AND availability_blocks.start_time >= NOW()"
+                         )
+                         .select("users.*, MIN(availability_blocks.start_time) as next_available")
+                         .group("users.id")
+                         .order("next_available ASC NULLS LAST")
+                         .limit(9)
+
+      if all_stylists.empty?
+        return "\nSTYLIST SEARCH:\nNo stylists are currently on the platform. " \
+               "Let the client know and encourage them to check back soon.\n"
+      end
+
+      stylist_lines = all_stylists.map do |s|
+        services = s.services.map(&:name).first(3).join(", ")
+        profile_url = Rails.application.routes.url_helpers
+                          .stylist_booking_page_path(slug: s.booking_slug)
+        next_avail = s.next_available ?
+          Time.parse(s.next_available.to_s).strftime("%b %d") :
+          "availability not listed"
+        "- [**#{s.full_name}**](#{profile_url}) — #{services} (Next available: #{next_avail})"
+      end
+
       return <<~PROMPT
 
-        STYLIST SEARCH — IMPORTANT:
-        This client has no city saved on their profile. When they ask
-        about finding a stylist, ask them which city they are looking
-        in as part of the conversation — do not present a form or field.
-        Once they tell you their city in chat, let them know you can
-        only search based on their saved profile city, and suggest they
-        update their profile at /profile/edit to save it for next time.
-        For this chat session, acknowledge their city and do your best
-        to help — but note you cannot query live results mid-chat, so
-        be honest that your stylist list is based on their profile city.
+        AVAILABLE STYLISTS (platform-wide — results not filtered by city):
+        #{stylist_lines.join("\n")}
+
+        Note to HOPPS: This client has no city on their profile. Present these stylists
+        as platform-wide options. If the client mentions a city, acknowledge it and
+        suggest they save their city at /profile/edit so future chats show local results.
+        Otherwise apply the same 3-at-a-time presentation rules below.
       PROMPT
     end
 
@@ -259,8 +287,9 @@ class HoppsService
       - Always include next available date in parentheses
       - Never invent stylists or URLs not in this list
       - If the client asks about a different city, say:
-        "I can only search one city per chat — start a new chat and
-        enter [city] to see stylists there."
+        "I'm currently set up to show you stylists in #{city} for this chat.
+        If you'd like to explore a different city instead, just start a fresh
+        chat and I'll pull up local results right away!"
     PROMPT
   end
 end

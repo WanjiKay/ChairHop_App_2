@@ -9,12 +9,6 @@ class MessagesController < ApplicationController
   def create
     skip_authorization
 
-    # Guard: prevent AI response if city is still pending for this chat
-    if @chat.city.blank? && current_user.city.blank? && current_user.customer?
-      flash[:validation_error] = "Please provide your city first."
-      redirect_to chat_path(@chat) and return
-    end
-
     @message = Message.new(message_params)
     @message.chat = @chat
     @message.role = "user"

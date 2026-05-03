@@ -72,7 +72,6 @@ class Webhooks::SquareController < ApplicationController
   end
 
   def valid_signature?(payload, signature)
-    return true if WEBHOOK_SIGNATURE_KEY.blank? # skip in dev/test
     expected = Base64.strict_encode64(
       OpenSSL::HMAC.digest('SHA256', WEBHOOK_SIGNATURE_KEY, payload)
     )

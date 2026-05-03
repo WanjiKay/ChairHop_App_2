@@ -1,0 +1,138 @@
+.policy-page {
+  background-color: $color-cream;
+  min-height: 100vh;
+}
+
+.policy-hero {
+  background-color: $color-brown-deep;
+  padding: 3.5rem 2rem 3rem;
+  text-align: center;
+}
+
+.policy-hero-inner {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.policy-hero-title {
+  color: $color-cream;
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.policy-hero-link {
+  color: $color-soft-gray;
+  text-decoration: underline;
+
+  &:hover {
+    color: $color-cream;
+  }
+}
+
+.policy-meta {
+  color: $color-soft-gray;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.policy-body {
+  max-width: 760px;
+  padding: 2.5rem 1.5rem 5rem;
+
+  h2 {
+    color: $color-brown-deep;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    font-family: $body-font;
+  }
+
+  h3 {
+    color: $color-dark;
+    font-size: 0.975rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-family: $body-font;
+  }
+
+  p, li {
+    color: $color-dark-text;
+    font-size: 0.9375rem;
+    line-height: 1.8;
+  }
+
+  ul, ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  a {
+    color: $color-dark;
+    text-decoration: underline;
+
+    &:hover {
+      color: $color-brown-deep;
+    }
+  }
+}
+
+.policy-summary {
+  background-color: darken($color-cream, 4%);
+  border-left: 3px solid $color-brown-deep;
+  border-radius: 4px;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1rem;
+
+  .policy-summary__title {
+    color: $color-brown-deep;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  p, li {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: $color-dark-text;
+  }
+}
+
+.policy-section {
+  margin-bottom: 0.5rem;
+}
+
+.policy-table {
+  font-size: 0.875rem;
+  margin-top: 1rem;
+
+  th {
+    background-color: darken($color-cream, 6%);
+    color: $color-brown-deep;
+    font-weight: 600;
+    border-color: darken($color-cream, 10%);
+  }
+
+  td {
+    color: $color-dark-text;
+    border-color: darken($color-cream, 8%);
+    vertical-align: top;
+  }
+}
+
+.policy-back {
+  a {
+    color: $color-soft-gray;
+    font-size: 0.875rem;
+    text-decoration: none;
+
+    &:hover {
+      color: $color-brown-deep;
+    }
+  }
+}

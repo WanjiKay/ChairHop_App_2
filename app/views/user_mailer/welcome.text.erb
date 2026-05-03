@@ -1,0 +1,21 @@
+Welcome to ChairHop, <%= @user.first_name %>!
+
+<% if @user.stylist? %>
+You've joined ChairHop as a stylist. Here's how to get started:
+
+1. Complete your profile — Add your bio, services, and a profile photo.
+2. Set your availability — Let clients know when you're open for bookings.
+3. Start getting discovered — Clients searching in Montreal will find you.
+
+Complete your profile: <%= step1_stylist_onboarding_url %>
+<% else %>
+You've joined ChairHop as a client. Here's how to find your next appointment:
+
+1. Browse stylists — Explore independent stylists in Montreal.
+2. Pick a service & time — Choose what you need and when works for you.
+3. Book instantly — A small deposit secures your spot.
+
+Browse stylists: <%= stylists_url %>
+<% end %>
+
+© ChairHop — You're receiving this because you just created an account with us.

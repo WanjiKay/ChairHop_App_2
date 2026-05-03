@@ -47,6 +47,7 @@
 
       <% else %>
         <!-- Sign In / Sign Up -->
+        <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-primary btn-sm" %>
         <%= link_to "Sign In", new_user_session_path, class: "chairhop-navbar__cta chairhop-navbar__cta--auth" %>
         <span class="navbar-stylist-cta">
           <%= link_to "List your chair", "/users/sign_up", class: "chairhop-navbar__cta chairhop-navbar__cta--auth" %>
